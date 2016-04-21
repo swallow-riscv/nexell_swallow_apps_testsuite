@@ -23,7 +23,7 @@ OBJS	:= $(COBJS) $(CPPOBJS)
 INCLUDE += -I./ -I../include -I../src
 
 #	Add dependent libraries
-LIBRARY += 
+LIBRARY += -L../src -lnx_video_alloc
 
 #	Compile Options
 CFLAGS	+= -fPIC
@@ -31,13 +31,12 @@ CFLAGS	+= -fPIC
 all: $(TARGET) install
 
 $(TARGET):	depend $(OBJS)
-	$(AR) $(ARFLAGS) $(TARGET) $(OBJS)
-#	$(quiet)$(CC) $(LDFLAGS) -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS) $(LIBRARY)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJS) -o $@ $(LIBRARY)
 
 install :
 	@echo "$(ColorMagenta)[[[ Intall $(TARGET) ]]]$(ColorEnd)"
 	install -m 755 -d $(INSTALL_PATH)
-	install -m 644 $(TARGET) $(INSTALL_PATH)
+	install -m 775 $(TARGET) $(INSTALL_PATH)
 
 clean:
 	@echo "$(ColorMagenta)[[[ Clean $(TARGET) ]]]$(ColorEnd)"

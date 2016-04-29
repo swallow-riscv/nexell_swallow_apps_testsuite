@@ -1,101 +1,71 @@
-#include <fcntl.h>
+//------------------------------------------------------------------------------
+//
+//	Copyright (C) 2016 Nexell Co. All Rights Reserved
+//	Nexell Co. Proprietary & Confidential
+//
+//	NEXELL INFORMS THAT THIS CODE AND INFORMATION IS PROVIDED "AS IS" BASE
+//  AND	WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING
+//  BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS
+//  FOR A PARTICULAR PURPOSE.
+//
+//	Module		:
+//	File		:
+//	Description	:
+//	Author		: 
+//	Export		:
+//	History		:
+//
+//------------------------------------------------------------------------------
+
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>		    //	getopt & optarg
-#include <stdlib.h>         //	atoi
-#include <sys/mman.h>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <sys/time.h>		//	gettimeofday
-#include <math.h>
+#include <stdlib.h>
 
 #include <linux/videodev2.h>
-#include <linux/videodev2_nxp_media.h>
 
-#include <nx_video_alloc.h>
 #include <nx_fourcc.h>
-
+#include <nx_video_alloc.h>
 #include <nx_video_api.h>
 
 #include "Util.h"
 
+#define MAX_BUFFER_NUM		8
+
+//------------------------------------------------------------------------------
 static int32_t LoadImage( uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO *pImg )
 {
 	int32_t i, j;
-	uint8_t *pDst/*, *pCb, *pCr*/;
+	uint8_t *pDst;
 
-	//	Copy Lu
 	pDst = (uint8_t *)pImg->pBuffer[0];
-	for( i=0 ; i<h ; i++ )
+	for( i = 0; i < h; i++ )
 	{
-		memcpy(pDst, pSrc, w);
+		memcpy( pDst, pSrc, w );
 		pDst += pImg->stride[0];
 		pSrc += w;
 	}
 
-	//pCb = pSrc;
-	//pCr = pSrc + w*h/4;
-
-	/*switch( pImg->format )
+	for( j = 1; j < 3; j++ )
 	{
-		case FOURCC_NV12:
+		pDst = (uint8_t *)pImg->pBuffer[j];
+		for( i = 0 ; i < h / 2 ; i++ )
 		{
-			uint8_t *pCbCr;
-			pDst = (uint8_t*)pImg->cbVirAddr;
-			for( i=0 ; i<h/2 ; i++ )
-			{
-				pCbCr = pDst + pImg->cbStride*i;
-				for( j=0 ; j<w/2 ; j++ )
-				{
-					*pCbCr++ = *pCb++;
-					*pCbCr++ = *pCr++;
-				}
-			}
-			break;
+			memcpy( pDst, pSrc, w / 2 );
+			pDst += pImg->stride[j];
+			pSrc += w/2;
 		}
-		case FOURCC_NV21:
-		{
-			uint8_t *pCrCb;
-			pDst = (uint8_t*)pImg->cbVirAddr;
-			for( i=0 ; i<h/2 ; i++ )
-			{
-				pCrCb = pDst + pImg->cbStride*i;
-				for( j=0 ; j<w/2 ; j++ )
-				{
-					*pCrCb++ = *pCr++;
-					*pCrCb++ = *pCb++;
-				}
-			}
-			break;
-		}
-		case FOURCC_MVS0:
-		case FOURCC_YV12:
-		case FOURCC_IYUV:*/
-		{
-			for(j=1 ; j<3 ; j++)
-			{
-				pDst = (uint8_t *)pImg->pBuffer[j];
-				for( i=0 ; i<h/2 ; i++ )
-				{
-					memcpy(pDst, pSrc, w/2);
-					pDst += pImg->stride[j];
-					pSrc += w/2;
-				}
-			}
-			/*break;
-		}*/
 	}
+
 	return 0;
 }
 
-#define MAX_BUFFER_NUM		8
-
+//------------------------------------------------------------------------------
 int32_t VpuEncMain( CODEC_APP_DATA *pAppData )
 {
 	NX_V4L2ENC_HANDLE hEnc = NULL;
 	NX_V4L2ENC_PARAM encParam;
 
-	int32_t i, ret = -1;
+	int32_t i, vidRet = -1;
 	NX_VID_MEMORY_HANDLE hMem[MAX_BUFFER_NUM];
 	NX_VID_MEMORY_HANDLE pImage;
 	int32_t index = 0;
@@ -106,11 +76,11 @@ int32_t VpuEncMain( CODEC_APP_DATA *pAppData )
 	uint8_t *pSeqData;
 	int32_t seqSize;
 
-	//	Input Image
+	// Input Image Size
 	int32_t inWidth = pAppData->width;
 	int32_t inHeight = pAppData->height;
 
-	//	In/Out/Log File Open
+	// In/Out File Open
 	FILE *fdIn = fopen( pAppData->inFileName, "rb" );
 	FILE *fdOut = fopen( pAppData->outFileName, "wb" );
 
@@ -156,20 +126,31 @@ int32_t VpuEncMain( CODEC_APP_DATA *pAppData )
 	}
 
 	memset( &encParam, 0, sizeof(encParam) );
-	encParam.width		= pAppData->width;
-	encParam.height		= pAppData->height;
-	encParam.bitrate 	= pAppData->kbitrate;
-	encParam.initialQp	= pAppData->qp;
+	encParam.width = pAppData->width;
+	encParam.height = pAppData->height;
+	encParam.fpsNum = (pAppData->fpsNum) ? (pAppData->fpsNum) : (30);
+	encParam.fpsDen = (pAppData->fpsDen) ? (pAppData->fpsDen) : (1);
+	encParam.gopSize = (pAppData->gop) ? (pAppData->gop) : (encParam.fpsNum / encParam.fpsDen);
+	encParam.bitrate = pAppData->kbitrate * 1024;
+	encParam.maximumQp = pAppData->maxQp;
+	encParam.disableSkip = 0;
+	encParam.RCDelay = 0;
+	encParam.rcVbvSize = 0;
+	encParam.gammaFactor = 0;
+	encParam.initialQp = pAppData->qp;
+	encParam.numIntraRefreshMbs = 0;
+	encParam.searchRange = 0;
+	encParam.enableAUDelimiter = 0;
 
-	ret = NX_V4l2EncInit( hEnc, &encParam );
-	if( VID_ERR_NONE != ret )
+	vidRet = NX_V4l2EncInit( hEnc, &encParam );
+	if( VID_ERR_NONE != vidRet )
 	{
 		printf("Fail, NX_V4l2EncInit().\n");
 		goto ENC_TERMINATE;
 	}
 
-	ret = NX_V4l2EncGetSeqInfo( hEnc, &pSeqData, &seqSize );
-	if( VID_ERR_NONE != ret )
+	vidRet = NX_V4l2EncGetSeqInfo( hEnc, &pSeqData, &seqSize );
+	if( VID_ERR_NONE != vidRet )
 	{
 		printf("Fail, NX_V4l2EncGetSeqInfo().\n");
 		goto ENC_TERMINATE;
@@ -184,7 +165,7 @@ int32_t VpuEncMain( CODEC_APP_DATA *pAppData )
 	// Allocate Input Buffer
 	pSrcBuf = (uint8_t*)malloc( inWidth * inHeight * 3 / 2 );
 
-	// Allocate Output buffer
+	// Allocate Output Buffer
 	for( i = 0; i < MAX_BUFFER_NUM; i++ )
 	{
 		hMem[i] = NX_AllocateVideoMemory( inWidth, inHeight, 3, 0, 4096 );
@@ -226,18 +207,23 @@ int32_t VpuEncMain( CODEC_APP_DATA *pAppData )
 		memset( &encIn, 0, sizeof(encIn) );
 		encIn.pImage = pImage;
 
-		NX_V4l2EncEncodeFrame( hEnc, &encIn, &encOut );
+		vidRet = NX_V4l2EncEncodeFrame( hEnc, &encIn, &encOut );
+		if( VID_ERR_NONE != vidRet )
+		{
+			printf("File, NX_V4l2EncEncodeFrame().\n");
+		}
+
+		printf("[%04d] Encoded Frame. ( size=%d, type=%d )\n", frameCnt, encOut.bufSize, encOut.frameType);
 
 		if( fdOut && encOut.bufSize > 0 )
 		{
 			fwrite( (void *)encOut.outBuf, 1, encOut.bufSize, fdOut );
 		}
 
-		printf("[%d] Encoded Frame. ( %d )\n", frameCnt, encOut.bufSize);
 		frameCnt++;
 	}
 
-	ret = 0;
+	vidRet = 0;
 
 ENC_TERMINATE:
 	if( pSrcBuf )
@@ -265,9 +251,9 @@ ENC_TERMINATE:
 
 	if( hEnc )
 	{
-		NX_V4l2EncClose( hEnc );	
+		NX_V4l2EncClose( hEnc );
 	}
 
-	printf("Encoder End!!\n" );
+	printf("Encode End!!\n" );
 	return 0;
 }

@@ -1,13 +1,32 @@
+//------------------------------------------------------------------------------
+//
+//	Copyright (C) 2016 Nexell Co. All Rights Reserved
+//	Nexell Co. Proprietary & Confidential
+//
+//	NEXELL INFORMS THAT THIS CODE AND INFORMATION IS PROVIDED "AS IS" BASE
+//  AND	WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING
+//  BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS
+//  FOR A PARTICULAR PURPOSE.
+//
+//	Module		:
+//	File		:
+//	Description	:
+//	Author		: 
+//	Export		:
+//	History		:
+//
+//------------------------------------------------------------------------------
+
+#include <stdio.h>		//	printf
 #include <unistd.h>		//	getopt & optarg
 #include <stdlib.h>		//	atoi
-#include <stdio.h>		//	printf
 #include <string.h>		//	strdup
 
 #include <Util.h>
 
+//------------------------------------------------------------------------------
 extern int32_t VpuDecMain( CODEC_APP_DATA *pAppData );
 extern int32_t VpuEncMain( CODEC_APP_DATA *pAppData );
-
 
 enum
 {
@@ -18,6 +37,7 @@ enum
 	MODE_MAX
 };
 
+//------------------------------------------------------------------------------
 void print_usage( const char *appName )
 {
 	printf(
@@ -60,6 +80,7 @@ void print_usage( const char *appName )
 		"     #> %s -m 2 -o [output filename] -c 3 -q 100\n", appName );
 }
 
+//------------------------------------------------------------------------------
 int32_t main( int32_t argc, char *argv[] )
 {
 	int32_t opt;
@@ -117,4 +138,3 @@ int32_t main( int32_t argc, char *argv[] )
 
 	return 0;
 }
-

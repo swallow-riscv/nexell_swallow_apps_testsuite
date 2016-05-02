@@ -20,6 +20,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/types.h>	//	open
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <unistd.h>
 
 #include <linux/videodev2.h>
 
@@ -29,7 +34,57 @@
 
 #include "Util.h"
 
+#define ENABLE_DRM_DISPLAY
+#define ENABLE_ASPECT_RATIO
+#define SCREEN_WIDTH	(1080)
+#define SCREEN_HEIGHT	(1920)
+
+#ifdef ENABLE_DRM_DISPLAY
+#include <drm_fourcc.h>
+#include "DrmRender.h"
+#endif
+
+
 #define MAX_BUFFER_NUM		8
+
+static bool bExitLoop = false;
+
+
+//----------------------------------------------------------------------------------------------------
+//
+//	Signal Handler
+//
+static void signal_handler( int32_t sig )
+{
+	printf("Aborted by signal %s (%d)..\n", (char*)strsignal(sig), sig);
+
+	switch( sig )
+	{
+		case SIGINT :
+			printf("SIGINT..\n"); 	break;
+		case SIGTERM :
+			printf("SIGTERM..\n");	break;
+		case SIGABRT :
+			printf("SIGABRT..\n");	break;
+		default :
+			break;
+	}
+
+	if( !bExitLoop )
+		bExitLoop = true;
+	else{
+		usleep(1000000);	//	wait 1 seconds for double Ctrl+C operation
+		exit(EXIT_FAILURE);
+	}
+}
+
+static void register_signal( void )
+{
+	signal( SIGINT,  signal_handler );
+	signal( SIGTERM, signal_handler );
+	signal( SIGABRT, signal_handler );
+}
+
 
 //------------------------------------------------------------------------------
 static int32_t LoadImage( uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO *pImg )
@@ -95,6 +150,47 @@ int32_t VpuEncMain( CODEC_APP_DATA *pAppData )
 		printf("Fail, Input File Name.\n");
 		return -1;
 	}
+
+	register_signal();
+
+	int drmFd = open("/dev/dri/card0", O_RDWR);
+
+#ifdef ENABLE_DRM_DISPLAY
+	DRM_DSP_HANDLE hDsp = CreateDrmDisplay( drmFd );
+	DRM_RECT srcRect, dstRect;
+#endif	//	ENABLE_DRM_DISPLAY
+
+	SetDRMFd( drmFd );
+
+#ifdef ENABLE_DRM_DISPLAY
+	srcRect.x=0;
+	srcRect.y=0;
+	srcRect.width=pAppData->width;
+	srcRect.height=pAppData->height;
+	dstRect.x=0;
+	dstRect.y=0;
+	dstRect.width=pAppData->width;
+	dstRect.height=pAppData->height;
+
+#ifdef ENABLE_ASPECT_RATIO
+	double xRatio = (double)SCREEN_WIDTH/(double)pAppData->width;
+	double yRatio = (double)SCREEN_HEIGHT/(double)pAppData->height;
+	if( xRatio > yRatio )
+	{
+		dstRect.width = pAppData->width * yRatio;
+		dstRect.height = SCREEN_HEIGHT;
+		dstRect.x = abs(SCREEN_WIDTH - dstRect.width)/2;
+	}
+	else
+	{
+		dstRect.width = SCREEN_WIDTH;
+		dstRect.height = pAppData->height * xRatio;
+		dstRect.y = abs(SCREEN_HEIGHT - dstRect.height)/2;
+	}
+#endif
+
+	InitDrmDisplay(hDsp, 17, 22, DRM_FORMAT_YUV420, dstRect, srcRect );
+#endif	//	ENABLE_DRM_DISPLAY
 
 	if( pAppData->codec == 0 )
 	{
@@ -184,7 +280,7 @@ int32_t VpuEncMain( CODEC_APP_DATA *pAppData )
 		}
 	}
 
-	while(1)
+	while(!bExitLoop)
 	{
 		NX_V4L2ENC_IN encIn;
 		NX_V4L2ENC_OUT encOut;
@@ -203,6 +299,11 @@ int32_t VpuEncMain( CODEC_APP_DATA *pAppData )
 		}
 		
 		LoadImage( pSrcBuf, inWidth, inHeight, pImage );
+
+#ifdef ENABLE_DRM_DISPLAY
+		UpdateBuffer( hDsp, pImage, NULL );
+#endif
+
 
 		memset( &encIn, 0, sizeof(encIn) );
 		encIn.pImage = pImage;

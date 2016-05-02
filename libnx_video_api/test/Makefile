@@ -29,8 +29,6 @@ CPPOBJS	:= \
 		VideoEncTest.o		\
 		main.o
 
-OBJS	:= $(COBJS) $(CPPOBJS)
-
 #	Include Path
 INCLUDE += \
 		-I./				\
@@ -54,6 +52,13 @@ LIBRARY += \
 
 #	Compile Options
 CFLAGS	+= -g -pthread
+
+
+#	Add DRM Related Path
+CPPOBJS += DrmRender.o
+INCLUDE += -I../../../sysroot/include -I../../../sysroot/include/libdrm
+LIBRARY += -L../../../sysroot/lib -ldrm -lkms
+
 
 
 ######################################################################

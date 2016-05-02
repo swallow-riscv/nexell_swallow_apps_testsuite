@@ -24,6 +24,13 @@
 
 #define	DRM_DEVICE_NAME	"/dev/dri/card0"
 
+static int gstDrmFd = -1;
+
+void SetDRMFd( int fd )
+{
+	gstDrmFd = fd;
+}
+
 
 #define DRM_IOCTL_NR(n)         _IOC_NR(n)
 #define DRM_IOC_VOID            _IOC_NONE
@@ -72,8 +79,7 @@ static int alloc_gem(int drm_fd, int size, int flags)
 		return ret;
 	}
 
-	printf("[DRM ALLOC] gem %d, size %d, flags 0x%x\n",
-	       arg.handle, size, flags);
+	//printf("[DRM ALLOC] gem %d, size %d, flags 0x%x\n", arg.handle, size, flags);
 
 	return arg.handle;
 }
@@ -102,6 +108,30 @@ static int gem_to_dmafd(int drm_fd, int gem_fd)
 	return arg.fd;
 }
 
+static uint32_t get_flink_name(int fd, int gem)
+{
+	struct drm_gem_flink arg = { 0, };
+
+	arg.handle = gem;
+	if (drm_ioctl(fd, DRM_IOCTL_GEM_FLINK, &arg)) {
+		printf( "fail : get flink from gem:%d (DRM_IOCTL_GEM_FLINK)\n", gem);
+		return 0;
+	}
+	return arg.name;
+}
+
+static uint32_t gem_from_flink(int fd, uint32_t flink_name)
+{
+	struct drm_gem_open arg = { 0, };
+	/* struct nx_drm_gem_info info = { 0, }; */
+
+	arg.name = flink_name;
+	if (drm_ioctl(fd, DRM_IOCTL_GEM_OPEN, &arg)) {
+		printf("fail : cannot open gem name=%d\n", flink_name);
+		return -EINVAL;
+	}
+	return arg.handle;
+}
 
 
 //
@@ -120,7 +150,7 @@ NX_MEMORY_INFO *NX_AllocateMemory( int size, int align )
 {
 	int gemFd = -1;
 	int dmaFd = -1;
-	int drmFd = open(DRM_DEVICE_NAME, O_RDWR);
+	int drmFd = gstDrmFd;//open(DRM_DEVICE_NAME, O_RDWR);
 	int32_t flags = 0;
 	NX_MEMORY_INFO *pMem;
 
@@ -136,12 +166,11 @@ NX_MEMORY_INFO *NX_AllocateMemory( int size, int align )
 		goto ErrorExit;
 
 	pMem = (NX_MEMORY_INFO *)calloc(1, sizeof(NX_MEMORY_INFO));
-	pMem->fd = dmaFd;
+	pMem->drmFd = drmFd;
+	pMem->dmaFd = dmaFd;
+	pMem->gemFd = gemFd;
 	pMem->size = size;
 	pMem->align = align;
-
-	free_gem( drmFd, gemFd );
-	close( drmFd );
 	return pMem;
 
 ErrorExit:
@@ -162,7 +191,10 @@ void NX_FreeMemory( NX_MEMORY_INFO *pMem )
 		{
 			munmap( pMem->pBuffer, pMem->size );
 		}
-		close(pMem->fd);
+
+		free_gem( pMem->drmFd, pMem->gemFd );
+		close(pMem->dmaFd);
+		close(pMem->drmFd);
 		free( pMem );
 	}
 }
@@ -180,7 +212,7 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 {
 	int gemFd[NX_MAX_PLANES] = {0, };
 	int dmaFd[NX_MAX_PLANES] = {0, };
-	int drmFd = open(DRM_DEVICE_NAME, O_RDWR);
+	int drmFd = gstDrmFd;//open(DRM_DEVICE_NAME, O_RDWR);
 	int32_t flags = 0, i=0;
 	int32_t luStride, cStride;
 	int32_t luVStride, cVStride;
@@ -274,6 +306,7 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 	}
 
 	pVidMem = (NX_VID_MEMORY_INFO *)calloc(1, sizeof(NX_VID_MEMORY_INFO));
+	pVidMem->drmFd = drmFd;
 	pVidMem->width = width;
 	pVidMem->height = height;
 	pVidMem->align = align;
@@ -281,15 +314,11 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 	pVidMem->format = format;
 	for( i=0 ; i<planes ; i++ )
 	{
-		pVidMem->fd[i] = dmaFd[i];
+		pVidMem->dmaFd[i] = dmaFd[i];
+		pVidMem->gemFd[i] = gemFd[i];
 		pVidMem->size[i] = size[i];
 		pVidMem->stride[i] = stride[i];
-
-		printf("damFd = %d\n", dmaFd[i]);
-		free_gem( drmFd, gemFd[i] );
 	}
-
-	close( drmFd );
 	return pVidMem;
 
 ErrorExit:
@@ -321,8 +350,10 @@ void NX_FreeVideoMemory( NX_VID_MEMORY_INFO * pMem )
 			{
 				munmap( pMem->pBuffer[i], pMem->size[i] );
 			}
-			close(pMem->fd[i]);
+			free_gem( pMem->drmFd, pMem->gemFd[i] );
+			close(pMem->dmaFd[i]);
 		}
+		close(pMem->drmFd);
 		free( pMem );
 	}
 }
@@ -341,7 +372,7 @@ int NX_MapMemory( NX_MEMORY_INFO *pMem )
 	if( pMem->pBuffer )
 		return -1;
 
-	pBuf = mmap( 0, pMem->size, PROT_READ|PROT_WRITE, MAP_SHARED, pMem->fd, 0 );
+	pBuf = mmap( 0, pMem->size, PROT_READ|PROT_WRITE, MAP_SHARED, pMem->dmaFd, 0 );
 	if( pBuf == MAP_FAILED )
 	{
 		return -1;
@@ -380,7 +411,7 @@ int NX_MapVideoMemory( NX_VID_MEMORY_INFO *pMem )
 			return -1;
 		else
 		{
-			pBuf = mmap( 0, pMem->size[i], PROT_READ|PROT_WRITE, MAP_SHARED, pMem->fd[i], 0 );
+			pBuf = mmap( 0, pMem->size[i], PROT_READ|PROT_WRITE, MAP_SHARED, pMem->dmaFd[i], 0 );
 			if( pBuf == MAP_FAILED )
 			{
 				return -1;
@@ -404,6 +435,22 @@ int NX_UnmapVideoMemory( NX_VID_MEMORY_INFO *pMem )
 		}
 		else
 			return -1;
+	}
+	return 0;
+}
+
+
+int NX_GetGEMHandles( NX_VID_MEMORY_INFO *pMem, uint32_t handles[4] )
+{
+	int32_t i;
+	memset(handles, 0, sizeof(uint32_t)*4);
+	for( i = 0 ;  i < pMem->planes ; i ++ )
+	{
+		handles[i] = gem_from_flink( pMem->drmFd, get_flink_name(pMem->drmFd, pMem->gemFd[i]) );
+		if( 0 > (int)handles[i] )
+		{
+			return -1;
+		}
 	}
 	return 0;
 }

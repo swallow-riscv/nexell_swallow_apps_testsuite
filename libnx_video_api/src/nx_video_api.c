@@ -381,7 +381,7 @@ VPU_ERROR_E NX_V4l2EncInit( NX_V4L2ENC_HANDLE hEnc, NX_V4L2ENC_PARAM *pParam )
 	buf.memory	= V4L2_MEMORY_DMABUF;
 	buf.index	= 0;
 
-	buf.m.planes[0].m.fd		= hEnc->hBitStreamBuf->fd;
+	buf.m.planes[0].m.fd		= hEnc->hBitStreamBuf->dmaFd;
 	buf.m.planes[0].length		= hEnc->hBitStreamBuf->size;
 	buf.m.planes[0].bytesused	= hEnc->hBitStreamBuf->size;
 	buf.m.planes[0].data_offset	= 0;
@@ -450,7 +450,7 @@ VPU_ERROR_E NX_V4l2EncEncodeFrame( NX_V4L2ENC_HANDLE hEnc, NX_V4L2ENC_IN *pEncIn
 
 	for( i = 0; i < 3; i++ )
 	{
-		buf.m.planes[i].m.fd	= pEncIn->pImage->fd[i];
+		buf.m.planes[i].m.fd	= pEncIn->pImage->dmaFd[i];
 		buf.m.planes[i].length	= pEncIn->pImage->size[i];
 	}
 
@@ -468,7 +468,7 @@ VPU_ERROR_E NX_V4l2EncEncodeFrame( NX_V4L2ENC_HANDLE hEnc, NX_V4L2ENC_IN *pEncIn
 	buf.index	= 0;
 	buf.memory	= V4L2_MEMORY_DMABUF;
 
-	buf.m.planes[0].m.fd		= hEnc->hBitStreamBuf->fd;
+	buf.m.planes[0].m.fd		= hEnc->hBitStreamBuf->dmaFd;
 	buf.m.planes[0].length		= hEnc->hBitStreamBuf->size;
 	buf.m.planes[0].bytesused	= hEnc->hBitStreamBuf->size;
 	buf.m.planes[0].data_offset	= 0;
@@ -692,7 +692,7 @@ VPU_ERROR_E NX_V4l2DecParseVideoCfg( NX_V4L2DEC_HANDLE hDec, NX_V4L2DEC_SEQ_IN *
 	buf.index	= 0;
 	buf.flags	= 0;
 
-	buf.m.planes[0].m.fd		= hDec->hBitStreamBuf->fd;
+	buf.m.planes[0].m.fd		= hDec->hBitStreamBuf->dmaFd;
 	buf.m.planes[0].length		= hDec->hBitStreamBuf->size;
 	buf.m.planes[0].bytesused	= pSeqIn->seqSize;
 	buf.m.planes[0].data_offset	= 0;
@@ -841,7 +841,7 @@ VPU_ERROR_E NX_V4l2DecInit( NX_V4L2DEC_HANDLE hDec, NX_V4L2DEC_SEQ_IN *pSeqIn )
 		
 		for( j=0 ; j<3 ; j++ )
 		{
-			buf.m.planes[j].m.fd	= hDec->hFrameBuffer[i]->fd[j];
+			buf.m.planes[j].m.fd	= hDec->hFrameBuffer[i]->dmaFd[j];
 			buf.m.planes[j].length	= hDec->hFrameBuffer[i]->size[j];
 		}
 
@@ -888,7 +888,7 @@ VPU_ERROR_E NX_V4l2DecDecodeFrame( NX_V4L2DEC_HANDLE hDec, NX_V4L2DEC_IN *pDecIn
 	buf.timestamp.tv_usec	= (pDecIn->timeStamp % 1000) * 1000;
 	buf.flags	= pDecIn->eos ? 1 : 0;
 
-	buf.m.planes[0].m.fd		= hDec->hBitStreamBuf->fd;
+	buf.m.planes[0].m.fd		= hDec->hBitStreamBuf->dmaFd;
 	buf.m.planes[0].length		= hDec->hBitStreamBuf->size;
 	buf.m.planes[0].bytesused	= pDecIn->strmSize;
 	buf.m.planes[0].data_offset	= 0;
@@ -1001,7 +1001,7 @@ VPU_ERROR_E NX_V4l2DecClrDspFlag( NX_V4L2DEC_HANDLE hDec, NX_VID_MEMORY_HANDLE h
 
 	for( i = 0; i < 3; i++ )
 	{
-		buf.m.planes[i].m.fd = hDec->hFrameBuffer[index]->fd[i];
+		buf.m.planes[i].m.fd = hDec->hFrameBuffer[index]->dmaFd[i];
 		buf.m.planes[i].length = hDec->hFrameBuffer[index]->size[i];
 	}
 

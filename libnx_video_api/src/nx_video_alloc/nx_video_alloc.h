@@ -20,7 +20,9 @@ extern "C" {
 //
 typedef struct
 {
-	int			fd;
+	int			drmFd;		//	DRM Device Handle
+	int			dmaFd;		//	DMA Memory Handle
+	int			gemFd;		//	GEM Handle
 	int32_t		size;		//	Allocate Size
 	int32_t		align;		//	Start Address Align
 	void		*pBuffer;	//	Virtual Address Pointer
@@ -39,7 +41,9 @@ typedef struct
 	int32_t		planes;			//	Number of valid planes
 	uint32_t	format;			//	Pixel Format(N/A)
 
-	int			fd[NX_MAX_PLANES];			//	Allocator's file handle or descriptor.
+	int			drmFd;						//	Drm Device Handle
+	int			dmaFd[NX_MAX_PLANES];		//	DMA memory Handle
+	int			gemFd[NX_MAX_PLANES];		//	GEM Handle
 	int32_t		size[NX_MAX_PLANES];		//	Each plane's stride.
 	int32_t		stride[NX_MAX_PLANES];		//	Each plane's stride.
 	void		*pBuffer[NX_MAX_PLANES];	//	virtual address.
@@ -60,6 +64,9 @@ int NX_UnmapMemory( NX_MEMORY_INFO *pMem );
 int NX_MapVideoMemory( NX_VID_MEMORY_INFO *pMem );
 int NX_UnmapVideoMemory( NX_VID_MEMORY_INFO *pMem );
 
+int NX_GetGEMHandles( NX_VID_MEMORY_INFO *pMem, uint32_t handles[4] );
+
+void SetDRMFd( int fd );
 
 #ifdef	__cplusplus
 };

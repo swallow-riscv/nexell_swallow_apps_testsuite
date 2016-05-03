@@ -1,0 +1,10 @@
+#
+# Normal rules
+#
+.*
+*.o
+*.o.*
+*.a
+*.so
+*.so.dbg
+

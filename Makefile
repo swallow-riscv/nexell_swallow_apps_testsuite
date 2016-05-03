@@ -2,6 +2,7 @@ DIR :=
 DIR += allocator_test
 DIR += camera_test
 DIR += dp_cam_test
+DIR += libnx_video_api
 
 all:
 	@for dir in $(DIR); do	\

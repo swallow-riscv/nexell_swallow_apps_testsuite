@@ -15,7 +15,7 @@ FFMPEG_VERSION := ffmpeg-2.8.6-arm64
 include ../buildcfg.mk
 
 #	Install Path
-INSTALL_PATH := ../../../bin
+INSTALL_PATH := ../../../sysroot/bin
 
 #	Sources
 COBJS  	:=
@@ -66,15 +66,16 @@ LIBRARY += -L../../../sysroot/lib -ldrm -lkms
 OBJS	:= $(COBJS) $(CPPOBJS)
 
 all:	\
-	$(THEORAPARSER) \
 	$(TARGET)
 
 $(TARGET):	depend $(OBJS)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJS) -o $@ $(LIBRARY)
+	$(quiet)$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJS) -o $@ $(LIBRARY)
 
 install:
+	@echo "$(ColorMagenta)[[[ Install $(TARGET) ]]]"
 	install -m 755 -d $(INSTALL_PATH)
-	install -m 644 $(TARGET) $(INSTALL_PATH)
+	install -m 755 $(TARGET) $(INSTALL_PATH)
+	@echo "$(ColorEnd)"
 
 clean:
 	@echo "$(ColorMagenta)[[[ Clean $(TARGET) ]]]$(ColorEnd)"

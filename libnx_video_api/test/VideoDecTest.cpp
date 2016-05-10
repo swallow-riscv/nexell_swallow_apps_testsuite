@@ -216,25 +216,24 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 			bInit = 1;
 		}
 
-		if( size == 0 )
-			break;
-
 		NX_V4L2DEC_IN decIn;
 		NX_V4L2DEC_OUT decOut;
 
 		decIn.strmBuf = streamBuffer;
 		decIn.strmSize = size;
 		decIn.timeStamp = timeStamp;
+		decIn.eos = (size == 0) ? 1 : 0;
 
 		vidRet = NX_V4l2DecDecodeFrame( hDec, &decIn, &decOut );
 		if( VID_ERR_NONE != vidRet )
 		{
 			printf("Fail, NX_V4l2DecDecodeFrame().\n");
+			break;
 		}
 
-        // printf("Frame[%5d]: size=%6d, DecIdx=%2d, DspIdx=%2d, InTimeStamp=%7lu, outTimeStamp=%7lu, %7lu, interlace=%1d(%2d), Reliable=%3d, %3d, type = %d, %d\n",
-        //     frameCnt, decIn.strmSize, decOut.outDecIdx, decOut.outImgIdx, decIn.timeStamp, decOut.timeStamp[FIRST_FIELD], decOut.timeStamp[SECOND_FIELD], decOut.isInterlace, decOut.topFieldFirst,
-        //     decOut.outFrmReliable_0_100[DECODED_FRAME], decOut.outFrmReliable_0_100[DISPLAY_FRAME], decOut.picType[DECODED_FRAME], decOut.picType[DISPLAY_FRAME] );
+		// printf("Frame[%5d]: size=%6d, DecIdx=%2d, DspIdx=%2d, InTimeStamp=%7lu, outTimeStamp=%7lu, %7lu, interlace=%1d(%2d), Reliable=%3d, %3d, type = %d, %d\n",
+		// 	frameCnt, decIn.strmSize, decOut.outDecIdx, decOut.outImgIdx, decIn.timeStamp, decOut.timeStamp[FIRST_FIELD], decOut.timeStamp[SECOND_FIELD], decOut.isInterlace, decOut.topFieldFirst,
+		// 	decOut.outFrmReliable_0_100[DECODED_FRAME], decOut.outFrmReliable_0_100[DISPLAY_FRAME], decOut.picType[DECODED_FRAME], decOut.picType[DISPLAY_FRAME] );
 
 		if( 0 <= decOut.outImgIdx )
 		{
@@ -249,10 +248,15 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 			UpdateBuffer( hDsp, &decOut.outImg, NULL );
 #endif
 
-			NX_V4l2DecClrDspFlag( hDec, NULL, decOut.outImgIdx );
+			vidRet = NX_V4l2DecClrDspFlag( hDec, NULL, decOut.outImgIdx );
+			if( VID_ERR_NONE != vidRet )
+				break;
 		}
 
 		frameCnt++;
+		
+		if( decIn.eos == 1 )
+			break;
 	}
 	ret = 0;
 

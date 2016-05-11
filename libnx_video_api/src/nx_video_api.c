@@ -732,12 +732,11 @@ VPU_ERROR_E NX_V4l2DecParseVideoCfg( NX_V4L2DEC_HANDLE hDec, NX_V4L2DEC_SEQ_IN *
 		return VID_ERR_FAIL;
 	}
 
-	// pSeqOut->width			= fmt.fmt.pix_mp.width;		// TBD
-	pSeqOut->width			= fmt.fmt.pix_mp.plane_fmt[0].bytesperline;
+	pSeqOut->width			= fmt.fmt.pix_mp.width;
 	pSeqOut->height			= fmt.fmt.pix_mp.height;
-	pSeqOut->minBuffers		= fmt.fmt.raw_data[0];
-	pSeqOut->numBuffers 	= fmt.fmt.raw_data[0] + pSeqIn->addNumBuffers;
-	hDec->numFrameBuffers	= fmt.fmt.raw_data[0];
+	pSeqOut->minBuffers		= fmt.fmt.pix_mp.reserved[0];
+	pSeqOut->numBuffers 	= pSeqOut->minBuffers + pSeqIn->addNumBuffers;
+	hDec->numFrameBuffers	= pSeqOut->minBuffers;
 
 	memset( &crop, 0, sizeof(crop) );
 	crop.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;

@@ -1,9 +1,10 @@
 CFLAGS = -Wall
 INCLUDES := -I../../sysroot/include
 LDFLAGS := -L../../sysroot/lib
-LIBS := -lnx-drm-allocator
+# LIBS := -lnx-drm-allocator
+LIBS := -lnx_drm_allocator
 
-CROSS_COMPILE := aarch64-linux-gnu-
+CROSS_COMPILE ?= aarch64-linux-gnu-
 CC := $(CROSS_COMPILE)gcc
 
 SRCS := $(wildcard *.cpp)

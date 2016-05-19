@@ -4,9 +4,11 @@ DIR += camera_test
 DIR += dp_cam_test
 DIR += libnx_video_api
 
+CROSS_COMPILE ?= aarch64-linux-gnu-
+
 all:
 	@for dir in $(DIR); do	\
-	make -C $$dir || exit $?;	\
+	make CROSS_COMPILE=$(CROSS_COMPILE) -C $$dir || exit $?;	\
 	make -C $$dir install;	\
 	done
 

@@ -5,10 +5,11 @@ INCLUDES += -I../../sysroot/include/libdrm
 INCLUDES += -I../../sysroot/include/libkms
 INCLUDES += -I../../nx-renderer/include
 LDFLAGS := -L../../sysroot/lib
-LIBS := -lnx-drm-allocator -lnx-renderer -lnx-v4l2 -lnx-scaler
+# LIBS := -lnx-drm-allocator -lnx-renderer -lnx-v4l2 -lnx-scaler
+LIBS := -lnx_drm_allocator -lnx_renderer -lnx_v4l2 -lnx_scaler
 LIBS += -lkms -ldrm
 
-CROSS_COMPILE := aarch64-linux-gnu-
+CROSS_COMPILE ?= aarch64-linux-gnu-
 CC := $(CROSS_COMPILE)gcc
 
 SRCS := $(wildcard *.cpp)

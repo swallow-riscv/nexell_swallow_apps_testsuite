@@ -5,7 +5,8 @@
 OBJTREE		:= $(if $(BUILD_DIR),$(BUILD_DIR),$(CURDIR))
 
 ARCHNAME   	:= S5P6818
-CROSSNAME	:= aarch64-linux-gnu-
+#CROSSNAME	?= aarch64-linux-gnu-
+CROSS_COMPILE 	?= aarch64-linux-gnu-
 
 #KERNDIR		:= /home/doriya/working/artik7/linux-artik7
 
@@ -45,7 +46,8 @@ endif
 #########################################################################
 #	Toolchain.
 #########################################################################
-CROSS 	 	:= $(CROSSNAME)
+# CROSS 	 	:= $(CROSSNAME)
+CROSS 	 	:= $(CROSS_COMPILE)
 CC 		 	:= $(CROSS)gcc
 CPP		 	:= $(CROSS)g++
 AR 		 	:= $(CROSS)ar

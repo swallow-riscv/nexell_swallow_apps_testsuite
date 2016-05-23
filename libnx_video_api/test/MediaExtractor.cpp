@@ -583,7 +583,8 @@ int32_t CMediaReader::ReadStream( int32_t type, uint8_t *buf, int32_t *size, int
 			if( codecId == CODEC_ID_H264 && stream->codec->extradata_size > 0 && stream->codec->extradata[0]==1 )
 			{
 				*size = PasreAVCStream( &pkt, m_NalLengthSize, buf, 0 );
-				*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
+				if (key)
+					*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
 				if( (long long)pkt.pts != AV_NOPTS_VALUE )
 					*timeStamp = pkt.pts*timeStampRatio;
 				else
@@ -594,7 +595,8 @@ int32_t CMediaReader::ReadStream( int32_t type, uint8_t *buf, int32_t *size, int
 			else if(  (codecId == CODEC_ID_VC1) || (codecId == CODEC_ID_WMV1) || (codecId == CODEC_ID_WMV2) || (codecId == CODEC_ID_WMV3) )
 			{
 				*size = MakeVC1Stream( &pkt, stream, buf, 0 );
-				*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
+				if (key)
+					*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
 				if( (long long)pkt.pts != AV_NOPTS_VALUE )
 					*timeStamp = pkt.pts*timeStampRatio;
 				else
@@ -605,7 +607,8 @@ int32_t CMediaReader::ReadStream( int32_t type, uint8_t *buf, int32_t *size, int
 			else if( codecId == CODEC_ID_RV30 || codecId == CODEC_ID_RV40 )
 			{
 				*size = MakeRvStream( &pkt, stream, buf, 0 );
-				*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
+				if (key)
+					*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
 				if( (long long)pkt.pts != AV_NOPTS_VALUE )
 					*timeStamp = pkt.pts*timeStampRatio;
 				else
@@ -616,7 +619,8 @@ int32_t CMediaReader::ReadStream( int32_t type, uint8_t *buf, int32_t *size, int
 			else if( codecId == CODEC_ID_MSMPEG4V3 )
 			{
 				*size = MakeDIVX3Stream( &pkt, stream, buf, 0 );
-				*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
+				if (key)
+					*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
 				if( (long long)pkt.pts != AV_NOPTS_VALUE )
 					*timeStamp = pkt.pts*timeStampRatio;
 				else
@@ -645,7 +649,8 @@ int32_t CMediaReader::ReadStream( int32_t type, uint8_t *buf, int32_t *size, int
 			else if( codecId == CODEC_ID_VP8 )
 			{
 				*size = MakeVP8Stream( &pkt, stream, buf, 0 );
-				*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
+				if (key)
+					*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
 				if( (long long)pkt.pts != AV_NOPTS_VALUE )
 					*timeStamp = pkt.pts*timeStampRatio;
 				else
@@ -670,7 +675,8 @@ int32_t CMediaReader::ReadStream( int32_t type, uint8_t *buf, int32_t *size, int
 			{
 				memcpy(buf, pkt.data, pkt.size );
 				*size = pkt.size;
-				*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
+				if (key)
+					*key = (pkt.flags & AV_PKT_FLAG_KEY)?1:0;
 				if( (long long)pkt.pts != AV_NOPTS_VALUE )
 					*timeStamp = pkt.pts*timeStampRatio;
 				else

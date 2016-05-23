@@ -19,7 +19,8 @@ INSTALL_PATH	:=	../../lib
 #	Sources
 COBJS	:= \
 		nx_video_alloc/nx_video_alloc.o	\
-		nx_video_api.o
+		nx_video_enc.o \
+		nx_video_dec.o
 CPPOBJS	:=  
 OBJS	:= $(COBJS) $(CPPOBJS)
 

@@ -107,6 +107,7 @@ static int32_t LoadImage(uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO
 	switch (pImg->format) 
 	{
 	case V4L2_PIX_FMT_YUV420M:
+	case DRM_FORMAT_YUV420:
 		for (i=1 ; i<3 ; i++)
 		{
 			pDst = (uint8_t *)pImg->pBuffer[i];

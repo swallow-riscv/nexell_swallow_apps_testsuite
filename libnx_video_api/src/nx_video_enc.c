@@ -615,7 +615,7 @@ int32_t NX_V4l2EncEncodeFrame(NX_V4L2ENC_HANDLE hEnc, NX_V4L2ENC_IN *pEncIn, NX_
 			return -1;
 		}
 
-		pEncOut->strmBuf = (uint8_t*)hEnc->hBitStream[buf.index];
+		pEncOut->strmBuf = (uint8_t *)hEnc->hBitStream[buf.index]->pBuffer;
 		pEncOut->strmSize = buf.m.planes[0].bytesused;
 
 		if (buf.reserved == V4L2_BUF_FLAG_KEYFRAME)

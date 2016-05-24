@@ -22,15 +22,7 @@
 #include <drm/nexell_drm.h>
 #include <nx_video_alloc.h>
 
-#define	DRM_DEVICE_NAME	"/dev/dri/card0"
-
-static int gstDrmFd = -1;
-
-void SetDRMFd( int fd )
-{
-	gstDrmFd = fd;
-}
-
+#define DRM_DEVICE_NAME "/dev/dri/card0"
 
 #define DRM_IOCTL_NR(n)         _IOC_NR(n)
 #define DRM_IOC_VOID            _IOC_NONE
@@ -150,10 +142,10 @@ NX_MEMORY_INFO *NX_AllocateMemory( int size, int align )
 {
 	int gemFd = -1;
 	int dmaFd = -1;
-	int drmFd = gstDrmFd;//open(DRM_DEVICE_NAME, O_RDWR);
 	int32_t flags = 0;
 	NX_MEMORY_INFO *pMem;
 
+	int drmFd = open(DRM_DEVICE_NAME, O_RDWR);
 	if (drmFd < 0)
 		return NULL;
 
@@ -169,6 +161,7 @@ NX_MEMORY_INFO *NX_AllocateMemory( int size, int align )
 	pMem->drmFd = drmFd;
 	pMem->dmaFd = dmaFd;
 	pMem->gemFd = gemFd;
+	pMem->flink = get_flink_name( drmFd, gemFd );
 	pMem->size = size;
 	pMem->align = align;
 	return pMem;
@@ -212,14 +205,16 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 {
 	int gemFd[NX_MAX_PLANES] = {0, };
 	int dmaFd[NX_MAX_PLANES] = {0, };
-	int drmFd = gstDrmFd;//open(DRM_DEVICE_NAME, O_RDWR);
 	int32_t flags = 0, i=0;
 	int32_t luStride, cStride;
 	int32_t luVStride, cVStride;
 	int32_t stride[NX_MAX_PLANES];
 	int32_t size[NX_MAX_PLANES];
+	uint32_t flink[NX_MAX_PLANES];
+
 	NX_VID_MEMORY_INFO *pVidMem;
 
+	int drmFd = open( DRM_DEVICE_NAME, O_RDWR );
 	if (drmFd < 0)
 		return NULL;
 
@@ -249,6 +244,7 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 			dmaFd[0] = gem_to_dmafd(drmFd, gemFd[0]);
 			if (dmaFd[0] < 0)
 				goto ErrorExit;
+			flink[0] = get_flink_name( drmFd, gemFd[0] );
 			break;
 		case 2:
 			//	Buffer 1
@@ -260,6 +256,7 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 			dmaFd[0] = gem_to_dmafd(drmFd, gemFd[0]);
 			if (dmaFd[0] < 0)
 				goto ErrorExit;
+			flink[0] = get_flink_name( drmFd, gemFd[0] );
 
 			//	Buffer 2
 			size[1] = cStride*cVStride*2;
@@ -270,6 +267,7 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 			dmaFd[1] = gem_to_dmafd(drmFd, gemFd[1]);
 			if (dmaFd[1] < 0)
 				goto ErrorExit;
+			flink[1] = get_flink_name( drmFd, gemFd[1] );
 			break;
 		case 3:
 			//	Buffer 1
@@ -281,6 +279,7 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 			dmaFd[0] = gem_to_dmafd(drmFd, gemFd[0]);
 			if (dmaFd[0] < 0)
 				goto ErrorExit;
+			flink[0] = get_flink_name( drmFd, gemFd[0] );
 
 			//	Buffer 2
 			size[1] = cStride*cVStride;
@@ -291,6 +290,7 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 			dmaFd[1] = gem_to_dmafd(drmFd, gemFd[1]);
 			if (dmaFd[1] < 0)
 				goto ErrorExit;
+			flink[1] = get_flink_name( drmFd, gemFd[1] );
 
 			//	Buffer 3
 			size[2] = cStride*cVStride;
@@ -301,23 +301,25 @@ NX_VID_MEMORY_INFO * NX_AllocateVideoMemory( int width, int height, int32_t plan
 			dmaFd[2] = gem_to_dmafd(drmFd, gemFd[2]);
 			if (dmaFd[2] < 0)
 				goto ErrorExit;
+			flink[2] = get_flink_name( drmFd, gemFd[2] );
 			break;
 		break;
 	}
 
 	pVidMem = (NX_VID_MEMORY_INFO *)calloc(1, sizeof(NX_VID_MEMORY_INFO));
-	pVidMem->drmFd = drmFd;
 	pVidMem->width = width;
 	pVidMem->height = height;
 	pVidMem->align = align;
 	pVidMem->planes = planes;
 	pVidMem->format = format;
+	pVidMem->drmFd = drmFd;
 	for( i=0 ; i<planes ; i++ )
 	{
 		pVidMem->dmaFd[i] = dmaFd[i];
 		pVidMem->gemFd[i] = gemFd[i];
 		pVidMem->size[i] = size[i];
 		pVidMem->stride[i] = stride[i];
+		pVidMem->flink[i] = flink[i];
 	}
 	return pVidMem;
 
@@ -439,14 +441,14 @@ int NX_UnmapVideoMemory( NX_VID_MEMORY_INFO *pMem )
 	return 0;
 }
 
-
-int NX_GetGEMHandles( NX_VID_MEMORY_INFO *pMem, uint32_t handles[4] )
+int NX_GetGEMHandles( int drmFd, NX_VID_MEMORY_INFO *pMem, uint32_t handles[NX_MAX_PLANES] )
 {
 	int32_t i;
-	memset(handles, 0, sizeof(uint32_t)*4);
+	memset( handles, 0, sizeof(uint32_t)*NX_MAX_PLANES );
+
 	for( i = 0 ;  i < pMem->planes ; i ++ )
 	{
-		handles[i] = gem_from_flink( pMem->drmFd, get_flink_name(pMem->drmFd, pMem->gemFd[i]) );
+		handles[i] = gem_from_flink( drmFd, pMem->flink[i] );
 		if( 0 > (int)handles[i] )
 		{
 			return -1;

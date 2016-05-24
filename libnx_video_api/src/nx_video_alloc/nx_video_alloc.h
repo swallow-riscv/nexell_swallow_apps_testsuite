@@ -23,6 +23,7 @@ typedef struct
 	int			drmFd;		//	DRM Device Handle
 	int			dmaFd;		//	DMA Memory Handle
 	int			gemFd;		//	GEM Handle
+	uint32_t	flink;		//	flink name
 	int32_t		size;		//	Allocate Size
 	int32_t		align;		//	Start Address Align
 	void		*pBuffer;	//	Virtual Address Pointer
@@ -44,6 +45,7 @@ typedef struct
 	int			drmFd;						//	Drm Device Handle
 	int			dmaFd[NX_MAX_PLANES];		//	DMA memory Handle
 	int			gemFd[NX_MAX_PLANES];		//	GEM Handle
+	uint32_t	flink[NX_MAX_PLANES];		//	flink name
 	int32_t		size[NX_MAX_PLANES];		//	Each plane's size.
 	int32_t		stride[NX_MAX_PLANES];		//	Each plane's stride.
 	void		*pBuffer[NX_MAX_PLANES];	//	virtual address.
@@ -64,9 +66,8 @@ int NX_UnmapMemory( NX_MEMORY_INFO *pMem );
 int NX_MapVideoMemory( NX_VID_MEMORY_INFO *pMem );
 int NX_UnmapVideoMemory( NX_VID_MEMORY_INFO *pMem );
 
-int NX_GetGEMHandles( NX_VID_MEMORY_INFO *pMem, uint32_t handles[4] );
+int NX_GetGEMHandles( int drmFd, NX_VID_MEMORY_INFO *pMem, uint32_t handles[NX_MAX_PLANES] );
 
-void SetDRMFd( int fd );
 
 #ifdef	__cplusplus
 };

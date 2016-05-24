@@ -117,8 +117,6 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 		DRM_RECT srcRect, dstRect;
 #endif	//	ENABLE_DRM_DISPLAY
 
-		SetDRMFd(drmFd);
-
 #ifdef ENABLE_DRM_DISPLAY
 		srcRect.x = 0;
 		srcRect.y = 0;

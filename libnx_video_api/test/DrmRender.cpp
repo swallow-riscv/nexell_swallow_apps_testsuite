@@ -42,8 +42,7 @@ static int32_t FindDrmBufferIndex( DRM_DSP_HANDLE hDsp, NX_VID_MEMORY_INFO *pMem
 
 	for( i = 0 ; i < hDsp->numBuffers ; i ++ )
 	{
-		if( ( hDsp->vidMem[i].drmFd == pMem->drmFd ) &&
-			( hDsp->vidMem[i].dmaFd[0] == pMem->dmaFd[0] ) )
+		if( hDsp->vidMem[i].dmaFd[0] == pMem->dmaFd[0] )
 		{
 			//	already added memory
 			return i;
@@ -71,7 +70,7 @@ static int32_t AddDrmBuffer( DRM_DSP_HANDLE hDsp, NX_VID_MEMORY_INFO *pMem )
 	hDsp->bufferIDs[newIndex] = 0;
 
 	//	Get gem Handel
-	NX_GetGEMHandles( pMem, handles );
+	NX_GetGEMHandles( hDsp->drmFd, pMem, handles );
 
 	// printf("hDsp->format = %c%c%c%c\n", 
 	// 	hDsp->format&0xff,
@@ -79,9 +78,9 @@ static int32_t AddDrmBuffer( DRM_DSP_HANDLE hDsp, NX_VID_MEMORY_INFO *pMem )
 	// 	(hDsp->format>>16)&0xff,
 	// 	(hDsp->format>>24)&0xff );
 	printf("Fd(%d), Width(%d), Height(%d), Stride(%d,%d,%d) \n", 
-		pMem->drmFd, pMem->width, pMem->height, pMem->stride[0], pMem->stride[1], pMem->stride[2]);
+		hDsp->drmFd, pMem->width, pMem->height, pMem->stride[0], pMem->stride[1], pMem->stride[2]);
 
-	err = drmModeAddFB2( pMem->drmFd, pMem->width, pMem->height,
+	err = drmModeAddFB2( hDsp->drmFd, pMem->width, pMem->height,
 		DRM_FORMAT_YUV420, handles, pitches, offsets, &hDsp->bufferIDs[newIndex], 0);
 	if( err < 0 )
 	{
@@ -137,20 +136,20 @@ int32_t UpdateBuffer( DRM_DSP_HANDLE hDsp, NX_VID_MEMORY_INFO *pMem, NX_VID_MEMO
 {
 	int32_t err;
 	int32_t index = FindDrmBufferIndex( hDsp, pMem );
-	NX_VID_MEMORY_INFO *pAddedMem;
+	// NX_VID_MEMORY_INFO *pAddedMem;
 
 	if( 0 > index ){
 		index = AddDrmBuffer( hDsp, pMem );
 	}
 
-	pAddedMem = &hDsp->vidMem[index];
+	// pAddedMem = &hDsp->vidMem[index];
 
 	// printf("Index = %d, drmFd(%d), planeId(%d), crtcId(%d), bufferIDs(%d), srcRect(%d,%d,%d,%d), dstRect(%d,%d,%d,%d)\n",
 	// 	index, pAddedMem->drmFd, hDsp->planeID, hDsp->crtcID, hDsp->bufferIDs[index],
 	// 	hDsp->srcRect.x, hDsp->srcRect.y, hDsp->srcRect.width, hDsp->srcRect.height,
 	// 	hDsp->dstRect.x, hDsp->dstRect.y, hDsp->dstRect.width, hDsp->dstRect.height );
 
-	err = drmModeSetPlane( pAddedMem->drmFd, hDsp->planeID, hDsp->crtcID, hDsp->bufferIDs[index], 0,
+	err = drmModeSetPlane( hDsp->drmFd, hDsp->planeID, hDsp->crtcID, hDsp->bufferIDs[index], 0,
 			hDsp->srcRect.x, hDsp->srcRect.y, hDsp->srcRect.width, hDsp->srcRect.height,
 			hDsp->dstRect.x<<16, hDsp->dstRect.y<<16, hDsp->dstRect.width<<16, hDsp->dstRect.height<<16);
 
@@ -174,9 +173,14 @@ int32_t UpdateBuffer( DRM_DSP_HANDLE hDsp, NX_VID_MEMORY_INFO *pMem, NX_VID_MEMO
 
 void DestroyDrmDisplay( DRM_DSP_HANDLE hDsp )
 {
-	if( hDsp->drmFd > 0 )
+	int32_t i;
+	for( i = 0; i < hDsp->numBuffers; i++ )
 	{
-		close(hDsp->drmFd);
+		if( hDsp->bufferIDs[i] )
+		{
+			drmModeRmFB( hDsp->drmFd, hDsp->bufferIDs[i] );
+		}
 	}
+
 	free( hDsp );
 }

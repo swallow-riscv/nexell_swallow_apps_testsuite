@@ -4,6 +4,7 @@ DIR += camera_test
 DIR += dp_cam_test
 DIR += scaler_test
 DIR += camera_test_onedevice
+DIR += dp_cam_test_onedevice
 
 CROSS_COMPILE ?= aarch64-linux-gnu-
 

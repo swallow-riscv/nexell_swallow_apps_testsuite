@@ -19,7 +19,6 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -191,18 +190,19 @@ struct dp_framebuffer *display_buffer_init(struct dp_device *device, int  x, int
 }
 
 void init_scale_context(uint32_t w, uint32_t h, uint32_t s_w, uint32_t s_h,
-	uint32_t f, uint32_t plane_num, struct nx_scaler_context *s_ctx)
+	uint32_t f, uint32_t plane_num, struct rect crop,
+	struct nx_scaler_context *s_ctx)
 {
 
 	uint32_t src_y_stride = ALIGN(w, 32);
 	uint32_t src_c_stride = ALIGN(src_y_stride >> 1, 16);
-	uint32_t dst_y_stride = ALIGN(w, 8);
-	uint32_t dst_c_stride = ALIGN(src_y_stride >> 1, 4);
+	uint32_t dst_y_stride = ALIGN(s_w, 8);
+	uint32_t dst_c_stride = ALIGN(dst_y_stride >> 1, 4);
 
-	s_ctx->crop.x = 10;
-	s_ctx->crop.y = 10;
-	s_ctx->crop.width = 640;
-	s_ctx->crop.height = 480;
+	s_ctx->crop.x = crop.x;
+	s_ctx->crop.y = crop.y;
+	s_ctx->crop.width = crop.width;
+	s_ctx->crop.height = crop.height;
 
 	s_ctx->src_plane_num = plane_num;
 	s_ctx->src_width = w;
@@ -254,7 +254,7 @@ static size_t calc_alloc_size(uint32_t w, uint32_t h, uint32_t f)
 
 int scaler_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 	uint32_t h, uint32_t s_w, uint32_t s_h, uint32_t f, uint32_t bus_f,
-	uint32_t count)
+	uint32_t count, struct rect crop)
 {
 	struct nx_scaler_context s_ctx;
 	int ret;
@@ -267,14 +267,13 @@ int scaler_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 	int dst_dma_fds[MAX_BUFFER_COUNT] = { -1, };
 	struct dp_framebuffer *fbs[MAX_BUFFER_COUNT] = {NULL,};
 
-	// workaround code
 	if (f == 0)
 		f = V4L2_PIX_FMT_YUV420;
 
 	if (bus_f == 0)
 		bus_f = MEDIA_BUS_FMT_YUYV8_2X8;
 
-	init_scale_context(w, h, s_w, s_h, bus_f, 1, &s_ctx);
+	init_scale_context(w, h, s_w, s_h, bus_f, 1, crop, &s_ctx);
 	handle = scaler_open();
 	if (handle == -1) {
 		fprintf(stderr, "failed to open scaler\n");
@@ -476,7 +475,7 @@ int scaler_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 			fprintf(stderr, "failed qbuf index %d\n", dq_index);
 			return ret;
 		}
-		set_plane(device,fbs[dq_index],w,h);
+		set_plane(device,fbs[dq_index],s_w,s_h);
 
 	}
 
@@ -511,10 +510,17 @@ int main(int argc, char *argv[])
 	struct dp_device *device;
 	int dbg_on = 0;
 	uint32_t s_w, s_h;
+	struct rect crop;
+
+	crop.x = 0;
+	crop.y = 0;
+	crop.width = 0;
+	crop.height = 0;
 
 	dp_debug_on(dbg_on);
 
-	ret = handle_option(argc, argv, &m, &w, &h, &f, &bus_f, &count);
+	ret = handle_option(argc, argv, &m, &w, &h, &s_w, &s_h, &f, &bus_f,
+		&count, &crop);
 	if (ret) {
 		fprintf(stderr, "failed to handle_option\n");
 		return ret;
@@ -534,10 +540,8 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	s_w = w;
-	s_h = h;
-
-	err = scaler_test(device, drm_fd, m, w, h, s_w, s_h, f, bus_f,count);
+	err = scaler_test(device, drm_fd, m, w, h, s_w, s_h, f, bus_f, count,
+			crop);
 	if (err < 0) {
 		fprintf(stderr, "failed to do camera_test \n");
 		return -1;

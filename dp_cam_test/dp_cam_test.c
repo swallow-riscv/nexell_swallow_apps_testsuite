@@ -20,6 +20,8 @@
 #include "nexell_drmif.h"
 #include "nx-v4l2.h"
 
+#include "option.h"
+
 #ifndef ALIGN
 #define ALIGN(x, a) (((x) + (a) - 1) & ~((a) - 1))
 #endif
@@ -117,12 +119,10 @@ static uint32_t choose_format(struct dp_plane *plane, int select)
 	return format;
 }
 
-
 struct dp_device * dp_device_init(int fd)
 {
 	struct dp_device *device;
 	int err;
-
 
 	err = drmSetClientCap(fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
 	if (err < 0) {
@@ -207,22 +207,36 @@ struct dp_framebuffer * dp_buffer_init(struct dp_device *device, int  x, int y, 
 }
 
 
-int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w, uint32_t h, uint32_t f, uint32_t bus_f, uint32_t count)
+int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
+		uint32_t h, uint32_t sw, uint32_t sh, uint32_t f,
+		uint32_t bus_f, uint32_t count)
 {
 	int ret;
 	int gem_fds[MAX_BUFFER_COUNT] = { -1, };
 	int dma_fds[MAX_BUFFER_COUNT] = { -1, };
 	struct dp_framebuffer *fbs[MAX_BUFFER_COUNT] = {NULL,};
-	
-	DP_DBG("m: %d, w: %d, h: %d, f: %d, bus_f: %d, c: %d\n",
-	       m, w, h, f, bus_f, count);
+
+	DP_DBG("m: %d, w: %d, h: sw : %d, sh : %d, f: %d, bus_f: %d, c: %d\n",
+	       m, w, h, sw, sh, f, bus_f, count);
 
 	// workaround code
 	if (f == 0)
 		f = V4L2_PIX_FMT_YUV420;
 
-	if (bus_f == 0)
+	switch (bus_f) {
+	case 0:
 		bus_f = MEDIA_BUS_FMT_YUYV8_2X8;
+		break;
+	case 1:
+		bus_f = MEDIA_BUS_FMT_UYVY8_2X8;
+		break;
+	case 2:
+		bus_f = MEDIA_BUS_FMT_VYUY8_2X8;
+		break;
+	case 3:
+		bus_f = MEDIA_BUS_FMT_YVYU8_2X8;
+		break;
+	};
 
 	int sensor_fd = nx_v4l2_open_device(nx_sensor_subdev, m);
 	if (sensor_fd < 0) {
@@ -319,6 +333,14 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w, ui
 		return ret;
 	}
 
+	if (sw > 0 && sh > 0) {
+		ret = nx_v4l2_set_crop(clipper_video_fd, nx_clipper_video,
+				0, 0, sw, sh);
+		if (ret) {
+			DP_ERR("failed to set_crop for clipper subdev\n");
+			return ret;
+		}
+	}
 
 	ret = nx_v4l2_reqbuf(clipper_video_fd, nx_clipper_video,
 			     MAX_BUFFER_COUNT);
@@ -418,18 +440,18 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w, ui
 	return ret;
 }
 
-// ./dp_cam_test -m 1 -w 800 -h 600 -f 0 -F 0 -c 10000
 int main(int argc, char *argv[])
 {
 	int ret, drm_fd, err;
 	uint32_t m, w, h, f, bus_f, count;
 	struct dp_device *device;
 	int dbg_on = 0;
+	uint32_t sw = 0, sh = 0;
 
 	dp_debug_on(dbg_on);
 
-
-	ret = handle_option(argc, argv, &m, &w, &h, &f, &bus_f, &count);
+	ret = handle_option(argc, argv, &m, &w, &h, &sw, &sh, &f, &bus_f,
+			&count);
 	if (ret) {
 		DP_ERR("failed to handle_option\n");
 		return ret;
@@ -447,7 +469,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	err = camera_test(device, drm_fd, m,w,h,f,bus_f,count);
+	err = camera_test(device, drm_fd, m, w, h, sw, sh, f, bus_f, count);
 	if (err < 0) {
 		DP_ERR("failed to do camera_test \n");
 		return -1;

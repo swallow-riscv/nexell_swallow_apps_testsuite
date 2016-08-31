@@ -68,7 +68,7 @@ void print_usage(const char *appName)
 		"     #> %s -m 2 -o [output filename]\n", appName);
 	printf(
 		" Encoder File Mode :(H.264, 1920x1080, 10Mbps, 30fps, 30 gop)\n"
-		"     #> %s -m 2 -i [input filename] -o [output filename] -r 1920,1080 -f 30,1 -b 10000 -g 30 \n", appName);
+		"     #> %s -m 2 -i [input filename] -o [output filename] -s 1920,1080 -f 30,1 -b 10000 -g 30 \n", appName);
 }
 
 //------------------------------------------------------------------------------

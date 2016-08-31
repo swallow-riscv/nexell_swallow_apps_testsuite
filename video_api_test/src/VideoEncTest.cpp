@@ -32,6 +32,7 @@
 #include <nx_video_alloc.h>
 #include <nx_video_api.h>
 
+#include "NX_CV4l2Camera.h"
 #include "Util.h"
 
 #define ENABLE_DRM_DISPLAY
@@ -47,8 +48,10 @@
 #define IMAGE_BUFFER_NUM	8
 #define IMG_FORMAT			V4L2_PIX_FMT_YUV420M  //V4L2_PIX_FMT_NV12M
 #define IMG_PLANE_NUM		1
-#define PLANE_ID			26
-#define CRTC_ID				31
+// #define PLANE_ID			26
+// #define CRTC_ID			31
+#define PLANE_ID			17
+#define CRTC_ID				22
 
 static bool bExitLoop = false;
 
@@ -268,6 +271,299 @@ static int32_t GetImgInfo(uint32_t format, int32_t lSize, int *Size)
 	}
 
 	return 0;
+}
+
+//------------------------------------------------------------------------------
+//	Camera Encoder Main
+static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
+{
+	NX_V4L2ENC_HANDLE hEnc = NULL;
+#ifdef ENABLE_DRM_DISPLAY
+	DRM_DSP_HANDLE hDsp = NULL;
+#endif
+	NX_VIP_INFO info;
+	NX_CV4l2Camera*	pV4l2Camera = NULL;
+	NX_VID_MEMORY_HANDLE hVideoMemory[IMAGE_BUFFER_NUM];
+
+	int32_t inWidth = 0;
+	int32_t inHeight = 0;
+
+	if( (pAppData->width == 0) || (pAppData->height == 0) )
+	{
+		inWidth = 640;
+		inHeight = 480;
+	}
+	else
+	{
+		inWidth = pAppData->width;
+		inHeight = pAppData->height;
+	}
+
+	int32_t ret = 0, i;
+	int32_t planes = IMG_PLANE_NUM;
+
+	FILE *fpOut = fopen(pAppData->outFileName, "wb");
+
+	if ( fpOut == NULL)
+	{
+		printf("input file or output file open error!!\n");
+		goto CAM_ENC_TERMINATE;
+	}
+
+	register_signal();
+
+	//==============================================================================
+	// DISPLAY INITIALIZATION
+	//==============================================================================
+	{
+		int drmFd = open("/dev/dri/card0", O_RDWR);
+
+#ifdef ENABLE_DRM_DISPLAY
+		hDsp = CreateDrmDisplay(drmFd);
+		DRM_RECT srcRect, dstRect;
+
+		srcRect.x = 0;
+		srcRect.y = 0;
+		srcRect.width = inWidth;
+		srcRect.height = inHeight;
+		dstRect.x = 0;
+		dstRect.y = 0;
+		dstRect.width = inWidth;
+		dstRect.height = inHeight;
+
+#ifdef ENABLE_ASPECT_RATIO
+		double xRatio = (double)SCREEN_WIDTH/(double)inWidth;
+		double yRatio = (double)SCREEN_HEIGHT/(double)inHeight;
+
+		if (xRatio > yRatio)
+		{
+			dstRect.width = inWidth * yRatio;
+			dstRect.height = SCREEN_HEIGHT;
+			dstRect.x = abs(SCREEN_WIDTH - dstRect.width)/2;
+		}
+		else
+		{
+			dstRect.width = SCREEN_WIDTH;
+			dstRect.height = inHeight * xRatio;
+			dstRect.y = abs(SCREEN_HEIGHT - dstRect.height) / 2;
+		}
+#endif
+
+		InitDrmDisplay(hDsp, PLANE_ID, CRTC_ID, DRM_FORMAT_YUV420, srcRect, dstRect );
+#endif	//	ENABLE_DRM_DISPLAY
+	}
+
+	//==============================================================================
+	// CAMERA INITIALIZATION
+	//==============================================================================
+	{
+		memset( &info, 0x00, sizeof(info) );
+
+		info.iModule		= 0; 
+		info.iSensorId		= nx_sensor_subdev;
+		info.bUseMipi		= true;
+
+		info.iWidth			= inWidth;
+		info.iHeight		= inHeight;
+		info.iFpsNum		= 30;
+		info.iFpsDen		= 1;
+
+		info.iNumPlane		= 1;
+
+		info.iCropX			= 0;
+		info.iCropY			= 0;
+		info.iCropWidth		= inWidth;
+		info.iCropHeight	= inHeight;
+
+		info.iOutWidth		= inWidth;
+		info.iOutHeight		= inHeight;
+		pV4l2Camera = new NX_CV4l2Camera();
+		if( 0 > pV4l2Camera->Init( &info ) )
+		{
+			delete pV4l2Camera;
+			pV4l2Camera = NULL;
+
+			printf( "Fail, V4l2Camera Init().\n");
+			goto CAM_ENC_TERMINATE;
+		}
+
+		for( i = 0; i < IMAGE_BUFFER_NUM; i++ )
+		{
+			hVideoMemory[i] = (NX_VID_MEMORY_INFO*)malloc( sizeof(NX_VID_MEMORY_INFO) );
+			memset( hVideoMemory[i], 0, sizeof(NX_VID_MEMORY_INFO) );
+			pV4l2Camera->SetVideoMemory( hVideoMemory[i] );
+		}
+	}
+
+	//==============================================================================
+	// ENCODER INITIALIZATION
+	//==============================================================================
+	{
+		NX_V4L2ENC_PARA encPara;
+		uint8_t *pSeqData;
+		int32_t seqSize;
+
+		// Initialize Encoder
+		if (pAppData->codec == 0)
+		{
+			pAppData->codec = V4L2_PIX_FMT_H264;
+		}
+		else if (pAppData->codec == 1)
+		{
+			pAppData->codec = V4L2_PIX_FMT_MPEG4;
+		}
+		else if (pAppData->codec == 2)
+		{
+			pAppData->codec = V4L2_PIX_FMT_H263;
+			encPara.profile = V4L2_MPEG_VIDEO_H263_PROFILE_P3;
+		}
+		else if (pAppData->codec == 3)
+		{
+			pAppData->codec = V4L2_PIX_FMT_MJPEG;
+		}
+		else
+		{
+			printf("Fail, not supported codec!!!\n");
+			goto CAM_ENC_TERMINATE;
+		}
+
+		hEnc = NX_V4l2EncOpen(pAppData->codec);
+		if (hEnc == NULL)
+		{
+			printf("video encoder open is failed!!!");
+			ret = -1;
+			goto CAM_ENC_TERMINATE;
+		}
+
+		memset(&encPara, 0, sizeof(encPara));
+		encPara.width = inWidth;
+		encPara.height = inHeight;
+		encPara.fpsNum = (pAppData->fpsNum) ? (pAppData->fpsNum) : (30);
+		encPara.fpsDen = (pAppData->fpsDen) ? (pAppData->fpsDen) : (1);
+		encPara.keyFrmInterval = (pAppData->gop) ? (pAppData->gop) : (encPara.fpsNum / encPara.fpsDen);
+		encPara.bitrate = pAppData->kbitrate * 1024;
+		encPara.maximumQp = (pAppData->maxQp) ? (pAppData->maxQp) : (0);
+		encPara.rcVbvSize = (pAppData->vbv) ? (pAppData->vbv) : (0);
+		encPara.disableSkip = 0;
+		encPara.RCDelay = 0;
+		encPara.gammaFactor = 0;
+		encPara.initialQp = pAppData->qp;
+		encPara.numIntraRefreshMbs = 0;
+		encPara.searchRange = 0;
+		encPara.enableAUDelimiter = 0;
+		encPara.imgFormat = IMG_FORMAT;
+		encPara.imgBufferNum = IMAGE_BUFFER_NUM;
+		encPara.imgPlaneNum = planes;
+
+		if (pAppData->codec == V4L2_PIX_FMT_MJPEG)
+			encPara.jpgQuality = (pAppData->qp == 0) ? (90) : (pAppData->qp);
+
+		ret = NX_V4l2EncInit(hEnc, &encPara);
+		if (ret < 0)
+		{
+			printf("video encoder initialization is failed!!!");
+			goto CAM_ENC_TERMINATE;
+		}
+
+		ret = NX_V4l2EncGetSeqInfo(hEnc, &pSeqData, &seqSize);
+		if (ret < 0)
+		{
+			printf("Getting Sequence header is failed!!!");
+			goto CAM_ENC_TERMINATE;
+		}
+
+		// Write Sequence Data
+		if (seqSize > 0)
+			fwrite((void *)pSeqData, 1, seqSize, fpOut);
+	}
+	//==============================================================================
+	// PROCESS UNIT
+	//==============================================================================
+	{
+		int32_t frmCnt = 0;
+		uint64_t startTime, endTime;
+
+		while (!bExitLoop)
+		{
+			NX_V4L2ENC_IN encIn;
+			NX_V4L2ENC_OUT encOut;
+			NX_VID_MEMORY_INFO *pBuf = NULL;
+			int32_t BufferIndex = 0;
+
+			//Camera
+			if( 0 >  pV4l2Camera->DequeueBuffer( &BufferIndex, &pBuf ) )
+			{
+				printf( "Fail, DequeueBuffer().\n" );
+				break;
+			}
+
+
+#ifdef ENABLE_DRM_DISPLAY
+			UpdateBuffer(hDsp, pBuf, NULL);
+#endif
+			memset(&encIn, 0, sizeof(NX_V4L2ENC_IN));
+			memset(&encOut, 0, sizeof(NX_V4L2ENC_OUT));
+
+			encIn.pImage = pBuf;
+			encIn.imgIndex = BufferIndex;
+			encIn.forcedIFrame = 0;
+			encIn.forcedSkipFrame = 0;
+			encIn.quantParam = pAppData->qp;
+
+			startTime = NX_GetTickCount();
+			ret = NX_V4l2EncEncodeFrame(hEnc, &encIn, &encOut);
+			endTime = NX_GetTickCount();
+
+			if (ret < 0)
+			{
+				printf("[%d] Frame]NX_V4l2EncEncodeFrame() is failed!!\n", frmCnt);
+				break;
+			}
+
+			if( 0 >  pV4l2Camera->QueueBuffer( pBuf ) )
+			{
+				printf( "Fail, DequeueBuffer().\n" );
+				break;
+			}
+
+			printf("[%04d Frm]Size = %5d, Type = %1d, TIme = %6lu\n", frmCnt, encOut.strmSize, encOut.frameType, (endTime - startTime));
+
+			if (fpOut && encOut.strmSize > 0)
+				fwrite((void *)encOut.strmBuf, 1, encOut.strmSize, fpOut);
+
+			frmCnt++;
+		}//while end
+	}
+
+	//==============================================================================
+	// TERMINATION
+	//==============================================================================
+CAM_ENC_TERMINATE:
+	if (hEnc)
+		NX_V4l2EncClose(hEnc);
+
+	if( pV4l2Camera )
+	{
+		pV4l2Camera->Deinit();
+		delete pV4l2Camera;
+		pV4l2Camera = NULL;
+	}
+
+	for( i = 0; i < IMAGE_BUFFER_NUM; i++ )
+	{
+		if( hVideoMemory[i] )
+		{
+			free( hVideoMemory[i] );
+			hVideoMemory[i] = NULL;
+		}
+	}
+
+	if (fpOut)
+		fclose(fpOut);
+
+	printf("Cam Encode End!!\n" );
+
+	return ret;
 }
 
 //------------------------------------------------------------------------------
@@ -528,6 +824,5 @@ int32_t VpuEncMain(CODEC_APP_DATA *pAppData)
 	if (pAppData->inFileName)
 		return VpuEncPerfMain(pAppData);
 	else
-		return -1;
-		//return VpuCamEncMain(pAppData);		// TBD
+		return VpuCamEncMain(pAppData);
 }

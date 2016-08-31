@@ -22,6 +22,7 @@ COBJS  	:=
 CPPOBJS	:= \
 		./src/MediaExtractor.o	\
 		./src/CodecInfo.o		\
+		./src/NX_CV4l2Camera.o	\
 		./src/NX_Queue.o		\
 		./src/NX_Semaphore.o	\
 		./src/Util.o			\
@@ -44,7 +45,9 @@ LIBRARY += -lstdc++ -lm
 
 LIBRARY += \
 		-L$(LIB_PATH)	\
-		-lnx_video_api
+		-lnx_video_api	\
+		-lnx_drm_allocator	\
+		-lnx_v4l2
 
 # Add FFMPEG libraries
 LIBRARY += \

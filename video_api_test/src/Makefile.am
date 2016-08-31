@@ -24,12 +24,15 @@ video_api_test_LDADD = \
 	-lswresample		\
 	-L${libdir}			\
 	-ldrm				\
-	-lnx_video_api
+	-lnx_video_api		\
+	-lnx_drm_allocator	\
+	-lnx_v4l2
 
 video_api_test_SOURCES = \
 	CodecInfo.cpp		\
 	DrmRender.cpp		\
 	MediaExtractor.cpp	\
+	NX_CV4l2Camera.cpp	\
 	NX_Queue.cpp		\
 	NX_Semaphore.cpp	\
 	Util.cpp			\

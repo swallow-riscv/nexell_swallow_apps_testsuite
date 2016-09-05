@@ -241,6 +241,46 @@ static int v4l2_dqbuf(int fd, uint32_t buf_type, uint32_t mem_type, int *index)
 	return 0;
 }
 
+static void enum_format(int fd, uint32_t buf_type)
+{
+	int i;
+	struct v4l2_fmtdesc format;
+
+	for (i = 0;; i++) {
+		memset(&format, 0, sizeof(format));
+
+		format.index = i;
+		format.type = buf_type;
+
+		if (ioctl(fd, VIDIOC_ENUM_FMT, &format) < 0)
+			break;
+
+		printf("index: %u\n", format.index);
+		printf("type: %d\n", format.type);
+		printf("flags: 0x%08x\n", format.flags);
+		printf("description: '%s'\n", format.description);
+		printf("pixelformat: 0x%08x\n", format.pixelformat);
+	}
+}
+
+static void query_buf(int fd, uint32_t buf_type, uint32_t memory, int buf_count)
+{
+	int i;
+	struct v4l2_buffer buf;
+
+	for (i = 0; i < buf_count; i++) {
+		bzero(&buf, sizeof(buf));
+		buf.type = buf_type;
+		buf.memory = memory;
+		buf.index = i;
+
+		if (ioctl(fd, VIDIOC_QUERYBUF, &buf) < 0) {
+			fprintf(stderr, "failed to querybuf for index %d\n", i);
+			return;
+		}
+	}
+}
+
 static int camera_test(struct dp_device *device, int drm_fd, uint32_t w,
 		       uint32_t h, uint32_t count, char *path)
 {
@@ -264,6 +304,8 @@ static int camera_test(struct dp_device *device, int drm_fd, uint32_t w,
 		return -ENODEV;
 	}
 
+	enum_format(video_fd, buf_type);
+
 	/* set format */
 	bzero(&v4l2_fmt, sizeof(v4l2_fmt));
 	v4l2_fmt.type = buf_type;
@@ -277,7 +319,7 @@ static int camera_test(struct dp_device *device, int drm_fd, uint32_t w,
 	}
 
 	bzero(&req, sizeof(req));
-	req.count = count;
+	req.count = MAX_BUFFER_COUNT;
 	req.memory = V4L2_MEMORY_DMABUF;
 	req.type = buf_type;
 	ret = ioctl(video_fd, VIDIOC_REQBUFS, &req);
@@ -285,6 +327,8 @@ static int camera_test(struct dp_device *device, int drm_fd, uint32_t w,
 		fprintf(stderr, "failed to reqbuf\n");
 		return ret;
 	}
+
+	query_buf(video_fd, buf_type, V4L2_MEMORY_DMABUF, count);
 
 	alloc_size = calc_alloc_size(w, h, f);
 	if (alloc_size <= 0) {

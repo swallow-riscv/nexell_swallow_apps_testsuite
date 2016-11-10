@@ -28,6 +28,9 @@
 
 #define MAX_BUFFER_COUNT	4
 
+#define YUV_STRIDE_ALIGN_FACTOR		64
+#define YUV_STRIDE(w)	ALIGN(w, YUV_STRIDE_ALIGN_FACTOR)
+
 static const uint32_t dp_formats[] = {
 
 	/* 1 buffer */
@@ -69,7 +72,6 @@ static const uint32_t dp_formats[] = {
 	DRM_FORMAT_XBGR8888,
 };
 
-
 static size_t calc_alloc_size(uint32_t w, uint32_t h, uint32_t f)
 {
 	uint32_t y_stride = ALIGN(w, 32);
@@ -86,6 +88,39 @@ static size_t calc_alloc_size(uint32_t w, uint32_t h, uint32_t f)
 	case V4L2_PIX_FMT_YUV420:
 		size = y_size +
 			2 * (ALIGN(y_stride >> 1, 16) * ALIGN(h >> 1, 16));
+		break;
+
+	case V4L2_PIX_FMT_NV21:
+	case V4L2_PIX_FMT_NV12:
+		size = y_size + y_stride * ALIGN(h >> 1, 16);
+		break;
+	}
+	DP_DBG("[%s] format = %u, size = %d \n ",__func__,f,size);
+
+	return size;
+}
+
+static size_t calc_alloc_size_interlace(uint32_t w, uint32_t h, uint32_t f, uint32_t t)
+{
+	uint32_t y_stride = ALIGN(w, 128);
+	uint32_t y_size = y_stride * ALIGN(h, 16);
+	size_t size = 0;
+	uint32_t y, cb, cr;
+	uint32_t lu_stride, cb_stride, cr_stride;
+
+	switch (f) {
+	case V4L2_PIX_FMT_YUYV:
+	case V4L2_PIX_FMT_NV16:
+	case V4L2_PIX_FMT_NV61:
+		size = y_size << 1;
+		break;
+
+	case V4L2_PIX_FMT_YUV420:
+		size = y_size +
+			2 * (ALIGN(w >> 1, 64) * ALIGN(h >> 1, 16));
+		y = y_size;
+		cb = (ALIGN(w >> 1, 64) * ALIGN(h >> 1, 16));
+		cr = (ALIGN(w >> 1, 64) * ALIGN(h >> 1, 16));
 		break;
 
 	case V4L2_PIX_FMT_NV21:
@@ -159,7 +194,58 @@ int dp_plane_update(struct dp_device *device, struct dp_framebuffer *fb, uint32_
 	return 1;
 }
 
-struct dp_framebuffer * dp_buffer_init(struct dp_device *device, int  x, int y, int gem_fd)
+struct dp_framebuffer * dp_buffer_init(
+	struct dp_device *device, int  x, int y, int gem_fd)
+{
+	struct dp_framebuffer *fb = NULL;
+	int d_idx = 0, p_idx = 0, op_format = 8/*YUV420*/;
+	struct dp_plane *plane;
+
+	uint32_t format;
+	int err;
+
+	plane = dp_device_find_plane_by_index(device,
+					      d_idx, p_idx);
+	if (!plane) {
+		DP_ERR("no overlay plane found\n");
+		return NULL;
+	}
+
+	/*
+	 * set plane format
+	 */
+	format = choose_format(plane, op_format);
+	if (!format) {
+		DP_ERR("fail : no matching format found\n");
+		return NULL;
+	}
+
+	DP_DBG("format is %d\n",format);
+	fb = dp_framebuffer_config(device, format, x, y, 0, gem_fd,
+		calc_alloc_size(x,y,format));
+
+	if (!fb)
+	{
+		DP_ERR("fail : framebuffer create Fail \n");
+		return NULL;
+	}
+
+	err = dp_framebuffer_addfb2(fb);
+	if (err<0)
+	{
+		DP_ERR("fail : framebuffer add Fail \n");
+		if (fb)
+		{
+			dp_framebuffer_free(fb);
+		}
+		return NULL;
+	}
+
+	return fb;
+}
+
+struct dp_framebuffer * dp_buffer_init_interlace(
+	struct dp_device *device, int  x, int y, int gem_fd, uint32_t t)
 {
 	struct dp_framebuffer *fb = NULL;
 	int d_idx = 0, p_idx = 0, op_format = 8/*YUV420*/;
@@ -186,12 +272,18 @@ struct dp_framebuffer * dp_buffer_init(struct dp_device *device, int  x, int y, 
 
 	DP_DBG("format is %d\n",format);
 
-	fb = dp_framebuffer_config(device, format, x, y, 0, gem_fd, calc_alloc_size(x,y,format));
+	if (t == V4L2_FIELD_INTERLACED)
+		fb = dp_framebuffer_interlace_config(device, format, x, y, 0, gem_fd,
+			calc_alloc_size_interlace(x, y, format, t));
+	else
+		fb = dp_framebuffer_config(device, format, x, y, 0, gem_fd,
+			calc_alloc_size(x,y,format));
 	if (!fb)
 	{
 		DP_ERR("fail : framebuffer create Fail \n");
 		return NULL;
 	}	
+
 	err = dp_framebuffer_addfb2(fb);
 	if (err<0)
 	{
@@ -206,18 +298,18 @@ struct dp_framebuffer * dp_buffer_init(struct dp_device *device, int  x, int y, 
 	return fb;
 }
 
-
 int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 		uint32_t h, uint32_t sw, uint32_t sh, uint32_t f,
-		uint32_t bus_f, uint32_t count)
+		uint32_t bus_f, uint32_t count, uint32_t t)
 {
 	int ret;
 	int gem_fds[MAX_BUFFER_COUNT] = { -1, };
 	int dma_fds[MAX_BUFFER_COUNT] = { -1, };
 	struct dp_framebuffer *fbs[MAX_BUFFER_COUNT] = {NULL,};
+	size_t alloc_size = 0;
 
-	DP_DBG("m: %d, w: %d, h: sw : %d, sh : %d, f: %d, bus_f: %d, c: %d\n",
-	       m, w, h, sw, sh, f, bus_f, count);
+	DP_DBG("m: %d, w: %d, h: %d, sw : %d, sh : %d, f: %d, bus_f: %d, c: %d, type : %d\n",
+	       m, w, h, sw, sh, f, bus_f, count, t);
 
 	// workaround code
 	if (f == 0)
@@ -235,6 +327,21 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 		break;
 	case 3:
 		bus_f = MEDIA_BUS_FMT_YVYU8_2X8;
+		break;
+	};
+
+	switch (t) {
+	case 0:
+		t = V4L2_FIELD_ANY;
+		break;
+	case 1:
+		t = V4L2_FIELD_NONE;
+		break;
+	case 2:
+		t = V4L2_FIELD_INTERLACED;
+		break;
+	default:
+		t = V4L2_FIELD_ANY;
 		break;
 	};
 
@@ -319,7 +426,8 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 		return ret;
 	}
 
-	ret = nx_v4l2_set_format(clipper_video_fd, nx_clipper_video, w, h, f);
+	ret = nx_v4l2_set_format_with_field(clipper_video_fd, nx_clipper_video,
+		w, h, f, t);
 	if (ret) {
 		DP_ERR("failed to set_format for clipper video\n");
 		return ret;
@@ -349,7 +457,11 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 		return ret;
 	}
 
-	size_t alloc_size = calc_alloc_size(w, h, f);
+	if (t == V4L2_FIELD_INTERLACED)
+		alloc_size = calc_alloc_size_interlace(w, h, f, t);
+	else
+		alloc_size = calc_alloc_size(w, h, f);
+
 	if (alloc_size <= 0) {
 		DP_ERR("invalid alloc size %lu\n", alloc_size);
 		return -1;
@@ -370,7 +482,13 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 			return -1;
 		}
 
-		struct dp_framebuffer *fb = dp_buffer_init(device, w,h,gem_fd);
+		struct dp_framebuffer *fb;
+
+		if (t == V4L2_FIELD_INTERLACED)
+			fb = dp_buffer_init_interlace(device, w, h, gem_fd, t);
+		else
+			fb = dp_buffer_init(device, w,h,gem_fd);
+
 		if (!fb) {
 			DP_ERR("fail : framebuffer Init %m\n");
 			ret = -1;
@@ -443,7 +561,7 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 int main(int argc, char *argv[])
 {
 	int ret, drm_fd, err;
-	uint32_t m, w, h, f, bus_f, count;
+	uint32_t m, w, h, f, bus_f, count, t = 0;
 	struct dp_device *device;
 	int dbg_on = 0;
 	uint32_t sw = 0, sh = 0;
@@ -451,7 +569,7 @@ int main(int argc, char *argv[])
 	dp_debug_on(dbg_on);
 
 	ret = handle_option(argc, argv, &m, &w, &h, &sw, &sh, &f, &bus_f,
-			&count);
+			&count, &t);
 	if (ret) {
 		DP_ERR("failed to handle_option\n");
 		return ret;
@@ -469,7 +587,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	err = camera_test(device, drm_fd, m, w, h, sw, sh, f, bus_f, count);
+	err = camera_test(device, drm_fd, m, w, h, sw, sh, f, bus_f, count, t);
 	if (err < 0) {
 		DP_ERR("failed to do camera_test \n");
 		return -1;
@@ -480,4 +598,3 @@ int main(int argc, char *argv[])
 
 	return ret;
 }
-

@@ -1,0 +1,1096 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AFLAGS	env.mk	/^AFLAGS 		:=$/;"	m
+AFTCB_timer	iAP2UtilityImplementation/iAP2Time.c	/^static struct itimerval AFTCB_timer;$/;"	v	typeref:struct:itimerval	file:
+AR	env.mk	/^AR 		 	:= $(CROSS)ar$/;"	m
+ARFLAGS	env.mk	/^ARFLAGS		:= crv$/;"	m
+BACKLOG	main.c	39;"	d	file:
+BOOL	iAP2Utility/iAP2Defines.h	/^typedef signed char BOOL;$/;"	t
+CC	env.mk	/^CC 		 	:= $(CROSS)gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS 	:= -static$/;"	m
+CFLAGS	env.mk	/^CFLAGS 	 	:= $(COPTS)$/;"	m
+CHECK_NULL	utils/ux_timer.c	15;"	d	file:
+COBJS	Makefile	/^COBJS	:=$/;"	m
+COPTS	env.mk	/^COPTS 		:= $(OPTS)$/;"	m
+CPP	env.mk	/^CPP		 	:= $(CROSS)g++$/;"	m
+CPPFLAGS	env.mk	/^CPPFLAGS 	:= $(CPPOPTS)$/;"	m
+CPPOBJS	Makefile	/^CPPOBJS	:=$/;"	m
+CPPOPTS	env.mk	/^CPPOPTS 	:= $(OPTS) -Wnon-virtual-dtor$/;"	m
+CP_DEVID	Cpchip.c	22;"	d	file:
+CP_DEVPORT	Cpchip.c	23;"	d	file:
+CP_RESET	Cpchip.c	24;"	d	file:
+CP_Read	iAP_Auth.c	/^int CP_Read(unsigned long ulRegAddr, char* pBuf, unsigned int nBufLen)$/;"	f
+CP_Reset	iAP_Auth.c	/^int CP_Reset(void)$/;"	f
+CP_VersionCheck	iAP_Auth.c	/^int CP_VersionCheck(void)$/;"	f
+CP_Write	iAP_Auth.c	/^int CP_Write(unsigned long ulRegAddr, char* pBuf, unsigned int nBufLen)$/;"	f
+CROSS	env.mk	/^CROSS 	 	:= $(CROSSNAME)$/;"	m
+CROSSNAME	env.mk	/^CROSSNAME	:= arm-cortex_a9-linux-gnueabi-$/;"	m
+ConnectedCB	main.c	/^static void ConnectedCB (struct iAP2Link_st* link, BOOL bConnected)$/;"	f	file:
+DBG_DEBUG	DbgMsg.h	30;"	d
+DBG_DISABLE	DbgMsg.h	34;"	d
+DBG_ERR	DbgMsg.h	33;"	d
+DBG_INFO	DbgMsg.h	31;"	d
+DBG_PRINT	DbgMsg.h	42;"	d
+DBG_PRINT	DbgMsg.h	52;"	d
+DBG_TAG	utils/gpio.h	11;"	d
+DBG_VBS	DbgMsg.h	29;"	d
+DBG_WARN	DbgMsg.h	32;"	d
+DEBUG	iAP2LinkConfig.h	79;"	d
+DEBUG_LEVEL	DbgMsg.h	36;"	d
+DEF_PORT	main.c	38;"	d	file:
+ERROR_PROCESS	main.c	36;"	d	file:
+EVENT_MSG_TYPE	main.c	/^} EVENT_MSG_TYPE;$/;"	t	typeref:enum:__anon3	file:
+EVT_IUIHUI_CONNECT	main.c	/^	EVT_IUIHUI_CONNECT	= 0,$/;"	e	enum:__anon3	file:
+EVT_IUIHUI_DISCONNECT	main.c	/^	EVT_IUIHUI_DISCONNECT	= 1,$/;"	e	enum:__anon3	file:
+EVT_MSG_MAX	main.c	/^	EVT_MSG_MAX$/;"	e	enum:__anon3	file:
+EVT_USB_CONNECT	main.c	/^	EVT_USB_CONNECT		= 2,$/;"	e	enum:__anon3	file:
+EVT_USB_DISCONNECT	main.c	/^	EVT_USB_DISCONNECT	= 3,$/;"	e	enum:__anon3	file:
+FALSE	iAP2Utility/iAP2Defines.h	58;"	d
+FUNC_IN	DbgMsg.h	76;"	d
+FUNC_IN	DbgMsg.h	79;"	d
+FUNC_OUT	DbgMsg.h	77;"	d
+FUNC_OUT	DbgMsg.h	80;"	d
+GPIO_DIR_IN	utils/gpio.h	13;"	d
+GPIO_DIR_OUT	utils/gpio.h	14;"	d
+GetAndroidUsbStatus	main.c	/^int32_t GetAndroidUsbStatus()$/;"	f
+GetDevAuthenticationInfo	iAP_Auth.c	/^int GetDevAuthenticationInfo(void)$/;"	f
+GetDevAuthenticationSign	iAP_Auth.c	/^int GetDevAuthenticationSign(struct iAP2Link_st* link,$/;"	f
+GetIPodDeviceMode	main.c	/^int GetIPodDeviceMode(void)$/;"	f
+GetIPodLinkStatus	main.c	/^int32_t GetIPodLinkStatus()$/;"	f
+GetPorcessId	main.c	/^int32_t GetPorcessId( const char *pAppName )$/;"	f
+GetTickCountMs	main.c	/^int GetTickCountMs(void)$/;"	f
+IAP2PacketEnums	iAP2Link/iAP2Packet.h	/^enum IAP2PacketEnums$/;"	g
+IAP2_CTRL	main.c	/^} IAP2_CTRL;$/;"	t	typeref:struct:__anon5	file:
+IAP2_HI_BYTE	iAP2Link/iAP2Packet.h	243;"	d
+IAP2_LO_BYTE	iAP2Link/iAP2Packet.h	244;"	d
+IAP2_MISC_READ_BIG64	iAP2Utility/iAP2Misc.h	75;"	d
+IAP2_MISC_WRITE_BIG64	iAP2Utility/iAP2Misc.h	101;"	d
+IAP2_SERV_BUFF_HI_BYTE	iAP2Link/iAP2FileTransfer.h	137;"	d
+IAP2_SERV_BUFF_LO_BYTE	iAP2Link/iAP2FileTransfer.h	138;"	d
+IAP2_STATE	main.c	/^} IAP2_STATE;$/;"	t	typeref:enum:__anon2	file:
+IAP2_STATE_CLOSE	main.c	/^	IAP2_STATE_CLOSE	= 4,$/;"	e	enum:__anon2	file:
+IAP2_STATE_CONNECTED	main.c	/^	IAP2_STATE_CONNECTED	= 3,$/;"	e	enum:__anon2	file:
+IAP2_STATE_ERROR	main.c	/^	IAP2_STATE_ERROR	= 5,$/;"	e	enum:__anon2	file:
+IAP2_STATE_LINK	main.c	/^	IAP2_STATE_LINK		= 2,$/;"	e	enum:__anon2	file:
+IAP2_STATE_MAX	main.c	/^	IAP2_STATE_MAX$/;"	e	enum:__anon2	file:
+IAP2_STATE_NONE	main.c	/^	IAP2_STATE_NONE		= 0,$/;"	e	enum:__anon2	file:
+IAP2_STATE_READY	main.c	/^	IAP2_STATE_READY	= 1,$/;"	e	enum:__anon2	file:
+IAP_DEV_FILE	main.c	46;"	d	file:
+IAP_HANDLER	main.c	/^typedef struct IAP_HANDLER$/;"	s	file:
+IAP_HANDLER	main.c	/^} IAP_HANDLER;$/;"	t	typeref:struct:IAP_HANDLER	file:
+INCLUDE	env.mk	/^INCLUDE   	:= $/;"	m
+INCLUDE_EXT	Makefile	/^INCLUDE_EXT =$/;"	m
+INCS	Makefile	/^INCS := $(INCLUDE) $(INCLUDE_EXT)$/;"	m
+INVALID_TIMEOUT_ID	iAP2Utility/iAP2Time.h	68;"	d
+INVALID_TIMEOUT_TYPE	iAP2Utility/iAP2Time.h	67;"	d
+INVALID_TIMEOUT_VAL	iAP2Utility/iAP2Time.h	69;"	d
+IPC_SOCKET	main.c	/^typedef struct IPC_SOCKET$/;"	s	file:
+IPC_SOCKET	main.c	/^}IPC_SOCKET;$/;"	t	typeref:struct:IPC_SOCKET	file:
+IPC_TYPE	main.c	/^} IPC_TYPE;$/;"	t	typeref:enum:__anon1	file:
+IPC_TYPE_MAX	main.c	/^	IPC_TYPE_MAX$/;"	e	enum:__anon1	file:
+IPC_TYPE_UEVENT	main.c	/^	IPC_TYPE_UEVENT= 0,$/;"	e	enum:__anon1	file:
+IPOD_STATE_FILE	main.c	42;"	d	file:
+IPOD_UEVENT_STRING	main.c	41;"	d	file:
+IPOD_USBCONFIG_STATUS	main.c	44;"	d	file:
+IPOD_USBCONFIG_STRING	main.c	43;"	d	file:
+IUIHID_DEV_FILE	main.c	45;"	d	file:
+KillProcess	main.c	/^void KillProcess( int32_t pid )$/;"	f
+LD	env.mk	/^LD 		 	:= $(CROSS)ld$/;"	m
+LDFLAGS	env.mk	/^LDFLAGS  	:=$/;"	m
+LIBRARY	env.mk	/^LIBRARY		:=$/;"	m
+LIBRARY_EXT	Makefile	/^LIBRARY_EXT =$/;"	m
+LOCAL_MODULE	Android.mk	/^LOCAL_MODULE:= ipod_service$/;"	m
+LOCAL_MODULE_PATH	Android.mk	/^LOCAL_MODULE_PATH:= $(LOCAL_PATH)$/;"	m
+LOCAL_MODULE_TAGS	Android.mk	/^LOCAL_MODULE_TAGS := optional$/;"	m
+LOCAL_PATH	Android.mk	/^LOCAL_PATH:= $(call my-dir)$/;"	m
+LOCAL_SHARED_LIBRARIES	Android.mk	/^LOCAL_SHARED_LIBRARIES := \\$/;"	m
+LOCAL_SRC_FILES	Android.mk	/^LOCAL_SRC_FILES:=	\\$/;"	m
+LOG_STRING_SIZE	iAP2UtilityImplementation/iAP2Log.c	71;"	d	file:
+MANAGER_IAP	main.c	/^} MANAGER_IAP;$/;"	t	typeref:struct:__anon4	file:
+MAX_ALLOC_SIZE	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	70;"	d	file:
+MAX_TIMEOUT_VAL	iAP2Utility/iAP2Time.h	70;"	d
+MAX_TIMER_NUM	utils/ux_timer.h	8;"	d
+MY_TIMER_SIGNAL	utils/ux_timer.c	6;"	d	file:
+Manager_iPodService	main.c	/^void Manager_iPodService(void)$/;"	f
+Monitor_iPodLink	main.c	/^void Monitor_iPodLink(void)$/;"	f
+NM	env.mk	/^NM 		 	:= $(CROSS)nm$/;"	m
+NX_CreateSem	utils/NX_Semaphore.c	/^NX_SEMAPHORE *NX_CreateSem( uint32_t initValue, uint32_t maxValue )$/;"	f
+NX_DTAG	DbgMsg.h	26;"	d
+NX_DestroySem	utils/NX_Semaphore.c	/^void NX_DestroySem( NX_SEMAPHORE *hSem )$/;"	f
+NX_ESEM	utils/NX_Semaphore.h	17;"	d
+NX_ESEM_OVERFLOW	utils/NX_Semaphore.h	18;"	d
+NX_ESEM_TIMEOUT	utils/NX_Semaphore.h	16;"	d
+NX_PendSem	utils/NX_Semaphore.c	/^int32_t NX_PendSem( NX_SEMAPHORE *hSem )$/;"	f
+NX_PostSem	utils/NX_Semaphore.c	/^int32_t NX_PostSem( NX_SEMAPHORE *hSem )$/;"	f
+NX_SEMAPHORE	utils/NX_Semaphore.h	/^typedef struct _NX_SEMAPHORE NX_SEMAPHORE;$/;"	t	typeref:struct:_NX_SEMAPHORE
+NxDbgMsg	DbgMsg.h	44;"	d
+NxDbgMsg	DbgMsg.h	54;"	d
+NxErrMsg	DbgMsg.h	49;"	d
+NxErrMsg	DbgMsg.h	60;"	d
+NxTrace	DbgMsg.h	43;"	d
+NxTrace	DbgMsg.h	53;"	d
+OBJCOPY	env.mk	/^OBJCOPY	 	:= $(CROSS)objcopy$/;"	m
+OBJS	Makefile	/^OBJS	:= $(COBJS) $(CPPOBJS)$/;"	m
+ONE_MSEC_TO_NSEC	utils/ux_timer.c	7;"	d	file:
+ONE_MSEC_TO_SEC	utils/ux_timer.c	10;"	d	file:
+ONE_SEC_TO_NSEC	utils/ux_timer.c	8;"	d	file:
+OPTS	env.mk	/^OPTS		:= -Wall -O2 -Wextra -Wcast-align -Wno-unused-parameter -Wshadow \\$/;"	m
+PAD_GPIO_A	utils/gpio.h	16;"	d
+PAD_GPIO_ALV	utils/gpio.h	21;"	d
+PAD_GPIO_B	utils/gpio.h	17;"	d
+PAD_GPIO_C	utils/gpio.h	18;"	d
+PAD_GPIO_D	utils/gpio.h	19;"	d
+PAD_GPIO_E	utils/gpio.h	20;"	d
+PhaseStateFunc	main.c	/^typedef struct PhaseStateFunc {$/;"	s	file:
+PhaseStateFunc	main.c	/^} PhaseStateFunc ;$/;"	t	typeref:struct:PhaseStateFunc	file:
+RANLIB	env.mk	/^RANLIB 	 	:= $(CROSS)ranlib$/;"	m
+REGNET_SYSFS	main.c	47;"	d	file:
+Read_APMajorVersion	iAP_Auth.c	/^int Read_APMajorVersion(void)$/;"	f
+Read_APMinorVersion	iAP_Auth.c	/^int Read_APMinorVersion(void)$/;"	f
+Read_AccCertificateData	iAP_Auth.c	/^int Read_AccCertificateData(void)$/;"	f
+Read_AccCertificateDataLength	iAP_Auth.c	/^int Read_AccCertificateDataLength(void)$/;"	f
+Read_AuthentiCS	iAP_Auth.c	/^int Read_AuthentiCS(void)$/;"	f
+Read_CPChallengeData	iAP_Auth.c	/^int Read_CPChallengeData(void)$/;"	f
+Read_CPChallengeDataLength	iAP_Auth.c	/^int Read_CPChallengeDataLength(void)$/;"	f
+Read_CPDeviceID	iAP_Auth.c	/^int Read_CPDeviceID(void)$/;"	f
+Read_CPSignatureData	iAP_Auth.c	/^int Read_CPSignatureData(void)$/;"	f
+Read_CPSignatureDataLength	iAP_Auth.c	/^int Read_CPSignatureDataLength(void)$/;"	f
+Read_ErrorCode	iAP_Auth.c	/^int Read_ErrorCode(void)$/;"	f
+Receive	main.c	/^static BOOL Receive (struct iAP2Link_st* link, uint8_t* data, uint32_t dataLen, uint8_t session)$/;"	f	file:
+RetDevAuthenticationInfo	iAP_Auth.c	/^int RetDevAuthenticationInfo(struct iAP2Link_st* link,$/;"	f
+RetDevAuthenticationSign	iAP_Auth.c	/^int RetDevAuthenticationSign(struct iAP2Link_st* link,$/;"	f
+RunProcess	main.c	/^void RunProcess(const char *pAppName, const char *pOption)$/;"	f
+SRCS	Makefile	/^SRCS := $(COBJS:.o=.c) $(CPPOBJS:.o=.cpp)$/;"	m
+STRIP	env.mk	/^STRIP	 	:= $(CROSS)strip$/;"	m
+Send	iAP_Auth.c	/^int Send(struct iAP2Link_st* link,$/;"	f
+SendDetect	main.c	/^static void SendDetect (struct iAP2Link_st* link, BOOL bBad)$/;"	f	file:
+SendPacket	main.c	/^static void SendPacket (struct iAP2Link_st* link, iAP2Packet_t*       packet)$/;"	f	file:
+SentCB	main.c	/^void SentCB(struct iAP2Link_st* link, void* context)$/;"	f
+SysIpodCpchipRead	Cpchip.c	/^void SysIpodCpchipRead(struct ipodIoParam_t* param)$/;"	f
+SysIpodCpchipReset	Cpchip.c	/^bool SysIpodCpchipReset(void)$/;"	f
+SysIpodCpchipWrite	Cpchip.c	/^void SysIpodCpchipWrite(struct ipodIoParam_t* param)$/;"	f
+TARGET	Makefile	/^TARGET	:= ipod_service$/;"	m
+TOPDIR	Makefile	/^TOPDIR := .\/$/;"	m
+TRUE	iAP2Utility/iAP2Defines.h	59;"	d
+TimerHandler	utils/ux_timer.h	/^typedef void (*TimerHandler)(int key, void *userPtr);$/;"	t
+TimerInfo	utils/ux_timer.c	/^}TimerInfo;$/;"	t	typeref:struct:__anon27	file:
+USB_HOST_DEVICE_CHANGE	main.c	49;"	d	file:
+USB_OTG_POWER	main.c	50;"	d	file:
+Ux_CreateTimer	utils/ux_timer.c	/^int Ux_CreateTimer(void)$/;"	f
+Ux_DestroyTimer	utils/ux_timer.c	/^int Ux_DestroyTimer(void)$/;"	f
+Ux_InitTimer	utils/ux_timer.c	/^int Ux_InitTimer(void)$/;"	f
+Ux_KillTimer	utils/ux_timer.c	/^int Ux_KillTimer(int key)$/;"	f
+Ux_SetTimer	utils/ux_timer.c	/^int Ux_SetTimer(int *key, unsigned long resMSec, TimerHandler tmFn, void *userPtr)$/;"	f
+Write_CPAuthenticationControl	iAP_Auth.c	/^int Write_CPAuthenticationControl(void)$/;"	f
+Write_CPChallengeData	iAP_Auth.c	/^int Write_CPChallengeData(void)$/;"	f
+Write_CPChallengeDataLength	iAP_Auth.c	/^int Write_CPChallengeDataLength(void)$/;"	f
+_CleanupAckedPackets	iAP2Link/iAP2Link.c	/^static void _CleanupAckedPackets (iAP2Link_t* link)$/;"	f	file:
+_CleanupRecvPackets	iAP2Link/iAP2Link.c	/^static void _CleanupRecvPackets (iAP2Link_t* link)$/;"	f	file:
+_ComparePckTimerIdCB	iAP2Link/iAP2Link.c	/^static intptr_t _ComparePckTimerIdCB (void* a, void* b, uint8_t dataSize)$/;"	f	file:
+_DeletePckCB	iAP2Link/iAP2Link.c	/^static void _DeletePckCB (void* item)$/;"	f	file:
+_GPIO_H_	utils/gpio.h	2;"	d
+_HARDWARE_UEVENT_H	uevent.h	18;"	d
+_IsReceivedPacket	iAP2Link/iAP2Link.c	/^static BOOL _IsReceivedPacket (iAP2Link_t*   link,$/;"	f	file:
+_IsSessionDuplicate	iAP2Link/iAP2Link.c	/^static BOOL _IsSessionDuplicate (iAP2PacketSYNData_t *synData, iAP2PacketSessionInfo_t *session)$/;"	f	file:
+_NX_SEMAPHORE	utils/NX_Semaphore.h	/^struct _NX_SEMAPHORE{$/;"	s
+_PrepareEAKDataPacket	iAP2Link/iAP2Link.c	/^static iAP2Packet_t* _PrepareEAKDataPacket (iAP2Link_t*  link)$/;"	f	file:
+_PrintTime	iAP2UtilityImplementation/iAP2Log.c	/^static void _PrintTime (char* outString, int outStringLen, iAP2LogType_t type, const char* prefix, const char* suffix)$/;"	f	file:
+_ResetAckedPackets	iAP2Link/iAP2Link.c	/^static void _ResetAckedPackets (iAP2Link_t* link)$/;"	f	file:
+_ResetRecvPackets	iAP2Link/iAP2Link.c	/^static void _ResetRecvPackets (iAP2Link_t* link)$/;"	f	file:
+__AnySessionSendListHasPacket	iAP2Link/iAP2Link.c	/^static BOOL __AnySessionSendListHasPacket (iAP2Link_t* link)$/;"	f	file:
+__DBGMSG_H__	DbgMsg.h	21;"	d
+__NX_Semaphore_h__	utils/NX_Semaphore.h	12;"	d
+__func__	DbgMsg.h	70;"	d
+__func__	DbgMsg.h	72;"	d
+__iAP2BuffPoolCleanupBuffList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolCleanupBuffList (iAP2BuffPool_t* buffPool)$/;"	f
+__iAP2BuffPoolCleanupRecvPacketList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolCleanupRecvPacketList (iAP2BuffPool_t* buffPool)$/;"	f
+__iAP2BuffPoolCleanupSendPacketList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolCleanupSendPacketList (iAP2BuffPool_t* buffPool)$/;"	f
+__iAP2BuffPoolGetBuff	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void* __iAP2BuffPoolGetBuff (iAP2BuffPool_t* buffPool, uint32_t buffLen)$/;"	f
+__iAP2BuffPoolGetBuffSizeBuffList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^uint32_t __iAP2BuffPoolGetBuffSizeBuffList (uint32_t maxBuffSize,$/;"	f
+__iAP2BuffPoolGetBuffSizeRecvPacketList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^uint32_t __iAP2BuffPoolGetBuffSizeRecvPacketList (uint32_t maxBuffSize,$/;"	f
+__iAP2BuffPoolGetBuffSizeSendPacketList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^uint32_t __iAP2BuffPoolGetBuffSizeSendPacketList (uint32_t maxBuffSize,$/;"	f
+__iAP2BuffPoolGetRecvPacket	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void* __iAP2BuffPoolGetRecvPacket (iAP2BuffPool_t* buffPool, uint32_t payloadLen)$/;"	f
+__iAP2BuffPoolGetSendPacket	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void* __iAP2BuffPoolGetSendPacket (iAP2BuffPool_t* buffPool, uint32_t payloadLen)$/;"	f
+__iAP2BuffPoolInitBuffList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolInitBuffList (iAP2BuffPool_t* buffPool,$/;"	f
+__iAP2BuffPoolInitRecvPacketList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolInitRecvPacketList (iAP2BuffPool_t* buffPool,$/;"	f
+__iAP2BuffPoolInitSendPacketList	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolInitSendPacketList (iAP2BuffPool_t* buffPool,$/;"	f
+__iAP2BuffPoolReturnBuff	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolReturnBuff (iAP2BuffPool_t* buffPool, void* buff)$/;"	f
+__iAP2BuffPoolReturnRecvPacket	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolReturnRecvPacket (iAP2BuffPool_t* buffPool, void* packet)$/;"	f
+__iAP2BuffPoolReturnSendPacket	iAP2UtilityImplementation/iAP2BuffPoolImplementation.c	/^void __iAP2BuffPoolReturnSendPacket (iAP2BuffPool_t* buffPool, void* packet)$/;"	f
+__iAP2FileTransferDataSentCB	iAP2Link/iAP2FileTransfer.c	/^void __iAP2FileTransferDataSentCB (struct iAP2Link_st* link,$/;"	f
+__iAP2FileTransferSendBufferPacket	iAP2Link/iAP2FileTransfer.c	/^static void __iAP2FileTransferSendBufferPacket (iAP2FileTransfer_t*          fileXfer,$/;"	f	file:
+__printPacketItemWithIndexAndParam	iAP2Link/iAP2Link.c	/^static void __printPacketItemWithIndexAndParam (void* item, uint8_t index, void* param)$/;"	f	file:
+__printPacketList	iAP2Link/iAP2Link.c	/^static void __printPacketList (const char*  tag,$/;"	f	file:
+__printTimeOutItem	iAP2UtilityImplementation/iAP2Time.c	/^static void __printTimeOutItem (void* item)$/;"	f	file:
+_iAP2LinkComparePacketSeq	iAP2Link/iAP2Link.c	/^static intptr_t _iAP2LinkComparePacketSeq (void* a, void* b, uint8_t dataSize)$/;"	f	file:
+_iAP2LinkHandleTimerCancel	iAP2Link/iAP2Link.c	/^static void _iAP2LinkHandleTimerCancel (iAP2Timer_t* timer, uint8_t timerID)$/;"	f	file:
+_iAP2LinkHandleTimerExpire	iAP2Link/iAP2Link.c	/^static void _iAP2LinkHandleTimerExpire (iAP2Timer_t* timer,$/;"	f	file:
+_iAP2LinkNeedEAK	iAP2Link/iAP2Link.c	/^static BOOL _iAP2LinkNeedEAK (iAP2Link_t* link)$/;"	f	file:
+_iAP2LinkProcessInOrderPacketACK	iAP2Link/iAP2Link.c	/^static BOOL _iAP2LinkProcessInOrderPacketACK (struct iAP2Link_st* link,$/;"	f	file:
+_iAP2LinkProcessInOrderPacketEAK	iAP2Link/iAP2Link.c	/^static BOOL _iAP2LinkProcessInOrderPacketEAK (struct iAP2Link_st* link,$/;"	f	file:
+_iAP2LinkProcessInOrderPacketRST	iAP2Link/iAP2Link.c	/^static BOOL _iAP2LinkProcessInOrderPacketRST (struct iAP2Link_st* link,$/;"	f	file:
+_iAP2LinkProcessInOrderPacketSUS	iAP2Link/iAP2Link.c	/^static BOOL _iAP2LinkProcessInOrderPacketSUS (struct iAP2Link_st* link,$/;"	f	file:
+_iAP2LinkProcessInOrderPacketSYN	iAP2Link/iAP2Link.c	/^static BOOL _iAP2LinkProcessInOrderPacketSYN (struct iAP2Link_st* link,$/;"	f	file:
+_iAP2LinkSendPacketCommon	iAP2Link/iAP2Link.c	/^static void _iAP2LinkSendPacketCommon (iAP2Link_t*    link,$/;"	f	file:
+_iAP2LinkSignalSendBuffCallback	iAP2Link/iAP2LinkRunLoop.c	/^static void _iAP2LinkSignalSendBuffCallback(struct iAP2Link_st* link)$/;"	f	file:
+_iAP2LinkStartSendAckTimerIfNotRunning	iAP2Link/iAP2Link.c	/^static void _iAP2LinkStartSendAckTimerIfNotRunning (iAP2Link_t* link, uint8_t seq)$/;"	f	file:
+_iAP2ListArrayDataFromItem	iAP2Utility/iAP2ListArray.c	/^static uint8_t* _iAP2ListArrayDataFromItem (iAP2ListArrayItemHeader_t* item)$/;"	f	file:
+_iAP2ListArrayDataFromItemIndex	iAP2Utility/iAP2ListArray.c	/^static uint8_t* _iAP2ListArrayDataFromItemIndex (iAP2ListArrayHeader_t* listArray,$/;"	f	file:
+_iAP2ListArrayItemFromIndex	iAP2Utility/iAP2ListArray.c	/^static iAP2ListArrayItemHeader_t* _iAP2ListArrayItemFromIndex (iAP2ListArrayHeader_t* listArray,$/;"	f	file:
+_iAP2TimeCallbackAfter	iAP2UtilityImplementation/iAP2Time.c	/^BOOL _iAP2TimeCallbackAfter (iAP2Timer_t* timer,$/;"	f
+_iAP2TimeCancelCallback	iAP2UtilityImplementation/iAP2Time.c	/^void _iAP2TimeCancelCallback (iAP2Timer_t* timer)$/;"	f
+_iAP2TimeCheckTimeouts	iAP2UtilityImplementation/iAP2Time.c	/^void _iAP2TimeCheckTimeouts (iAP2Timer_t* timer)$/;"	f
+_iAP2TimeCleanupCallback	iAP2UtilityImplementation/iAP2Time.c	/^void _iAP2TimeCleanupCallback (iAP2Timer_t* timer)$/;"	f
+_iAP2TimeCompareID	iAP2UtilityImplementation/iAP2Time.c	/^intptr_t _iAP2TimeCompareID (void* a, void* b, uint8_t dataSize)$/;"	f
+_iAP2TimeCompareTimeout	iAP2UtilityImplementation/iAP2Time.c	/^intptr_t _iAP2TimeCompareTimeout (void* a, void* b, uint8_t dataSize)$/;"	f
+_iAP2TimeGetFreeTimeoutID	iAP2UtilityImplementation/iAP2Time.c	/^uint8_t _iAP2TimeGetFreeTimeoutID (iAP2Timer_t* timer)$/;"	f
+_iAP2TimeHandleExpired	iAP2UtilityImplementation/iAP2Time.c	/^void _iAP2TimeHandleExpired (iAP2Timer_t* timer, uint32_t curTime)$/;"	f
+ack	iAP2Link/iAP2Packet.h	/^    uint8_t ack;$/;"	m	struct:__anon14
+ack	iAP2Link/iAP2Packet.h	/^    uint8_t ack;$/;"	m	struct:__anon15
+ack	iAP2Link/iAP2Packet.h	/^    uint8_t ack;$/;"	m	struct:__anon16
+action	iAP2Utility/iAP2FSM.h	/^    iAP2FSMEventAction_t    action;$/;"	m	struct:iAP2FSMEvent_st
+auth_resp	iAP_Auth.c	/^void auth_resp(struct iAP2Link_st* link,$/;"	f
+bDeleteBuffOnFinish	iAP2Link/iAP2FileTransfer.h	/^    BOOL        bDeleteBuffOnFinish:1;$/;"	m	struct:iAP2FileTransfer_st
+bIgnoreSynRetryLimit	iAP2Link/iAP2Link.h	/^    BOOL            bIgnoreSynRetryLimit:1;$/;"	m	struct:iAP2Link_st
+bIsReceive	iAP2Link/iAP2FileTransfer.h	/^    BOOL        bIsReceive:1;$/;"	m	struct:iAP2FileTransfer_st
+bStream	iAP2Link/iAP2FileTransfer.h	/^    BOOL        bStream:1;$/;"	m	struct:iAP2FileTransfer_st
+bUseiAP2LinkRunLoop	iAP2Link/iAP2Link.h	/^    BOOL            bUseiAP2LinkRunLoop:1;$/;"	m	struct:iAP2Link_st
+bValidRecvAck	iAP2Link/iAP2Link.h	/^    BOOL            bValidRecvAck:1;$/;"	m	struct:iAP2Link_st
+bValidRecvSeq	iAP2Link/iAP2Link.h	/^    BOOL            bValidRecvSeq:1;$/;"	m	struct:iAP2Link_st
+bValidSentAck	iAP2Link/iAP2Link.h	/^    BOOL            bValidSentAck:1;$/;"	m	struct:iAP2Link_st
+bValidSentSeq	iAP2Link/iAP2Link.h	/^    BOOL            bValidSentSeq:1;$/;"	m	struct:iAP2Link_st
+buf	main.c	/^	char *buf;$/;"	m	struct:iui_packet	file:
+buffCount	iAP2Utility/iAP2BuffPool.h	/^    uint16_t    buffCount;$/;"	m	struct:iAP2BuffPool_st
+buffPool	iAP2Link/iAP2Link.h	/^    iAP2BuffPool_t* buffPool;$/;"	m	struct:iAP2Link_st
+buffSentSize	iAP2Link/iAP2FileTransfer.h	/^    uint64_t    buffSentSize;$/;"	m	struct:iAP2FileTransfer_st
+buffSize	iAP2Link/iAP2FileTransfer.h	/^    uint64_t    buffSize;$/;"	m	struct:iAP2FileTransfer_st
+buffSize	iAP2Utility/iAP2BuffPool.h	/^    uint32_t    buffSize;$/;"	m	struct:iAP2BuffPool_st
+bufferID	iAP2Link/iAP2FileTransfer.h	/^    uint8_t     bufferID;$/;"	m	struct:iAP2FileTransfer_st
+bufferLen	iAP2Link/iAP2Packet.h	/^    uint32_t    bufferLen;$/;"	m	struct:iAP2Packet_st
+bytesRcvd	iAP2Link/iAP2Link.h	/^    uint32_t    bytesRcvd;$/;"	m	struct:iAP2Link_st
+bytesSent	iAP2Link/iAP2Link.h	/^    uint32_t    bytesSent;$/;"	m	struct:iAP2Link_st
+callback	iAP2Link/iAP2Link.h	/^    iAP2LinkDataSentCB_t callback;$/;"	m	struct:iAP2LinkData_st
+callback	utils/ux_timer.c	/^void callback(int key)$/;"	f
+callbackOnSend	iAP2Link/iAP2Packet.h	/^    void*       callbackOnSend; \/* iAP2LinkDataSentCB_t *\/$/;"	m	struct:iAP2Packet_st
+cancelCB	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    iAP2TimeCancelCB_t  cancelCB;$/;"	m	struct:iAP2Timer_st
+cbContext	iAP2Link/iAP2Packet.h	/^    void*       cbContext;$/;"	m	struct:iAP2Packet_st
+chk	iAP2Link/iAP2Packet.h	/^    uint8_t chk;$/;"	m	struct:__anon14
+chk	iAP2Link/iAP2Packet.h	/^    uint8_t chk;$/;"	m	struct:__anon15
+chk	iAP2Link/iAP2Packet.h	/^    uint8_t chk;$/;"	m	struct:__anon16
+clear	utils/ux_timer.c	/^void clear()$/;"	f
+connect_done	main.c	/^	int connect_done;$/;"	m	struct:__anon5	file:
+connectedCB	iAP2Link/iAP2Link.h	/^    iAP2LinkConnectedCB_t       connectedCB;$/;"	m	struct:iAP2Link_st
+context	iAP2Link/iAP2Link.h	/^    void*           context;$/;"	m	struct:iAP2Link_st
+context	iAP2Link/iAP2Link.h	/^    void*       context;$/;"	m	struct:iAP2LinkData_st
+context	iAP2Link/iAP2LinkRunLoop.h	/^    void*               context;$/;"	m	struct:iAP2LinkRunLoop_st
+context	iAP2Utility/iAP2BuffPool.h	/^    uintptr_t   context;$/;"	m	struct:iAP2BuffPool_st
+context3	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    void*               context3;$/;"	m	struct:iAP2Timer_st
+count	iAP2Utility/iAP2ListArray.h	/^    uint8_t             count;$/;"	m	struct:__anon8
+cpChip_init	main.c	/^int cpChip_init(void)$/;"	f
+cp_devid	Cpchip.c	/^static unsigned char cp_devid = 0x20;$/;"	v	file:
+ctl	iAP2Link/iAP2Packet.h	/^    uint8_t ctl;$/;"	m	struct:__anon14
+ctl	iAP2Link/iAP2Packet.h	/^    uint8_t ctl;$/;"	m	struct:__anon15
+ctl	iAP2Link/iAP2Packet.h	/^    uint8_t ctl;$/;"	m	struct:__anon16
+cumAckTimeout	iAP2Link/iAP2Packet.h	/^    uint16_t   cumAckTimeout;$/;"	m	struct:__anon18
+cur	iAP2Link/iAP2Link.h	/^    uint8_t*    cur;$/;"	m	struct:iAP2LinkData_st
+curLen	iAP2Link/iAP2Link.h	/^    uint32_t    curLen;$/;"	m	struct:iAP2LinkData_st
+currentEvent	iAP2Utility/iAP2FSM.h	/^    unsigned int    currentEvent;$/;"	m	struct:iAP2FSM_st
+currentState	iAP2Utility/iAP2FSM.h	/^    unsigned int    currentState;$/;"	m	struct:iAP2FSM_st
+data	iAP2Link/iAP2Link.h	/^    uint8_t*    data;$/;"	m	struct:iAP2LinkData_st
+data	iAP2Link/iAP2Packet.h	/^    uint8_t data [1];$/;"	m	struct:__anon15
+data	iAP2Link/iAP2Packet.h	/^    uint8_t data [kiAP2PacketMaxPayloadSize];$/;"	m	struct:__anon16
+data	iAP2Utility/iAP2BuffPool.h	/^    uintptr_t   data;$/;"	m	struct:iAP2BuffPool_st
+data	iAP2Utility/iAP2FSM.h	/^    void*           data;$/;"	m	struct:iAP2FSM_st
+dataBytesRcvd	iAP2Link/iAP2Link.h	/^    uint32_t    dataBytesRcvd;$/;"	m	struct:iAP2Link_st
+dataBytesSent	iAP2Link/iAP2Link.h	/^    uint32_t    dataBytesSent;$/;"	m	struct:iAP2Link_st
+dataChecksum	iAP2Link/iAP2Packet.h	/^    uint8_t     dataChecksum;$/;"	m	struct:iAP2Packet_st
+dataCurLen	iAP2Link/iAP2Packet.h	/^    uint32_t    dataCurLen;$/;"	m	struct:iAP2Packet_st
+dataLen	iAP2Link/iAP2Link.h	/^    uint32_t    dataLen;$/;"	m	struct:iAP2LinkData_st
+dataPacketsRcvd	iAP2Link/iAP2Link.h	/^    uint32_t    dataPacketsRcvd;$/;"	m	struct:iAP2Link_st
+dataPacketsSent	iAP2Link/iAP2Link.h	/^    uint32_t    dataPacketsSent;$/;"	m	struct:iAP2Link_st
+dataSize	iAP2Utility/iAP2ListArray.h	/^    uint8_t             dataSize;$/;"	m	struct:__anon8
+datachk	iAP2Link/iAP2Packet.h	/^    uint8_t datachk;$/;"	m	struct:__anon16
+debugData	iAP2Link/iAP2Packet.h	/^    uint8_t     debugData:4;$/;"	m	struct:iAP2Packet_st
+delTimer	utils/ux_timer.c	/^int delTimer(int key)$/;"	f
+detectAckTimeoutID	iAP2Link/iAP2Link.h	/^    uint8_t         detectAckTimeoutID;$/;"	m	struct:iAP2Link_st
+dev	main.c	/^	uint8_t dev;$/;"	m	struct:IPC_SOCKET	file:
+doConnectIAP2packet	main.c	/^int doConnectIAP2packet(void)$/;"	f
+do_rollchange	main.c	/^int do_rollchange(void)$/;"	f
+endCB	iAP2Link/iAP2FileTransfer.h	/^    iAP2FileTransferEndCB_t     endCB;$/;"	m	struct:iAP2FileTransfer_st
+endCBUserInfo	iAP2Link/iAP2FileTransfer.h	/^    void*                       endCBUserInfo;$/;"	m	struct:iAP2FileTransfer_st
+eventCount	iAP2Utility/iAP2FSM.h	/^    unsigned int    eventCount;$/;"	m	struct:iAP2FSM_st
+eventMask	iAP2Link/iAP2LinkRunLoop.h	/^    uint32_t            eventMask;$/;"	m	struct:iAP2LinkRunLoop_st
+eventNames	iAP2Link/iAP2Link.c	/^const char* eventNames [kiAP2LinkEventCount] =$/;"	v
+eventNames	iAP2Utility/iAP2FSM.h	/^    const char**    eventNames;$/;"	m	struct:iAP2FSM_st
+events	iAP2Utility/iAP2FSM.h	/^    const iAP2FSMEvent_t*   events;$/;"	m	struct:iAP2FSMState_st
+evtProcess_disconnect	main.c	/^void evtProcess_disconnect(void)$/;"	f
+evtProcess_iPodUevent	main.c	/^void evtProcess_iPodUevent(void)$/;"	f
+evtProcess_usbConfig	main.c	/^void evtProcess_usbConfig(void)$/;"	f
+expiredCB	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    iAP2TimeExpireCB_t  expiredCB;$/;"	m	struct:iAP2Timer_st
+fd	uevent.c	/^static int fd = -1;$/;"	v	file:
+fd_iap	main.c	/^	int fd_iap;$/;"	m	struct:__anon5	file:
+fd_iuihid	main.c	/^	int fd_iuihid;$/;"	m	struct:__anon5	file:
+findNewKey	utils/ux_timer.c	/^int findNewKey()$/;"	f
+free	iAP2Utility/iAP2ListArray.h	/^    uint8_t             free;$/;"	m	struct:__anon8
+fsm	iAP2Link/iAP2Link.h	/^    iAP2FSM_t*      fsm;$/;"	m	struct:iAP2Link_st
+func	main.c	/^        int (*func)(int msg);$/;"	m	struct:PhaseStateFunc	file:
+func_error_connect	main.c	/^void func_error_connect(void)$/;"	f
+func_error_link	main.c	/^void func_error_link(void)$/;"	f
+gPhaseStateFunc	main.c	/^PhaseStateFunc gPhaseStateFunc[IAP2_STATE_MAX] =$/;"	v
+g_Enable	iAP2UtilityImplementation/iAP2Log.c	/^static BOOL g_Enable [kiAP2LogTypeCount] =$/;"	v	file:
+g_LogLock	iAP2UtilityImplementation/iAP2Log.c	/^static pthread_mutex_t g_LogLock = PTHREAD_MUTEX_INITIALIZER;$/;"	v	file:
+g_LogTypeName	iAP2UtilityImplementation/iAP2Log.c	/^static const char* g_LogTypeName [kiAP2LogTypeCount] =$/;"	v	file:
+g_detectSuccess	main.c	/^	int g_detectSuccess ;$/;"	m	struct:__anon5	file:
+g_exit	main.c	/^	int g_exit ;$/;"	m	struct:__anon5	file:
+g_i2cFile	Cpchip.c	/^int g_i2cFile;$/;"	v
+g_iapWriteError	main.c	/^	int g_iapWriteError ;$/;"	m	struct:__anon5	file:
+gotCB	iAP2Link/iAP2FileTransfer.h	/^    iAP2FileTransferGotDataCB_t gotCB;$/;"	m	struct:iAP2FileTransfer_st
+gotCBUserInfo	iAP2Link/iAP2FileTransfer.h	/^    void*                       gotCBUserInfo;$/;"	m	struct:iAP2FileTransfer_st
+gpio_dir	utils/gpio.c	/^int gpio_dir(unsigned gpio, unsigned dir)$/;"	f
+gpio_dir_in	utils/gpio.c	/^int gpio_dir_in(unsigned gpio)$/;"	f
+gpio_dir_out	utils/gpio.c	/^int gpio_dir_out(unsigned gpio)$/;"	f
+gpio_export	utils/gpio.c	/^int gpio_export(unsigned gpio)$/;"	f
+gpio_get_value	utils/gpio.c	/^int gpio_get_value(unsigned gpio)$/;"	f
+gpio_set_value	utils/gpio.c	/^int gpio_set_value(unsigned gpio, unsigned value)$/;"	f
+gpio_unexport	utils/gpio.c	/^int gpio_unexport(unsigned gpio)$/;"	f
+hCond	utils/NX_Semaphore.h	/^	pthread_cond_t hCond;$/;"	m	struct:_NX_SEMAPHORE
+hMutex	utils/NX_Semaphore.h	/^	pthread_mutex_t hMutex;$/;"	m	struct:_NX_SEMAPHORE
+handle	main.c	/^	MANAGER_IAP handle;$/;"	m	struct:IAP_HANDLER	file:
+handler	uevent.c	/^    void (*handler)(void *data, const char *msg, int msg_len);$/;"	m	struct:uevent_handler	file:
+handler_data	uevent.c	/^    void *handler_data;$/;"	m	struct:uevent_handler	file:
+i2cClose	Cpchip.c	/^void i2cClose()$/;"	f
+i2cOpen	Cpchip.c	/^void i2cOpen(int port)$/;"	f
+i2cSetAddress	Cpchip.c	/^void i2cSetAddress(unsigned char address)$/;"	f
+i2c_read	Cpchip.c	/^static bool i2c_read(char regaddr, void* recv_buf, int len)$/;"	f	file:
+i2c_read	iAP_Auth.c	/^int i2c_read(unsigned long ulRegAddr, char* pBuf, unsigned int nBufLen)$/;"	f
+i2c_reset	iAP_Auth.c	/^int i2c_reset(void)$/;"	f
+i2c_write	Cpchip.c	/^static bool i2c_write(char regaddr, const void* write_buf, int len)$/;"	f	file:
+i2c_write	iAP_Auth.c	/^int i2c_write(unsigned long ulRegAddr, char* pBuf, unsigned int nBufLen)$/;"	f
+iAP2BuffPoolCleanup	iAP2Utility/iAP2BuffPool.c	/^void iAP2BuffPoolCleanup (iAP2BuffPool_t* buffPool)$/;"	f
+iAP2BuffPoolGet	iAP2Utility/iAP2BuffPool.c	/^void* iAP2BuffPoolGet (iAP2BuffPool_t*  buffPool,$/;"	f
+iAP2BuffPoolGetBuffSize	iAP2Utility/iAP2BuffPool.c	/^uint32_t iAP2BuffPoolGetBuffSize (uint8_t  buffType,$/;"	f
+iAP2BuffPoolInit	iAP2Utility/iAP2BuffPool.c	/^iAP2BuffPool_t* iAP2BuffPoolInit (uint8_t   buffType,$/;"	f
+iAP2BuffPoolReturn	iAP2Utility/iAP2BuffPool.c	/^void iAP2BuffPoolReturn (iAP2BuffPool_t*    buffPool,$/;"	f
+iAP2BuffPool_st	iAP2Utility/iAP2BuffPool.h	/^typedef struct iAP2BuffPool_st$/;"	s
+iAP2BuffPool_t	iAP2Utility/iAP2BuffPool.h	/^} iAP2BuffPool_t;$/;"	t	typeref:struct:iAP2BuffPool_st
+iAP2FSMCreate	iAP2Utility/iAP2FSM.c	/^iAP2FSM_t* iAP2FSMCreate (unsigned int                  stateCount,$/;"	f
+iAP2FSMDelete	iAP2Utility/iAP2FSM.c	/^void iAP2FSMDelete (iAP2FSM_t* fsm)$/;"	f
+iAP2FSMEventAction_t	iAP2Utility/iAP2FSM.h	/^typedef void (*iAP2FSMEventAction_t) (struct iAP2FSM_st* fsm, unsigned int* nextEvent);$/;"	t
+iAP2FSMEvent_st	iAP2Utility/iAP2FSM.h	/^typedef struct iAP2FSMEvent_st$/;"	s
+iAP2FSMEvent_t	iAP2Utility/iAP2FSM.h	/^} iAP2FSMEvent_t;$/;"	t	typeref:struct:iAP2FSMEvent_st
+iAP2FSMGetActionForEvent	iAP2Utility/iAP2FSM.c	/^iAP2FSMEventAction_t iAP2FSMGetActionForEvent (iAP2FSM_t*     fsm,$/;"	f
+iAP2FSMGetBuffSize	iAP2Utility/iAP2FSM.c	/^uint32_t iAP2FSMGetBuffSize (void)$/;"	f
+iAP2FSMGetNextStateForEvent	iAP2Utility/iAP2FSM.c	/^unsigned int iAP2FSMGetNextStateForEvent (iAP2FSM_t*    fsm,$/;"	f
+iAP2FSMHandleEvent	iAP2Utility/iAP2FSM.c	/^void iAP2FSMHandleEvent (iAP2FSM_t* fsm, unsigned int event)$/;"	f
+iAP2FSMState_st	iAP2Utility/iAP2FSM.h	/^typedef struct iAP2FSMState_st$/;"	s
+iAP2FSMState_t	iAP2Utility/iAP2FSM.h	/^} iAP2FSMState_t;$/;"	t	typeref:struct:iAP2FSMState_st
+iAP2FSM_DEBUG	iAP2Utility/iAP2FSM.c	63;"	d	file:
+iAP2FSM_st	iAP2Utility/iAP2FSM.h	/^typedef struct iAP2FSM_st$/;"	s
+iAP2FSM_t	iAP2Utility/iAP2FSM.h	/^} iAP2FSM_t;$/;"	t	typeref:struct:iAP2FSM_st
+iAP2FileTransferCancel	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferCancel (iAP2FileTransfer_t* fileXfer)$/;"	f
+iAP2FileTransferCancelSetup	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferCancelSetup (iAP2Link_t*  link,$/;"	f
+iAP2FileTransferCleanup	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferCleanup (iAP2FileTransfer_t* fileXfer)$/;"	f
+iAP2FileTransferControl_t	iAP2Link/iAP2FileTransfer.h	/^} iAP2FileTransferControl_t;$/;"	t	typeref:enum:__anon24
+iAP2FileTransferCreate	iAP2Link/iAP2FileTransfer.c	/^iAP2FileTransfer_t* iAP2FileTransferCreate (iAP2Link_t*                 link,$/;"	f
+iAP2FileTransferDelete	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferDelete (iAP2FileTransfer_t* fileXfer)$/;"	f
+iAP2FileTransferEndCB_t	iAP2Link/iAP2FileTransfer.h	/^typedef BOOL (*iAP2FileTransferEndCB_t) (struct iAP2FileTransfer_st* fileXfer, void* userInfo);$/;"	t
+iAP2FileTransferFailure	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferFailure (iAP2FileTransfer_t* fileXfer)$/;"	f
+iAP2FileTransferGotDataCB_t	iAP2Link/iAP2FileTransfer.h	/^typedef BOOL (*iAP2FileTransferGotDataCB_t) (struct iAP2FileTransfer_st* fileXfer, void* userInfo);$/;"	t
+iAP2FileTransferHandleRecv	iAP2Link/iAP2FileTransfer.c	/^BOOL iAP2FileTransferHandleRecv (iAP2FileTransfer_t*    fileXfer,$/;"	f
+iAP2FileTransferPacketType_t	iAP2Link/iAP2FileTransfer.h	/^} iAP2FileTransferPacketType_t;$/;"	t	typeref:enum:__anon25
+iAP2FileTransferPause	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferPause (iAP2FileTransfer_t* fileXfer)$/;"	f
+iAP2FileTransferResume	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferResume (iAP2FileTransfer_t* fileXfer)$/;"	f
+iAP2FileTransferSendNext	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferSendNext (iAP2FileTransfer_t* fileXfer,$/;"	f
+iAP2FileTransferStart	iAP2Link/iAP2FileTransfer.c	/^BOOL iAP2FileTransferStart (iAP2FileTransfer_t*     fileXfer,$/;"	f
+iAP2FileTransferState_t	iAP2Link/iAP2FileTransfer.h	/^} iAP2FileTransferState_t;$/;"	t	typeref:enum:__anon23
+iAP2FileTransferSuccess	iAP2Link/iAP2FileTransfer.c	/^void iAP2FileTransferSuccess (iAP2FileTransfer_t* fileXfer)$/;"	f
+iAP2FileTransferValidateBufferID	iAP2Link/iAP2FileTransfer.c	/^BOOL iAP2FileTransferValidateBufferID (iAP2Link_t*  link,$/;"	f
+iAP2FileTransfer_st	iAP2Link/iAP2FileTransfer.h	/^typedef struct iAP2FileTransfer_st$/;"	s
+iAP2FileTransfer_t	iAP2Link/iAP2FileTransfer.h	/^} iAP2FileTransfer_t;$/;"	t	typeref:struct:iAP2FileTransfer_st
+iAP2LINKRUNLOOP_DEBUG	iAP2Link/iAP2LinkRunLoop.c	69;"	d	file:
+iAP2LINKRUNLOOP_DEBUG_PACKET	iAP2Link/iAP2LinkRunLoop.c	70;"	d	file:
+iAP2LINK_DEBUG	iAP2Link/iAP2Link.c	77;"	d	file:
+iAP2LINK_DEBUG_PACKET	iAP2Link/iAP2Link.c	78;"	d	file:
+iAP2LinkAccessoryActionConnectedACK	iAP2Link/iAP2LinkAccessory.c	/^void iAP2LinkAccessoryActionConnectedACK (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkAccessoryActionHandleSuspend	iAP2Link/iAP2LinkAccessory.c	/^void iAP2LinkAccessoryActionHandleSuspend (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkAccessoryActionResendSYN	iAP2Link/iAP2LinkAccessory.c	/^void iAP2LinkAccessoryActionResendSYN (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkAccessoryActionSendDetect	iAP2Link/iAP2LinkAccessory.c	/^void iAP2LinkAccessoryActionSendDetect (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkAccessoryActionSendSYNACK	iAP2Link/iAP2LinkAccessory.c	/^void iAP2LinkAccessoryActionSendSYNACK (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkAccessoryActionSendSYNNewSeq	iAP2Link/iAP2LinkAccessory.c	/^void iAP2LinkAccessoryActionSendSYNNewSeq (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkAccessoryConnectedStateEvents	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMEvent_t iAP2LinkAccessoryConnectedStateEvents [kiAP2LinkEventCount] =$/;"	v
+iAP2LinkAccessoryDetachedStateEvents	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMEvent_t iAP2LinkAccessoryDetachedStateEvents [kiAP2LinkEventCount] =$/;"	v
+iAP2LinkAccessoryDetectStateEvents	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMEvent_t iAP2LinkAccessoryDetectStateEvents [kiAP2LinkEventCount] =$/;"	v
+iAP2LinkAccessoryFailedStateEvents	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMEvent_t iAP2LinkAccessoryFailedStateEvents [kiAP2LinkEventCount] =$/;"	v
+iAP2LinkAccessoryIdleStateEvents	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMEvent_t iAP2LinkAccessoryIdleStateEvents [kiAP2LinkEventCount] =$/;"	v
+iAP2LinkAccessoryInitStateEvents	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMEvent_t iAP2LinkAccessoryInitStateEvents [kiAP2LinkEventCount] =$/;"	v
+iAP2LinkAccessoryPendingStateEvents	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMEvent_t iAP2LinkAccessoryPendingStateEvents [kiAP2LinkEventCount] =$/;"	v
+iAP2LinkAccessoryStates	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMState_t iAP2LinkAccessoryStates [kiAP2LinkStateCount] =$/;"	v
+iAP2LinkAccessorySuspendStateEvents	iAP2Link/iAP2LinkAccessory.c	/^const iAP2FSMEvent_t iAP2LinkAccessorySuspendStateEvents [kiAP2LinkEventCount] =$/;"	v
+iAP2LinkActionDetach	iAP2Link/iAP2Link.c	/^void iAP2LinkActionDetach (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionHandleACK	iAP2Link/iAP2Link.c	/^void iAP2LinkActionHandleACK (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionHandleData	iAP2Link/iAP2Link.c	/^void iAP2LinkActionHandleData (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionNone	iAP2Link/iAP2Link.c	/^void iAP2LinkActionNone (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionNotifyConnectionFail	iAP2Link/iAP2Link.c	/^void iAP2LinkActionNotifyConnectionFail (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionResendData	iAP2Link/iAP2Link.c	/^void iAP2LinkActionResendData (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionResendMissing	iAP2Link/iAP2Link.c	/^void iAP2LinkActionResendMissing (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionSendACK	iAP2Link/iAP2Link.c	/^void iAP2LinkActionSendACK (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionSendData	iAP2Link/iAP2Link.c	/^void iAP2LinkActionSendData (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkActionSwitchToiAP1	iAP2Link/iAP2Link.c	/^void iAP2LinkActionSwitchToiAP1 (struct iAP2FSM_st* fsm, unsigned int* nextEvent)$/;"	f
+iAP2LinkAddPacketAfter	iAP2Link/iAP2Link.c	/^uint8_t iAP2LinkAddPacketAfter (uint8_t*        listArrayBuffer,$/;"	f
+iAP2LinkAttached	iAP2Link/iAP2Link.c	/^void iAP2LinkAttached (iAP2Link_t* link)$/;"	f
+iAP2LinkConnectedCB_t	iAP2Link/iAP2Link.h	/^typedef void (*iAP2LinkConnectedCB_t) (struct iAP2Link_st* link,$/;"	t
+iAP2LinkCreate	iAP2Link/iAP2Link.c	/^iAP2Link_t* iAP2LinkCreate (iAP2LinkType_t              type,$/;"	f
+iAP2LinkCreateAccessory	iAP2Link/iAP2Link.c	/^iAP2Link_t* iAP2LinkCreateAccessory (iAP2PacketSYNData_t*       synParam,$/;"	f
+iAP2LinkCreateDevice	iAP2Link/iAP2Link.c	/^iAP2Link_t* iAP2LinkCreateDevice (iAP2PacketSYNData_t*       synParam,$/;"	f
+iAP2LinkDataReadyCB_t	iAP2Link/iAP2Link.h	/^typedef BOOL (*iAP2LinkDataReadyCB_t) (struct iAP2Link_st* link,$/;"	t
+iAP2LinkDataSentCB_t	iAP2Link/iAP2Link.h	/^typedef void (*iAP2LinkDataSentCB_t) (struct iAP2Link_st* link,$/;"	t
+iAP2LinkData_st	iAP2Link/iAP2Link.h	/^typedef struct iAP2LinkData_st$/;"	s
+iAP2LinkData_t	iAP2Link/iAP2Link.h	/^} iAP2LinkData_t;$/;"	t	typeref:struct:iAP2LinkData_st
+iAP2LinkDebugIgnoreSynRetryLimit	iAP2Link/iAP2Link.c	/^void iAP2LinkDebugIgnoreSynRetryLimit (iAP2Link_t* link,$/;"	f
+iAP2LinkDebugPrintLink	iAP2Link/iAP2Link.c	/^void iAP2LinkDebugPrintLink (iAP2Link_t* link,$/;"	f
+iAP2LinkDebugPrintPacketList	iAP2Link/iAP2Link.c	/^void iAP2LinkDebugPrintPacketList (iAP2Link_t*  link,$/;"	f
+iAP2LinkDelete	iAP2Link/iAP2Link.c	/^void iAP2LinkDelete (iAP2Link_t* link)$/;"	f
+iAP2LinkDetached	iAP2Link/iAP2Link.c	/^void iAP2LinkDetached (iAP2Link_t* link)$/;"	f
+iAP2LinkEvent_t	iAP2Link/iAP2Link.h	/^} iAP2LinkEvent_t;$/;"	t	typeref:enum:__anon21
+iAP2LinkFindPacket	iAP2Link/iAP2Link.c	/^uint8_t iAP2LinkFindPacket (uint8_t*                    listArrayBuffer,$/;"	f
+iAP2LinkGetBuffSize	iAP2Link/iAP2Link.c	/^uint32_t iAP2LinkGetBuffSize (uint8_t maxPacketSentRcvdAtOnce)$/;"	f
+iAP2LinkGetMainTimer	iAP2Link/iAP2Link.c	/^iAP2Timer_t* iAP2LinkGetMainTimer (iAP2Link_t* link)$/;"	f
+iAP2LinkGetMaxPayloadSize	iAP2Link/iAP2Link.c	/^uint32_t iAP2LinkGetMaxPayloadSize (iAP2Link_t* link)$/;"	f
+iAP2LinkGetMaxRecvPacketSize	iAP2Link/iAP2Link.c	/^uint32_t iAP2LinkGetMaxRecvPacketSize (iAP2Link_t* link)$/;"	f
+iAP2LinkGetMaxRecvPayloadSize	iAP2Link/iAP2Link.c	/^uint32_t iAP2LinkGetMaxRecvPayloadSize (iAP2Link_t* link)$/;"	f
+iAP2LinkGetMaxSendPacketSize	iAP2Link/iAP2Link.c	/^uint32_t iAP2LinkGetMaxSendPacketSize (iAP2Link_t* link)$/;"	f
+iAP2LinkGetMaxSendPayloadSize	iAP2Link/iAP2Link.c	/^uint32_t iAP2LinkGetMaxSendPayloadSize (iAP2Link_t* link)$/;"	f
+iAP2LinkGetSessionForService	iAP2Link/iAP2Link.c	/^uint32_t iAP2LinkGetSessionForService (iAP2Link_t*              link,$/;"	f
+iAP2LinkGetSessionInfo	iAP2Link/iAP2Link.c	/^iAP2PacketSessionInfo_t* iAP2LinkGetSessionInfo (iAP2Link_t* link,$/;"	f
+iAP2LinkHandleReadyPacket	iAP2Link/iAP2Link.c	/^void iAP2LinkHandleReadyPacket (struct iAP2Link_st* link,$/;"	f
+iAP2LinkHandleSendACKTimeoutLink	iAP2Link/iAP2Link.c	/^void iAP2LinkHandleSendACKTimeoutLink (iAP2Link_t* link, uint32_t curTime)$/;"	f
+iAP2LinkHandleSuspend	iAP2Link/iAP2Link.c	/^void iAP2LinkHandleSuspend (struct iAP2Link_st* link)$/;"	f
+iAP2LinkHandleWaitACKTimeoutLink	iAP2Link/iAP2Link.c	/^void iAP2LinkHandleWaitACKTimeoutLink (iAP2Link_t* link, uint32_t curTime)$/;"	f
+iAP2LinkHandleWaitDetectTimeoutLink	iAP2Link/iAP2Link.c	/^void iAP2LinkHandleWaitDetectTimeoutLink (iAP2Link_t* link, uint32_t curTime)$/;"	f
+iAP2LinkIsDetached	iAP2Link/iAP2Link.c	/^BOOL iAP2LinkIsDetached (iAP2Link_t* link)$/;"	f
+iAP2LinkIsValidSynParam	iAP2Link/iAP2Link.c	/^BOOL iAP2LinkIsValidSynParam (iAP2PacketSYNData_t* synParam)$/;"	f
+iAP2LinkPacketForIndex	iAP2Link/iAP2Link.c	/^iAP2Packet_t* iAP2LinkPacketForIndex (uint8_t* listArrayBuffer, uint8_t index)$/;"	f
+iAP2LinkProcessInOrderPacket	iAP2Link/iAP2Link.c	/^BOOL iAP2LinkProcessInOrderPacket (struct iAP2Link_st* link,$/;"	f
+iAP2LinkProcessOutQueue	iAP2Link/iAP2Link.c	/^void iAP2LinkProcessOutQueue (iAP2Link_t* link)$/;"	f
+iAP2LinkProcessSendBuff	iAP2Link/iAP2Link.c	/^BOOL iAP2LinkProcessSendBuff (iAP2Link_t* link)$/;"	f
+iAP2LinkQueueSendData	iAP2Link/iAP2Link.c	/^BOOL iAP2LinkQueueSendData (iAP2Link_t*            link,$/;"	f
+iAP2LinkQueueSendDataPacket	iAP2Link/iAP2Link.c	/^BOOL iAP2LinkQueueSendDataPacket (iAP2Link_t*           link,$/;"	f
+iAP2LinkResetSend	iAP2Link/iAP2Link.c	/^void iAP2LinkResetSend (iAP2Link_t* link)$/;"	f
+iAP2LinkResetSeqAck	iAP2Link/iAP2Link.c	/^void iAP2LinkResetSeqAck (iAP2Link_t* link, BOOL bOnlySend)$/;"	f
+iAP2LinkRunLoopAttached	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopAttached(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+iAP2LinkRunLoopCleanupImplementation	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopCleanupImplementation(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+iAP2LinkRunLoopCreate	iAP2Link/iAP2LinkRunLoop.c	/^iAP2LinkRunLoop_t* iAP2LinkRunLoopCreate(iAP2LinkType_t              type,$/;"	f
+iAP2LinkRunLoopCreateAccessory	iAP2Link/iAP2LinkRunLoop.c	/^iAP2LinkRunLoop_t* iAP2LinkRunLoopCreateAccessory(iAP2PacketSYNData_t*       synParam,$/;"	f
+iAP2LinkRunLoopCreateDevice	iAP2Link/iAP2LinkRunLoop.c	/^iAP2LinkRunLoop_t* iAP2LinkRunLoopCreateDevice(iAP2PacketSYNData_t*       synParam,$/;"	f
+iAP2LinkRunLoopDebugPrint	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopDebugPrint(iAP2LinkRunLoop_t* linkRunLoop,$/;"	f
+iAP2LinkRunLoopDelete	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopDelete(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+iAP2LinkRunLoopDetached	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopDetached(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+iAP2LinkRunLoopEventMask_t	iAP2Link/iAP2LinkRunLoop.h	/^} iAP2LinkRunLoopEventMask_t;$/;"	t	typeref:enum:__anon11
+iAP2LinkRunLoopGetBuffSize	iAP2Link/iAP2LinkRunLoop.c	/^uint32_t iAP2LinkRunLoopGetBuffSize(uint8_t maxPacketSentAtOnce)$/;"	f
+iAP2LinkRunLoopGetResetEventMask	iAP2Link/iAP2LinkRunLoop.c	/^uint32_t iAP2LinkRunLoopGetResetEventMask(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+iAP2LinkRunLoopHandleReadyPacket	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopHandleReadyPacket(iAP2LinkRunLoop_t* linkRunLoop,$/;"	f
+iAP2LinkRunLoopHandleSuspend	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopHandleSuspend(struct iAP2LinkRunLoop_st* linkRunLoop)$/;"	f
+iAP2LinkRunLoopInitImplementation	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopInitImplementation(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+iAP2LinkRunLoopProtectedCall	iAP2Link/iAP2LinkRunLoop.c	/^BOOL iAP2LinkRunLoopProtectedCall(iAP2LinkRunLoop_t* linkRunLoop,$/;"	f
+iAP2LinkRunLoopQueueSendData	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopQueueSendData(iAP2LinkRunLoop_t*     linkRunLoop,$/;"	f
+iAP2LinkRunLoopRun	iAP2Link/iAP2LinkRunLoop.c	/^BOOL iAP2LinkRunLoopRun(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+iAP2LinkRunLoopRunOnce	iAP2Link/iAP2LinkRunLoop.c	/^BOOL iAP2LinkRunLoopRunOnce(iAP2LinkRunLoop_t* linkRunLoop, void* arg)$/;"	f
+iAP2LinkRunLoopSetEventMaskBit	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopSetEventMaskBit(iAP2LinkRunLoop_t*         linkRunLoop,$/;"	f
+iAP2LinkRunLoopSignal	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopSignal(iAP2LinkRunLoop_t* linkRunLoop, void* arg)$/;"	f
+iAP2LinkRunLoopTimeout	iAP2Link/iAP2LinkRunLoop.c	/^void iAP2LinkRunLoopTimeout(iAP2LinkRunLoop_t* linkRunLoop,$/;"	f
+iAP2LinkRunLoopWait	iAP2Link/iAP2LinkRunLoop.c	/^BOOL iAP2LinkRunLoopWait(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+iAP2LinkRunLoop_st	iAP2Link/iAP2LinkRunLoop.h	/^typedef struct iAP2LinkRunLoop_st$/;"	s
+iAP2LinkRunLoop_t	iAP2Link/iAP2LinkRunLoop.h	/^} iAP2LinkRunLoop_t;$/;"	t	typeref:struct:iAP2LinkRunLoop_st
+iAP2LinkSendDetectCB_t	iAP2Link/iAP2Link.h	/^typedef void (*iAP2LinkSendDetectCB_t) (struct iAP2Link_st* link,$/;"	t
+iAP2LinkSendPacket	iAP2Link/iAP2Link.c	/^void iAP2LinkSendPacket (iAP2Link_t*    link,$/;"	f
+iAP2LinkSendPacketCB_t	iAP2Link/iAP2Link.h	/^typedef void (*iAP2LinkSendPacketCB_t) (struct iAP2Link_st* link,$/;"	t
+iAP2LinkSendPacketWaitCB_t	iAP2Link/iAP2Link.h	/^typedef void (*iAP2LinkSendPacketWaitCB_t) (struct iAP2Link_st* link,$/;"	t
+iAP2LinkSendPacketWaitSend	iAP2Link/iAP2Link.c	/^void iAP2LinkSendPacketWaitSend (iAP2Link_t*      link,$/;"	f
+iAP2LinkSendRST	iAP2Link/iAP2Link.c	/^void iAP2LinkSendRST (iAP2Link_t* link)$/;"	f
+iAP2LinkSendWindowAvailable	iAP2Link/iAP2Link.c	/^BOOL iAP2LinkSendWindowAvailable (iAP2Link_t* link)$/;"	f
+iAP2LinkSetDefaultSYNParam	iAP2Link/iAP2Link.c	/^void iAP2LinkSetDefaultSYNParam (iAP2PacketSYNData_t* param)$/;"	f
+iAP2LinkSetUseiAP2LinkRunLoop	iAP2Link/iAP2Link.c	/^void iAP2LinkSetUseiAP2LinkRunLoop (iAP2Link_t* link)$/;"	f
+iAP2LinkSignalSendBuffCB_t	iAP2Link/iAP2Link.h	/^typedef void (*iAP2LinkSignalSendBuffCB_t) (struct iAP2Link_st* link);$/;"	t
+iAP2LinkStart	iAP2Link/iAP2Link.c	/^void iAP2LinkStart (iAP2Link_t* link)$/;"	f
+iAP2LinkType_t	iAP2Link/iAP2Link.h	/^} iAP2LinkType_t;$/;"	t	typeref:enum:__anon19
+iAP2LinkValidateSynParam	iAP2Link/iAP2Link.c	/^BOOL iAP2LinkValidateSynParam (iAP2PacketSYNData_t* synParam)$/;"	f
+iAP2Link_iAP2FileTransfer_h	iAP2Link/iAP2FileTransfer.h	56;"	d
+iAP2Link_iAP2LinkConfig_h	iAP2LinkConfig.h	56;"	d
+iAP2Link_iAP2LinkConfig_h	iAP2LinkConfig_sample.h	56;"	d
+iAP2Link_iAP2LinkPrivate_h	iAP2Link/iAP2LinkPrivate.h	56;"	d
+iAP2Link_iAP2LinkRunLoop_h	iAP2Link/iAP2LinkRunLoop.h	135;"	d
+iAP2Link_iAP2Link_h	iAP2Link/iAP2Link.h	104;"	d
+iAP2Link_iAP2Packet_h	iAP2Link/iAP2Packet.h	56;"	d
+iAP2Link_st	iAP2Link/iAP2Link.h	/^typedef struct iAP2Link_st$/;"	s
+iAP2Link_t	iAP2Link/iAP2Link.h	/^} iAP2Link_t;$/;"	t	typeref:struct:iAP2Link_st
+iAP2ListArrayAddItemAfter	iAP2Utility/iAP2ListArray.c	/^uint8_t iAP2ListArrayAddItemAfter (uint8_t* listArrayBuffer,$/;"	f
+iAP2ListArrayAddItemInOrder	iAP2Utility/iAP2ListArray.c	/^uint8_t iAP2ListArrayAddItemInOrder (uint8_t*                  listArrayBuffer,$/;"	f
+iAP2ListArrayCleanup	iAP2Utility/iAP2ListArray.c	/^void iAP2ListArrayCleanup (uint8_t* listArrayBuffer, piAP2ListArrayFunc itemCleanupFunc)$/;"	f
+iAP2ListArrayDeleteItem	iAP2Utility/iAP2ListArray.c	/^void iAP2ListArrayDeleteItem (uint8_t*              listArrayBuffer,$/;"	f
+iAP2ListArrayFindItem	iAP2Utility/iAP2ListArray.c	/^uint8_t iAP2ListArrayFindItem (uint8_t*                  listArrayBuffer,$/;"	f
+iAP2ListArrayForEach	iAP2Utility/iAP2ListArray.c	/^void iAP2ListArrayForEach (uint8_t*           listArrayBuffer,$/;"	f
+iAP2ListArrayForEachWithIndexAndParam	iAP2Utility/iAP2ListArray.c	/^void iAP2ListArrayForEachWithIndexAndParam (uint8_t*                     listArrayBuffer,$/;"	f
+iAP2ListArrayGetBuffSize	iAP2Utility/iAP2ListArray.c	/^uint32_t iAP2ListArrayGetBuffSize (uint8_t maxCount, uint8_t dataSize)$/;"	f
+iAP2ListArrayGetCount	iAP2Utility/iAP2ListArray.c	/^uint8_t iAP2ListArrayGetCount (uint8_t* listArrayBuffer)$/;"	f
+iAP2ListArrayGetFirstItemIndex	iAP2Utility/iAP2ListArray.c	/^uint8_t iAP2ListArrayGetFirstItemIndex (uint8_t* listArrayBuffer)$/;"	f
+iAP2ListArrayGetLastItemIndex	iAP2Utility/iAP2ListArray.c	/^uint8_t iAP2ListArrayGetLastItemIndex (uint8_t* listArrayBuffer)$/;"	f
+iAP2ListArrayGetNextItemIndex	iAP2Utility/iAP2ListArray.c	/^uint8_t iAP2ListArrayGetNextItemIndex (uint8_t* listArrayBuffer, uint8_t itemIndex)$/;"	f
+iAP2ListArrayHeader_t	iAP2Utility/iAP2ListArray.h	/^} iAP2ListArrayHeader_t;$/;"	t	typeref:struct:__anon8
+iAP2ListArrayInit	iAP2Utility/iAP2ListArray.c	/^int iAP2ListArrayInit (uint8_t* buff, uint8_t maxCount, uint8_t dataSize)$/;"	f
+iAP2ListArrayItemForIndex	iAP2Utility/iAP2ListArray.c	/^void* iAP2ListArrayItemForIndex (uint8_t* listArrayBuffer, uint8_t index)$/;"	f
+iAP2ListArrayItemHeader_t	iAP2Utility/iAP2ListArray.h	/^} iAP2ListArrayItemHeader_t;$/;"	t	typeref:struct:__anon7
+iAP2ListArrayStraightCompare	iAP2Utility/iAP2ListArray.c	/^intptr_t iAP2ListArrayStraightCompare(void* a, void* b)$/;"	f
+iAP2Log	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2Log (const char* format, ...)$/;"	f
+iAP2LogDataChar	iAP2UtilityImplementation/iAP2Log.c	/^char iAP2LogDataChar (char byte)$/;"	f
+iAP2LogDbg	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogDbg (const char* format, ...)$/;"	f
+iAP2LogDbgNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogDbgNL (const char* format, ...)$/;"	f
+iAP2LogDbgPureNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogDbgPureNL (const char* format, ...)$/;"	f
+iAP2LogDbgVNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogDbgVNL (const char* format, va_list args)$/;"	f
+iAP2LogDisable	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogDisable (iAP2LogType_t type)$/;"	f
+iAP2LogEnable	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogEnable (iAP2LogType_t type)$/;"	f
+iAP2LogError	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogError (const char* format, ...)$/;"	f
+iAP2LogErrorNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogErrorNL (const char* format, ...)$/;"	f
+iAP2LogErrorPureNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogErrorPureNL (const char* format, ...)$/;"	f
+iAP2LogErrorVNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogErrorVNL (const char* format, va_list args)$/;"	f
+iAP2LogNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogNL (const char* format, ...)$/;"	f
+iAP2LogPrintData	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogPrintData (const unsigned char* data,$/;"	f
+iAP2LogPrintDataNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogPrintDataNL (const unsigned char* data,$/;"	f
+iAP2LogPrintDataPureNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogPrintDataPureNL (const unsigned char* data,$/;"	f
+iAP2LogPrintDataPureVNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogPrintDataPureVNL (const unsigned char* data,$/;"	f
+iAP2LogPrintDataVNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogPrintDataVNL (const unsigned char* data,$/;"	f
+iAP2LogPureNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogPureNL (const char* format, ...)$/;"	f
+iAP2LogStart	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogStart (void)$/;"	f
+iAP2LogStop	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogStop (void)$/;"	f
+iAP2LogType	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogType (iAP2LogType_t type, const char* format, ...)$/;"	f
+iAP2LogTypeNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogTypeNL (iAP2LogType_t type, const char* format, ...)$/;"	f
+iAP2LogTypePureNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogTypePureNL (iAP2LogType_t type, const char* format, ...)$/;"	f
+iAP2LogTypePureVNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogTypePureVNL (iAP2LogType_t type, const char* format, va_list args)$/;"	f
+iAP2LogTypeVNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogTypeVNL (iAP2LogType_t type, const char* format, va_list args)$/;"	f
+iAP2LogType_t	iAP2Utility/iAP2Log.h	/^} iAP2LogType_t;$/;"	t	typeref:enum:__anon6
+iAP2LogVNL	iAP2UtilityImplementation/iAP2Log.c	/^void iAP2LogVNL (const char* format, va_list args)$/;"	f
+iAP2PACKET_DEBUG	iAP2Link/iAP2Packet.c	69;"	d	file:
+iAP2PACKET_DEBUG_PARSE	iAP2Link/iAP2Packet.c	70;"	d	file:
+iAP2PacketAssignTimer	iAP2Link/iAP2Packet.c	/^void iAP2PacketAssignTimer (iAP2Packet_t* pck, uint16_t timer)$/;"	f
+iAP2PacketCalcChecksum	iAP2Link/iAP2Packet.c	/^uint8_t iAP2PacketCalcChecksum (const uint8_t*  buffer,$/;"	f
+iAP2PacketCalcHeaderChecksum	iAP2Link/iAP2Packet.c	/^uint8_t iAP2PacketCalcHeaderChecksum (iAP2Packet_t* pck)$/;"	f
+iAP2PacketCalcPayloadChecksum	iAP2Link/iAP2Packet.c	/^uint8_t iAP2PacketCalcPayloadChecksum (iAP2Packet_t* pck)$/;"	f
+iAP2PacketCalcSeqGap	iAP2Link/iAP2Packet.c	/^uint8_t iAP2PacketCalcSeqGap (uint8_t curSeq, uint8_t nextSeq)$/;"	f
+iAP2PacketCheckDetect	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketCheckDetect (iAP2Packet_t* pck)$/;"	f
+iAP2PacketCheckDetectNACK	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketCheckDetectNACK (iAP2Packet_t* pck)$/;"	f
+iAP2PacketCopyAndCalcChecksum	iAP2Link/iAP2Packet.c	/^uint8_t iAP2PacketCopyAndCalcChecksum (uint8_t *        dst,$/;"	f
+iAP2PacketCreate	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreate (void*           link,$/;"	f
+iAP2PacketCreateACKPacket	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreateACKPacket (void*          link,$/;"	f
+iAP2PacketCreateEAKPacket	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreateEAKPacket (void*          link,$/;"	f
+iAP2PacketCreateEmptyPacket	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreateEmptyPacket (void* link)$/;"	f
+iAP2PacketCreateEmptyRecvPacket	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreateEmptyRecvPacket (void* link)$/;"	f
+iAP2PacketCreateEmptySendPacket	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreateEmptySendPacket (void* link)$/;"	f
+iAP2PacketCreateRSTPacket	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreateRSTPacket (void*   link,$/;"	f
+iAP2PacketCreateSUSPacket	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreateSUSPacket (void*   link,$/;"	f
+iAP2PacketCreateSYNPacket	iAP2Link/iAP2Packet.c	/^iAP2Packet_t* iAP2PacketCreateSYNPacket (void*          link,$/;"	f
+iAP2PacketData_t	iAP2Link/iAP2Packet.h	/^} iAP2PacketData_t;$/;"	t	typeref:struct:__anon15
+iAP2PacketDebugPrintPacket	iAP2Link/iAP2Packet.c	/^void iAP2PacketDebugPrintPacket (iAP2Packet_t*  packet,$/;"	f
+iAP2PacketDebugPrintPacketNL	iAP2Link/iAP2Packet.c	/^void iAP2PacketDebugPrintPacketNL (iAP2Packet_t*  packet,$/;"	f
+iAP2PacketDebugPrintPacketShortNL	iAP2Link/iAP2Packet.c	/^void iAP2PacketDebugPrintPacketShortNL (iAP2Packet_t*  packet)$/;"	f
+iAP2PacketDebugStringPacketShortNL	iAP2Link/iAP2Packet.c	/^char* iAP2PacketDebugStringPacketShortNL (iAP2Packet_t* packet,$/;"	f
+iAP2PacketDelete	iAP2Link/iAP2Packet.c	/^void iAP2PacketDelete (iAP2Packet_t* pck)$/;"	f
+iAP2PacketEqual	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketEqual (const iAP2Packet_t* packet1, const iAP2Packet_t* packet2)$/;"	f
+iAP2PacketGenerateBuffer	iAP2Link/iAP2Packet.c	/^uint8_t* iAP2PacketGenerateBuffer (iAP2Packet_t* packet)$/;"	f
+iAP2PacketGetBuffSize	iAP2Link/iAP2Packet.c	/^uint32_t iAP2PacketGetBuffSize (uint16_t payloadSize)$/;"	f
+iAP2PacketGetBuffer	iAP2Link/iAP2Packet.c	/^uint8_t* iAP2PacketGetBuffer (iAP2Packet_t* packet)$/;"	f
+iAP2PacketGetMissingSeqFromEAK	iAP2Link/iAP2Packet.c	/^uint8_t* iAP2PacketGetMissingSeqFromEAK (iAP2Packet_t* eakPacket,$/;"	f
+iAP2PacketGetPayload	iAP2Link/iAP2Packet.c	/^uint8_t* iAP2PacketGetPayload (iAP2Packet_t* packet)$/;"	f
+iAP2PacketGetPayloadLen	iAP2Link/iAP2Packet.c	/^uint16_t iAP2PacketGetPayloadLen (const iAP2Packet_t* packet)$/;"	f
+iAP2PacketGetSpaceLeft	iAP2Link/iAP2Packet.c	/^uint16_t iAP2PacketGetSpaceLeft (iAP2Packet_t*  packet,$/;"	f
+iAP2PacketGetTimeoutID	iAP2Link/iAP2Packet.c	/^uint16_t iAP2PacketGetTimeoutID (iAP2Packet_t* packet)$/;"	f
+iAP2PacketHeader_t	iAP2Link/iAP2Packet.h	/^} iAP2PacketHeader_t;$/;"	t	typeref:struct:__anon14
+iAP2PacketIsACKOnly	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketIsACKOnly (const iAP2Packet_t* pck)$/;"	f
+iAP2PacketIsComplete	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketIsComplete (const iAP2Packet_t* pck)$/;"	f
+iAP2PacketIsDataPacket	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketIsDataPacket (const iAP2Packet_t* pck)$/;"	f
+iAP2PacketIsEAK	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketIsEAK (const iAP2Packet_t* pck)$/;"	f
+iAP2PacketIsSeqACKd	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketIsSeqACKd (uint8_t seq, uint8_t ack, uint8_t window)$/;"	f
+iAP2PacketMax_t	iAP2Link/iAP2Packet.h	/^} iAP2PacketMax_t;$/;"	t	typeref:struct:__anon16
+iAP2PacketName	iAP2Link/iAP2Packet.c	/^const char* iAP2PacketName (iAP2Packet_t* packet)$/;"	f
+iAP2PacketNextSeq	iAP2Link/iAP2Packet.c	/^uint8_t iAP2PacketNextSeq (uint8_t curSeq)$/;"	f
+iAP2PacketParseBuffer	iAP2Link/iAP2Packet.c	/^uint32_t iAP2PacketParseBuffer (const uint8_t*  buffer,$/;"	f
+iAP2PacketParseSYNData	iAP2Link/iAP2Packet.c	/^void iAP2PacketParseSYNData (const uint8_t*         data,$/;"	f
+iAP2PacketRemoveTimer	iAP2Link/iAP2Packet.c	/^void iAP2PacketRemoveTimer (iAP2Packet_t* pck)$/;"	f
+iAP2PacketRequireACK	iAP2Link/iAP2Packet.c	/^BOOL iAP2PacketRequireACK (iAP2Packet_t* packet)$/;"	f
+iAP2PacketResetPacket	iAP2Link/iAP2Packet.c	/^void iAP2PacketResetPacket (iAP2Packet_t* pck)$/;"	f
+iAP2PacketSYNData_t	iAP2Link/iAP2Packet.h	/^} iAP2PacketSYNData_t;$/;"	t	typeref:struct:__anon18
+iAP2PacketServiceType_t	iAP2Link/iAP2Packet.h	/^} iAP2PacketServiceType_t;$/;"	t	typeref:enum:__anon13
+iAP2PacketSessionInfo_t	iAP2Link/iAP2Packet.h	/^} iAP2PacketSessionInfo_t;$/;"	t	typeref:struct:__anon17
+iAP2Packet_st	iAP2Link/iAP2Packet.h	/^typedef struct iAP2Packet_st$/;"	s
+iAP2Packet_t	iAP2Link/iAP2Packet.h	/^} iAP2Packet_t;$/;"	t	typeref:struct:iAP2Packet_st
+iAP2TimeCB_t	iAP2Utility/iAP2Time.h	/^typedef void (*iAP2TimeCB_t) (struct iAP2Timer_st* timer, uint32_t curTime);$/;"	t
+iAP2TimeCallbackAfter	iAP2UtilityImplementation/iAP2Time.c	/^uint8_t iAP2TimeCallbackAfter (iAP2Timer_t* timer,$/;"	f
+iAP2TimeCancelCB_t	iAP2Utility/iAP2Time.h	/^typedef void (*iAP2TimeCancelCB_t) (struct iAP2Timer_st* timer, uint8_t timerID);$/;"	t
+iAP2TimeCancelTimer	iAP2UtilityImplementation/iAP2Time.c	/^void iAP2TimeCancelTimer (iAP2Timer_t* timer,$/;"	f
+iAP2TimeCleanup	iAP2UtilityImplementation/iAP2Time.c	/^void iAP2TimeCleanup (void)$/;"	f
+iAP2TimeCreate	iAP2UtilityImplementation/iAP2Time.c	/^iAP2Timer_t* iAP2TimeCreate (void*               context,$/;"	f
+iAP2TimeDelete	iAP2UtilityImplementation/iAP2Time.c	/^void iAP2TimeDelete (iAP2Timer_t* timer)$/;"	f
+iAP2TimeExpireCB_t	iAP2Utility/iAP2Time.h	/^typedef void (*iAP2TimeExpireCB_t) (struct iAP2Timer_st* timer, uint8_t timerID, uint8_t timerType, uint32_t curTime);$/;"	t
+iAP2TimeGetBuffSize	iAP2UtilityImplementation/iAP2Time.c	/^uint32_t iAP2TimeGetBuffSize (uint8_t maxTimeouts)$/;"	f
+iAP2TimeGetContext	iAP2UtilityImplementation/iAP2Time.c	/^void* iAP2TimeGetContext (iAP2Timer_t* timer)$/;"	f
+iAP2TimeGetCurTimeMs	iAP2UtilityImplementation/iAP2Time.c	/^uint32_t iAP2TimeGetCurTimeMs (void)$/;"	f
+iAP2TimeGetCurTimeMsInt64	iAP2UtilityImplementation/iAP2Time.c	/^uint64_t iAP2TimeGetCurTimeMsInt64 (void)$/;"	f
+iAP2TimeGetType	iAP2UtilityImplementation/iAP2Time.c	/^uint8_t iAP2TimeGetType (iAP2Timer_t* timer,$/;"	f
+iAP2TimeInit	iAP2UtilityImplementation/iAP2Time.c	/^void iAP2TimeInit (void)$/;"	f
+iAP2TimePrintInfo	iAP2UtilityImplementation/iAP2Time.c	/^void iAP2TimePrintInfo (iAP2Timer_t* timer, BOOL needStartStop)$/;"	f
+iAP2TimeSpecToMs	iAP2UtilityImplementation/iAP2Time.c	/^uint32_t iAP2TimeSpecToMs (struct timespec* time)$/;"	f
+iAP2TimeValToMs	iAP2UtilityImplementation/iAP2Time.c	/^uint32_t iAP2TimeValToMs (struct timeval* time)$/;"	f
+iAP2TimeValToMsInt64	iAP2UtilityImplementation/iAP2Time.c	/^uint64_t iAP2TimeValToMsInt64 (struct timeval* time)$/;"	f
+iAP2Timeout_st	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^typedef struct iAP2Timeout_st$/;"	s
+iAP2Timeout_t	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^} iAP2Timeout_t;$/;"	t	typeref:struct:iAP2Timeout_st
+iAP2Timer_st	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^struct iAP2Timer_st$/;"	s
+iAP2Timer_t	iAP2Utility/iAP2Time.h	/^typedef struct iAP2Timer_st iAP2Timer_t;$/;"	t	typeref:struct:iAP2Timer_st
+iAP2Utility_iAP2BuffPoolImplementation_h	iAP2Utility/iAP2BuffPoolImplementation.h	56;"	d
+iAP2Utility_iAP2BuffPool_h	iAP2Utility/iAP2BuffPool.h	56;"	d
+iAP2Utility_iAP2Defines_h	iAP2Utility/iAP2Defines.h	56;"	d
+iAP2Utility_iAP2FSM_h	iAP2Utility/iAP2FSM.h	56;"	d
+iAP2Utility_iAP2ListArray_h	iAP2Utility/iAP2ListArray.h	113;"	d
+iAP2Utility_iAP2Log_h	iAP2Utility/iAP2Log.h	56;"	d
+iAP2Utility_iAP2TimeImplementation_h	iAP2UtilityImplementation/iAP2TimeImplementation.h	56;"	d
+iAP2Utility_iAP2Time_h	iAP2Utility/iAP2Time.h	56;"	d
+iAP2_ALLOW_LARGE_PACKET_MALLOC	iAP2LinkConfig.h	74;"	d
+iAP2_ALLOW_LARGE_PACKET_MALLOC	iAP2LinkConfig_sample.h	74;"	d
+iAP2_FOR_ACCESSORY	iAP2LinkConfig.h	59;"	d
+iAP2_FOR_ACCESSORY	iAP2LinkConfig_sample.h	59;"	d
+iAP2_FOR_DEVICE	iAP2LinkConfig.h	61;"	d
+iAP2_FOR_DEVICE	iAP2LinkConfig_sample.h	61;"	d
+iAP2_LINK_ALLOW_MALLOC	iAP2LinkConfig.h	71;"	d
+iAP2_LINK_ALLOW_MALLOC	iAP2LinkConfig_sample.h	71;"	d
+iAP2_LINK_ALLOW_STATS	iAP2LinkConfig.h	77;"	d
+iAP2_LINK_ALLOW_STATS	iAP2LinkConfig_sample.h	77;"	d
+iAP2_LINK_BUFFER_OFFSET	iAP2Link/iAP2Link.h	296;"	d
+iAP2_LINK_RUNLOOP_BUFFER_OFFSET	iAP2Link/iAP2LinkRunLoop.h	167;"	d
+iAP2_LINK_USE_LINKRUNLOOP	iAP2LinkConfig.h	68;"	d
+iAP2_LINK_USE_LINKRUNLOOP	iAP2LinkConfig_sample.h	68;"	d
+iAP2_LINK_VERSION	iAP2Utility/iAP2Defines.h	64;"	d
+iap2	main.c	/^	IAP2_CTRL iap2;$/;"	m	struct:IAP_HANDLER	file:
+iap2Func_PhaseClose	main.c	/^int iap2Func_PhaseClose(int msg)$/;"	f
+iap2Func_PhaseConnected	main.c	/^int iap2Func_PhaseConnected(int msg)$/;"	f
+iap2Func_PhaseEnter	main.c	/^int iap2Func_PhaseEnter(int msg)$/;"	f
+iap2Func_PhaseError	main.c	/^int iap2Func_PhaseError(int msg)$/;"	f
+iap2Func_PhaseLink	main.c	/^int iap2Func_PhaseLink(int msg)$/;"	f
+iap2Func_PhaseReady	main.c	/^int iap2Func_PhaseReady(int msg)$/;"	f
+iap2LinkClose	main.c	/^void iap2LinkClose(void)$/;"	f
+iap2SyncConfigurationData	main.c	/^void iap2SyncConfigurationData(iAP2PacketSYNData_t *synParam)$/;"	f
+iapCtrl	main.c	/^IAP_HANDLER iapCtrl;$/;"	v
+iap_ver	main.c	/^	int iap_ver;$/;"	m	struct:IAP_HANDLER	file:
+iapd_iAP2Misc_h	iAP2Utility/iAP2Misc.h	57;"	d
+id	iAP2Link/iAP2Packet.h	/^    uint8_t    id;$/;"	m	struct:__anon17
+id	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint8_t     id;$/;"	m	struct:iAP2Timeout_st
+inReleaseList	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    BOOL                inReleaseList;$/;"	m	struct:iAP2Timer_st
+initParam	iAP2Link/iAP2Link.h	/^    iAP2PacketSYNData_t initParam;$/;"	m	struct:iAP2Link_st
+initialize_ctrl	main.c	/^void initialize_ctrl(void)$/;"	f
+initialize_iap2_handler	main.c	/^void initialize_iap2_handler(void)$/;"	f
+invalidPackets	iAP2Link/iAP2Link.h	/^    uint32_t    invalidPackets;$/;"	m	struct:iAP2Link_st
+ipodIoParam_t	Cpchip.h	/^struct ipodIoParam_t {$/;"	s
+ipod_aud_service	main.c	/^void ipod_aud_service(void)$/;"	f
+isCallbacking	utils/ux_timer.c	/^int isCallbacking()$/;"	f
+iui_packet	main.c	/^struct iui_packet {$/;"	s	file:
+kIAP2PacketChksumLen	iAP2Link/iAP2Packet.h	/^    kIAP2PacketChksumLen = 1,   \/* checksum byte length *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketControlMaskACK	iAP2Link/iAP2Packet.h	/^    kIAP2PacketControlMaskACK = 0x40,   \/* acknowledgement *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketControlMaskEAK	iAP2Link/iAP2Packet.h	/^    kIAP2PacketControlMaskEAK = 0x20,   \/* extended acknowledgement *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketControlMaskRST	iAP2Link/iAP2Packet.h	/^    kIAP2PacketControlMaskRST = 0x10,   \/* reset *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketControlMaskSUS	iAP2Link/iAP2Packet.h	/^    kIAP2PacketControlMaskSUS = 0x08,   \/* suspend (sleep) *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketControlMaskSYN	iAP2Link/iAP2Packet.h	/^    kIAP2PacketControlMaskSYN = 0x80,   \/* synchronization *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketDetectCTRL	iAP2Link/iAP2Packet.h	/^    kIAP2PacketDetectCTRL   = 0xEE,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketDetectLEN	iAP2Link/iAP2Packet.h	/^    kIAP2PacketDetectLEN    = 0x0200,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketDetectNACKACK	iAP2Link/iAP2Packet.h	/^    kIAP2PacketDetectNACKACK    = 0xEE,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketDetectNACKCTRL	iAP2Link/iAP2Packet.h	/^    kIAP2PacketDetectNACKCTRL   = 0x02,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketDetectNACKLEN	iAP2Link/iAP2Packet.h	/^    kIAP2PacketDetectNACKLEN    = 0x0400,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketDetectNACKSEQ	iAP2Link/iAP2Packet.h	/^    kIAP2PacketDetectNACKSEQ    = 0x04,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketDetectNACKSESSID	iAP2Link/iAP2Packet.h	/^    kIAP2PacketDetectNACKSESSID = 0x08,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketDetectSEQ	iAP2Link/iAP2Packet.h	/^    kIAP2PacketDetectSEQ    = 0x10,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketHeaderLen	iAP2Link/iAP2Packet.h	/^    kIAP2PacketHeaderLen = 9,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexACK	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexACK    = 6,   \/* ACK number *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexCHK	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexCHK    = 8,   \/* Header checksum *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexCTRL	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexCTRL   = 4,   \/* Control flags *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexLEN1	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexLEN1   = 2,   \/* Packet length MSB *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexLEN2	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexLEN2   = 3,   \/* Packet length LSB *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexSEQ	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexSEQ    = 5,   \/* SEQ number *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexSESSID	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexSESSID = 7,   \/* Session ID *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexSOP	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexSOP    = 1,   \/* Start of packet byte 2 *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketIndexSYNC	iAP2Link/iAP2Packet.h	/^    kIAP2PacketIndexSYNC   = 0,   \/* Start of packet byte 1 *\/$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketMaxSessions	iAP2Link/iAP2Packet.h	/^    kIAP2PacketMaxSessions                 = 10,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketReservedSessionID	iAP2Link/iAP2Packet.h	/^    kIAP2PacketReservedSessionID           = 0,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSOP	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSOP         = 0x5A,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSOPLen	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSOPLen      = 2,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSOPOrig	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSOPOrig     = 0x55,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSYNC	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSYNC        = 0xFF,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketServiceTypeBuffer	iAP2Link/iAP2Packet.h	/^    kIAP2PacketServiceTypeBuffer   = 1, \/* Buffer (ie. Artwork, Workout) *\/$/;"	e	enum:__anon13
+kIAP2PacketServiceTypeControl	iAP2Link/iAP2Packet.h	/^    kIAP2PacketServiceTypeControl  = 0, \/* Control & Authentication *\/$/;"	e	enum:__anon13
+kIAP2PacketServiceTypeCount	iAP2Link/iAP2Packet.h	/^    kIAP2PacketServiceTypeCount$/;"	e	enum:__anon13
+kIAP2PacketServiceTypeEA	iAP2Link/iAP2Packet.h	/^    kIAP2PacketServiceTypeEA       = 2, \/* EA stream *\/$/;"	e	enum:__anon13
+kIAP2PacketSynDataBaseLen	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataBaseLen              = 10,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynDataIdxCumAckTimeout	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataIdxCumAckTimeout     = 6,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynDataIdxMaxCumACK	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataIdxMaxCumACK         = 9,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynDataIdxMaxOutstanding	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataIdxMaxOutstanding    = 1,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynDataIdxMaxPacketSize	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataIdxMaxPacketSize     = 2,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynDataIdxMaxRetransmit	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataIdxMaxRetransmit     = 8,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynDataIdxRetransmitTimeout	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataIdxRetransmitTimeout = 4,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynDataIdxSessionInfo	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataIdxSessionInfo       = 10,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynDataIdxVersion	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynDataIdxVersion           = 0,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynOptionMaskHP	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynOptionMaskHP             = 0x40$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynOptionMaskLP	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynOptionMaskLP             = 0x80,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynSessionIdxID	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynSessionIdxID             = 0,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynSessionIdxType	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynSessionIdxType           = 1,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynSessionIdxVersion	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynSessionIdxVersion        = 2,$/;"	e	enum:IAP2PacketEnums
+kIAP2PacketSynSessionSize	iAP2Link/iAP2Packet.h	/^    kIAP2PacketSynSessionSize              = 3,$/;"	e	enum:IAP2PacketEnums
+kIap2PacketDetectBadData	iAP2Link/iAP2Link.c	/^const uint8_t   kIap2PacketDetectBadData[]  = { 0xFF, 0x55, 0x04, 0x00, 0x02, 0x04, 0xEE, 0x08 };$/;"	v
+kIap2PacketDetectBadDataLen	iAP2Link/iAP2Link.c	/^uint32_t        kIap2PacketDetectBadDataLen = 8;$/;"	v
+kIap2PacketDetectData	iAP2Link/iAP2Link.c	/^const uint8_t   kIap2PacketDetectData[]     = { 0xFF, 0x55, 0x02, 0x00, 0xEE, 0x10 };$/;"	v
+kIap2PacketDetectDataLen	iAP2Link/iAP2Link.c	/^uint32_t        kIap2PacketDetectDataLen    = 6;$/;"	v
+kMFiAuthRetryDelayMics	Cpchip.c	27;"	d	file:
+kiAP2BuffPoolTypeBuff	iAP2Utility/iAP2BuffPool.h	/^    kiAP2BuffPoolTypeBuff           = 0,    \/* Buffer for general; send\/recv buffers: param is buff size *\/$/;"	e	enum:__anon10
+kiAP2BuffPoolTypeCount	iAP2Utility/iAP2BuffPool.h	/^    kiAP2BuffPoolTypeCount$/;"	e	enum:__anon10
+kiAP2BuffPoolTypeRecvPacket	iAP2Utility/iAP2BuffPool.h	/^    kiAP2BuffPoolTypeRecvPacket     = 2,    \/* Buffer for recv packet: param is payload size *\/$/;"	e	enum:__anon10
+kiAP2BuffPoolTypeSendPacket	iAP2Utility/iAP2BuffPool.h	/^    kiAP2BuffPoolTypeSendPacket     = 1,    \/* Buffer for send packet: param is payload size *\/$/;"	e	enum:__anon10
+kiAP2FileTransferControlFirst	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferControlFirst  = 0x80,$/;"	e	enum:__anon24
+kiAP2FileTransferControlLast	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferControlLast   = 0x40,$/;"	e	enum:__anon24
+kiAP2FileTransferControlType	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferControlType   = 0x0F$/;"	e	enum:__anon24
+kiAP2FileTransferDirBit	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferDirBit            = 0x80,$/;"	e	enum:__anon26
+kiAP2FileTransferDirFromAccessory	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferDirFromAccessory  = 0x00,$/;"	e	enum:__anon26
+kiAP2FileTransferDirFromDevice	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferDirFromDevice     = 0x80,$/;"	e	enum:__anon26
+kiAP2FileTransferHdrBaseLen	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferHdrBaseLen        = 2,$/;"	e	enum:__anon26
+kiAP2FileTransferHdrIdxControl	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferHdrIdxControl     = 1,$/;"	e	enum:__anon26
+kiAP2FileTransferHdrIdxData	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferHdrIdxData        = 2,$/;"	e	enum:__anon26
+kiAP2FileTransferHdrIdxID	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferHdrIdxID          = 0,$/;"	e	enum:__anon26
+kiAP2FileTransferHdrIdxSetupSize	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferHdrIdxSetupSize   = 2,$/;"	e	enum:__anon26
+kiAP2FileTransferHdrSetupBaseLen	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferHdrSetupBaseLen   = 10,$/;"	e	enum:__anon26
+kiAP2FileTransferNonDirection	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferNonDirection      = 0x7F$/;"	e	enum:__anon26
+kiAP2FileTransferPacketTypeCancel	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferPacketTypeCancel  = 0x02,$/;"	e	enum:__anon25
+kiAP2FileTransferPacketTypeData	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferPacketTypeData    = 0x00,$/;"	e	enum:__anon25
+kiAP2FileTransferPacketTypeFailure	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferPacketTypeFailure = 0x06$/;"	e	enum:__anon25
+kiAP2FileTransferPacketTypePause	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferPacketTypePause   = 0x03,$/;"	e	enum:__anon25
+kiAP2FileTransferPacketTypeSetup	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferPacketTypeSetup   = 0x04,$/;"	e	enum:__anon25
+kiAP2FileTransferPacketTypeStart	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferPacketTypeStart   = 0x01,$/;"	e	enum:__anon25
+kiAP2FileTransferPacketTypeSuccess	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferPacketTypeSuccess = 0x05,$/;"	e	enum:__anon25
+kiAP2FileTransferStateCancelRecv	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateCancelRecv,$/;"	e	enum:__anon23
+kiAP2FileTransferStateCancelSend	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateCancelSend,$/;"	e	enum:__anon23
+kiAP2FileTransferStateFailRecv	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateFailRecv$/;"	e	enum:__anon23
+kiAP2FileTransferStateFailSend	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateFailSend,$/;"	e	enum:__anon23
+kiAP2FileTransferStateFinishRecv	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateFinishRecv,$/;"	e	enum:__anon23
+kiAP2FileTransferStateFinishSend	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateFinishSend,$/;"	e	enum:__anon23
+kiAP2FileTransferStateIdle	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateIdle = 0,$/;"	e	enum:__anon23
+kiAP2FileTransferStatePauseRecv	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStatePauseRecv,$/;"	e	enum:__anon23
+kiAP2FileTransferStatePauseSend	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStatePauseSend,$/;"	e	enum:__anon23
+kiAP2FileTransferStateRecv	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateRecv,$/;"	e	enum:__anon23
+kiAP2FileTransferStateSend	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateSend,$/;"	e	enum:__anon23
+kiAP2FileTransferStateSetup	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateSetup,$/;"	e	enum:__anon23
+kiAP2FileTransferStateWaitStatus	iAP2Link/iAP2FileTransfer.h	/^    kiAP2FileTransferStateWaitStatus,$/;"	e	enum:__anon23
+kiAP2LinkEventAttach	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventAttach,               \/* Device\/Accessory attach event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventCount	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventCount$/;"	e	enum:__anon21
+kiAP2LinkEventDataToSend	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventDataToSend,           \/* There is data buffer to send out notification event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventDetach	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventDetach,               \/* Device\/Accessory detach event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventEAK	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventEAK,                  \/* EAK packet receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventInitDone	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventInitDone = 0,         \/* Initialization finished *\/$/;"	e	enum:__anon21
+kiAP2LinkEventMaxResend	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventMaxResend,            \/* Max resend limit has been reached event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvACK	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvACK,              \/* ACK packet (no payload) receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvACKBadLink	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvACKBadLink,       \/* ACK packet receive event even though bad LINK negotiation parameters *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvData	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvData,             \/* Data (ACK with payload) packet receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvDetect	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvDetect,           \/* DETECT byte sequence receive event (iAP2 supported) *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvDetectBad	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvDetectBad,        \/* Bad DETECT byte sequence received event (iAP2 not supported) *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvLastData	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvLastData,         \/* Data (ACK with payload) packet with previous seq# receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvRST	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvRST,              \/* RST packet receive event (only sent by Device) *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvSYN	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvSYN,              \/* SYN packet receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvSYNACK	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvSYNACK,           \/* SYN+ACK packet receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvSYNACKNEW	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvSYNACKNEW,        \/* SYN+ACK packet with new info receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecvSYNACKOLD	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecvSYNACKOLD,        \/* SYN+ACK packet with old seq# (resend) receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventRecviAP1Packet	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventRecviAP1Packet,       \/* iAP1 packet receive event *\/$/;"	e	enum:__anon21
+kiAP2LinkEventSendACKTimeout	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventSendACKTimeout,       \/* Send ACK timeout event, need to send ACK *\/$/;"	e	enum:__anon21
+kiAP2LinkEventSuspend	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventSuspend,              \/* SUS packet receive event (sent by Device when going to sleep) *\/$/;"	e	enum:__anon21
+kiAP2LinkEventWaitACKTimeout	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventWaitACKTimeout,       \/* Wait ACK timeout event, need to resend *\/$/;"	e	enum:__anon21
+kiAP2LinkEventWaitDetectTimeout	iAP2Link/iAP2Link.h	/^    kiAP2LinkEventWaitDetectTimeout,    \/* Wait for Detect\/DetectBad, Resend *\/$/;"	e	enum:__anon21
+kiAP2LinkRunLoopEventMaskAttach	iAP2Link/iAP2LinkRunLoop.h	/^    kiAP2LinkRunLoopEventMaskAttach             = 0x0001,$/;"	e	enum:__anon11
+kiAP2LinkRunLoopEventMaskDetach	iAP2Link/iAP2LinkRunLoop.h	/^    kiAP2LinkRunLoopEventMaskDetach             = 0x0002,$/;"	e	enum:__anon11
+kiAP2LinkRunLoopEventMaskNone	iAP2Link/iAP2LinkRunLoop.h	/^    kiAP2LinkRunLoopEventMaskNone               = 0$/;"	e	enum:__anon11
+kiAP2LinkRunLoopEventMaskSendACKTimeout	iAP2Link/iAP2LinkRunLoop.h	/^    kiAP2LinkRunLoopEventMaskSendACKTimeout     = 0x0020,$/;"	e	enum:__anon11
+kiAP2LinkRunLoopEventMaskSuspend	iAP2Link/iAP2LinkRunLoop.h	/^    kiAP2LinkRunLoopEventMaskSuspend            = 0x0004,$/;"	e	enum:__anon11
+kiAP2LinkRunLoopEventMaskTimeouts	iAP2Link/iAP2LinkRunLoop.h	/^    kiAP2LinkRunLoopEventMaskTimeouts           = 0x0070,$/;"	e	enum:__anon11
+kiAP2LinkRunLoopEventMaskWaitACKTimeout	iAP2Link/iAP2LinkRunLoop.h	/^    kiAP2LinkRunLoopEventMaskWaitACKTimeout     = 0x0010,$/;"	e	enum:__anon11
+kiAP2LinkRunLoopEventMaskWaitDetectTimeout	iAP2Link/iAP2LinkRunLoop.h	/^    kiAP2LinkRunLoopEventMaskWaitDetectTimeout  = 0x0040,$/;"	e	enum:__anon11
+kiAP2LinkStateConnected	iAP2Link/iAP2Link.h	/^    kiAP2LinkStateConnected,    \/* Link has been established and normal communication occurring *\/$/;"	e	enum:__anon20
+kiAP2LinkStateCount	iAP2Link/iAP2Link.h	/^    kiAP2LinkStateCount$/;"	e	enum:__anon20
+kiAP2LinkStateDetached	iAP2Link/iAP2Link.h	/^    kiAP2LinkStateDetached,     \/* Device\/Accessory is detached *\/$/;"	e	enum:__anon20
+kiAP2LinkStateDetect	iAP2Link/iAP2Link.h	/^    kiAP2LinkStateDetect,       \/* Waiting for DETECT *\/$/;"	e	enum:__anon20
+kiAP2LinkStateFailed	iAP2Link/iAP2Link.h	/^    kiAP2LinkStateFailed,       \/* Link has gone into failure state *\/$/;"	e	enum:__anon20
+kiAP2LinkStateIdle	iAP2Link/iAP2Link.h	/^    kiAP2LinkStateIdle,         \/* Waiting on link negotiation (SYN, SYN+ACK) *\/$/;"	e	enum:__anon20
+kiAP2LinkStateInit	iAP2Link/iAP2Link.h	/^    kiAP2LinkStateInit = 0,     \/* Initial starting state *\/$/;"	e	enum:__anon20
+kiAP2LinkStatePending	iAP2Link/iAP2Link.h	/^    kiAP2LinkStatePending,      \/* Waiting on Acknowledgement (only used by Device) *\/$/;"	e	enum:__anon20
+kiAP2LinkStateSuspend	iAP2Link/iAP2Link.h	/^    kiAP2LinkStateSuspend,      \/* Device has gone to sleep\/suspended state *\/$/;"	e	enum:__anon20
+kiAP2LinkState_t	iAP2Link/iAP2Link.h	/^} kiAP2LinkState_t;$/;"	t	typeref:enum:__anon20
+kiAP2LinkSynDefaultCumAckTimeout	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynDefaultCumAckTimeout     = 0,$/;"	e	enum:__anon22
+kiAP2LinkSynDefaultMaxCumAck	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynDefaultMaxCumAck         = 1,$/;"	e	enum:__anon22
+kiAP2LinkSynDefaultMaxOutstanding	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynDefaultMaxOutstanding    = 1,$/;"	e	enum:__anon22
+kiAP2LinkSynDefaultMaxPacketSize	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynDefaultMaxPacketSize     = 128,$/;"	e	enum:__anon22
+kiAP2LinkSynDefaultMaxRetransmit	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynDefaultMaxRetransmit     = 30,$/;"	e	enum:__anon22
+kiAP2LinkSynDefaultNumSessionInfo	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynDefaultNumSessionInfo    = 0,$/;"	e	enum:__anon22
+kiAP2LinkSynDefaultRetransmitTimeout	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynDefaultRetransmitTimeout = 1000,$/;"	e	enum:__anon22
+kiAP2LinkSynDefaultVersion	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynDefaultVersion           = 1,$/;"	e	enum:__anon22
+kiAP2LinkSynRetries	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynRetries                  = 10$/;"	e	enum:__anon22
+kiAP2LinkSynValCumAckTimeoutMax	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValCumAckTimeoutMax     = 32767,$/;"	e	enum:__anon22
+kiAP2LinkSynValCumAckTimeoutMin	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValCumAckTimeoutMin     = 10,$/;"	e	enum:__anon22
+kiAP2LinkSynValMaxCumAckMax	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValMaxCumAckMax         = 127,$/;"	e	enum:__anon22
+kiAP2LinkSynValMaxCumAckMin	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValMaxCumAckMin         = 0,$/;"	e	enum:__anon22
+kiAP2LinkSynValMaxOutstandingMax	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValMaxOutstandingMax    = 127,$/;"	e	enum:__anon22
+kiAP2LinkSynValMaxOutstandingMin	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValMaxOutstandingMin    = 1,$/;"	e	enum:__anon22
+kiAP2LinkSynValMaxPacketSizeMax	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValMaxPacketSizeMax     = 65535,$/;"	e	enum:__anon22
+kiAP2LinkSynValMaxPacketSizeMin	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValMaxPacketSizeMin     = 24,$/;"	e	enum:__anon22
+kiAP2LinkSynValMaxRetransmitMax	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValMaxRetransmitMax     = 30,$/;"	e	enum:__anon22
+kiAP2LinkSynValMaxRetransmitMin	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValMaxRetransmitMin     = 1,$/;"	e	enum:__anon22
+kiAP2LinkSynValRetransmitTimeoutMax	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValRetransmitTimeoutMax = 65535,$/;"	e	enum:__anon22
+kiAP2LinkSynValRetransmitTimeoutMin	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValRetransmitTimeoutMin = 20,$/;"	e	enum:__anon22
+kiAP2LinkSynValVersionMax	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValVersionMax           = 1,$/;"	e	enum:__anon22
+kiAP2LinkSynValVersionMin	iAP2Link/iAP2Link.h	/^    kiAP2LinkSynValVersionMin           = 1,$/;"	e	enum:__anon22
+kiAP2LinkTypeAccessory	iAP2Link/iAP2Link.h	/^    kiAP2LinkTypeAccessory = 0,$/;"	e	enum:__anon19
+kiAP2LinkTypeDevice	iAP2Link/iAP2Link.h	/^    kiAP2LinkTypeDevice$/;"	e	enum:__anon19
+kiAP2ListArrayInvalidIndex	iAP2Utility/iAP2ListArray.h	/^    kiAP2ListArrayInvalidIndex          = kiAP2ListArrayMaxCount,$/;"	e	enum:__anon9
+kiAP2ListArrayInvalidOffset	iAP2Utility/iAP2ListArray.h	/^    kiAP2ListArrayInvalidOffset         = -1,$/;"	e	enum:__anon9
+kiAP2ListArrayMaxCount	iAP2Utility/iAP2ListArray.h	/^    kiAP2ListArrayMaxCount              = 255,$/;"	e	enum:__anon9
+kiAP2ListArrayMaxDataSize	iAP2Utility/iAP2ListArray.h	/^    kiAP2ListArrayMaxDataSize           = 253$/;"	e	enum:__anon9
+kiAP2LogTypeCount	iAP2Utility/iAP2Log.h	/^    kiAP2LogTypeCount$/;"	e	enum:__anon6
+kiAP2LogTypeData	iAP2Utility/iAP2Log.h	/^    kiAP2LogTypeData,$/;"	e	enum:__anon6
+kiAP2LogTypeError	iAP2Utility/iAP2Log.h	/^    kiAP2LogTypeError = 0,$/;"	e	enum:__anon6
+kiAP2LogTypeLog	iAP2Utility/iAP2Log.h	/^    kiAP2LogTypeLog,$/;"	e	enum:__anon6
+kiAP2LogTypeLogDbg	iAP2Utility/iAP2Log.h	/^    kiAP2LogTypeLogDbg,$/;"	e	enum:__anon6
+kiAP2PacketLenMax	iAP2Link/iAP2Packet.h	/^    kiAP2PacketLenMax = 0xFFFF,$/;"	e	enum:IAP2PacketEnums
+kiAP2PacketMaxPayloadSize	iAP2Link/iAP2Packet.h	/^    kiAP2PacketMaxPayloadSize = (kiAP2PacketLenMax - kIAP2PacketHeaderLen - kIAP2PacketChksumLen),$/;"	e	enum:IAP2PacketEnums
+kiAP2PacketParseStateACK	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateACK,$/;"	e	enum:__anon12
+kiAP2PacketParseStateCHK	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateCHK,$/;"	e	enum:__anon12
+kiAP2PacketParseStateCTRL	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateCTRL,$/;"	e	enum:__anon12
+kiAP2PacketParseStateDETECT	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateDETECT,$/;"	e	enum:__anon12
+kiAP2PacketParseStateDETECTBAD	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateDETECTBAD,$/;"	e	enum:__anon12
+kiAP2PacketParseStateFINISH	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateFINISH,$/;"	e	enum:__anon12
+kiAP2PacketParseStateLAST	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateLAST = kiAP2PacketParseStateDETECTBAD$/;"	e	enum:__anon12
+kiAP2PacketParseStateLEN1	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateLEN1,$/;"	e	enum:__anon12
+kiAP2PacketParseStateLEN2	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateLEN2,$/;"	e	enum:__anon12
+kiAP2PacketParseStatePAYLOAD	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStatePAYLOAD,$/;"	e	enum:__anon12
+kiAP2PacketParseStatePAYLOADCHK	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStatePAYLOADCHK,$/;"	e	enum:__anon12
+kiAP2PacketParseStateSEQ	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateSEQ,$/;"	e	enum:__anon12
+kiAP2PacketParseStateSESSID	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateSESSID,$/;"	e	enum:__anon12
+kiAP2PacketParseStateSOP1	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateSOP1 = 0,$/;"	e	enum:__anon12
+kiAP2PacketParseStateSOP2	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseStateSOP2,$/;"	e	enum:__anon12
+kiAP2PacketParseState_t	iAP2Link/iAP2Packet.h	/^} kiAP2PacketParseState_t;$/;"	t	typeref:enum:__anon12
+kiAP2PacketVersion	iAP2Link/iAP2Packet.h	/^    kiAP2PacketVersion     = 1,$/;"	e	enum:IAP2PacketEnums
+last	iAP2Utility/iAP2ListArray.h	/^    uint8_t             last;$/;"	m	struct:__anon8
+len1	iAP2Link/iAP2Packet.h	/^    uint8_t len1;$/;"	m	struct:__anon14
+len1	iAP2Link/iAP2Packet.h	/^    uint8_t len1;$/;"	m	struct:__anon15
+len1	iAP2Link/iAP2Packet.h	/^    uint8_t len1;$/;"	m	struct:__anon16
+len2	iAP2Link/iAP2Packet.h	/^    uint8_t len2;$/;"	m	struct:__anon14
+len2	iAP2Link/iAP2Packet.h	/^    uint8_t len2;$/;"	m	struct:__anon15
+len2	iAP2Link/iAP2Packet.h	/^    uint8_t len2;$/;"	m	struct:__anon16
+length	main.c	/^	uint8_t length;$/;"	m	struct:IPC_SOCKET	file:
+link	iAP2Link/iAP2FileTransfer.h	/^    iAP2Link_t* link;$/;"	m	struct:iAP2FileTransfer_st
+link	iAP2Link/iAP2LinkRunLoop.h	/^    iAP2Link_t*         link;$/;"	m	struct:iAP2LinkRunLoop_st
+link	iAP2Link/iAP2Packet.h	/^    void*       link;       \/* link associated with this packet *\/$/;"	m	struct:iAP2Packet_st
+link	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    void*               link;   \/* context *\/$/;"	m	struct:iAP2Timer_st
+linkBuffer	iAP2Link/iAP2Link.h	/^    uint8_t*        linkBuffer;$/;"	m	struct:iAP2Link_st
+linkBufferNext	iAP2Link/iAP2Link.h	/^    uint8_t*        linkBufferNext;$/;"	m	struct:iAP2Link_st
+linkRLBuffer	iAP2Link/iAP2LinkRunLoop.h	/^    uint8_t*            linkRLBuffer;$/;"	m	struct:iAP2LinkRunLoop_st
+linkRLBufferNext	iAP2Link/iAP2LinkRunLoop.h	/^    uint8_t*            linkRLBufferNext;$/;"	m	struct:iAP2LinkRunLoop_st
+linkRunLoop	main.c	/^iAP2LinkRunLoop_t* linkRunLoop = 0;$/;"	v
+listBuffer	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint8_t*            listBuffer;$/;"	m	struct:iAP2Timer_st
+log	main.c	/^	uint8_t log[16];$/;"	m	struct:IPC_SOCKET	file:
+m_IsCallbacking	utils/ux_timer.c	/^int m_IsCallbacking;$/;"	v
+m_IsUsed	utils/ux_timer.c	/^ 	int m_IsUsed;$/;"	m	struct:__anon27	file:
+m_TimerNum	utils/ux_timer.c	/^int   m_TimerNum;  $/;"	v
+m_TmFn	utils/ux_timer.c	/^ 	TimerHandler m_TmFn;$/;"	m	struct:__anon27	file:
+m_TmId	utils/ux_timer.c	/^ 	timer_t   m_TmId;$/;"	m	struct:__anon27	file:
+m_TmInfoArr	utils/ux_timer.c	/^TimerInfo m_TmInfoArr[MAX_TIMER_NUM];$/;"	v
+m_UserPtr	utils/ux_timer.c	/^ 	void*   m_UserPtr;$/;"	m	struct:__anon27	file:
+m_curState	main.c	/^	int m_curState ;$/;"	m	struct:__anon5	file:
+m_errState	main.c	/^	int m_errState ;$/;"	m	struct:__anon5	file:
+m_init_cp	main.c	/^	pthread_t m_init_cp;$/;"	m	struct:__anon4	file:
+m_manager	main.c	/^	pthread_t m_manager;$/;"	m	struct:__anon4	file:
+m_monitor	main.c	/^	pthread_t m_monitor;$/;"	m	struct:__anon4	file:
+m_thread_chkstat	main.c	/^	pthread_t m_thread_chkstat;$/;"	m	struct:__anon5	file:
+m_thread_recv	main.c	/^	pthread_t m_thread_recv;$/;"	m	struct:__anon5	file:
+main	main.c	/^int main( int argc, char **argv )$/;"	f
+mainTimer	iAP2Link/iAP2Link.h	/^    iAP2Timer_t*    mainTimer;$/;"	m	struct:iAP2Link_st
+maxCount	iAP2Utility/iAP2ListArray.h	/^    uint8_t             maxCount;$/;"	m	struct:__anon8
+maxCumAck	iAP2Link/iAP2Packet.h	/^    uint8_t    maxCumAck;$/;"	m	struct:__anon18
+maxOutstandingPackets	iAP2Link/iAP2Packet.h	/^    uint8_t    maxOutstandingPackets;$/;"	m	struct:__anon18
+maxPacketSize	iAP2Link/iAP2Packet.h	/^    uint16_t   maxPacketSize;$/;"	m	struct:__anon18
+maxRetransmissions	iAP2Link/iAP2Packet.h	/^    uint8_t    maxRetransmissions;$/;"	m	struct:__anon18
+maxTimeOuts	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint8_t             maxTimeOuts;$/;"	m	struct:iAP2Timer_st
+missingReTxCount	iAP2Link/iAP2Link.h	/^    uint32_t    missingReTxCount;$/;"	m	struct:iAP2Link_st
+msg	main.c	/^	uint8_t msg;$/;"	m	struct:IPC_SOCKET	file:
+nBufLen	Cpchip.h	/^	unsigned int nBufLen;$/;"	m	struct:ipodIoParam_t
+nMaxValue	utils/NX_Semaphore.h	/^	unsigned int nMaxValue;$/;"	m	struct:_NX_SEMAPHORE
+nValue	utils/NX_Semaphore.h	/^	unsigned int nValue;$/;"	m	struct:_NX_SEMAPHORE
+name	iAP2Utility/iAP2FSM.h	/^    const char*     name;$/;"	m	struct:iAP2FSM_st
+ncCPSignatureData	iAP_Auth.h	/^char ncCPSignatureData[128];            \/\/Signature Data (v2)$/;"	v
+negotiatedParam	iAP2Link/iAP2Link.h	/^    iAP2PacketSYNData_t negotiatedParam;$/;"	m	struct:iAP2Link_st
+next	iAP2Utility/iAP2ListArray.h	/^    uint8_t next;$/;"	m	struct:__anon7
+nextID	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint8_t             nextID;$/;"	m	struct:iAP2Timer_st
+nextState	iAP2Utility/iAP2FSM.h	/^    unsigned int            nextState;$/;"	m	struct:iAP2FSMEvent_st
+noAckReTxCount	iAP2Link/iAP2Link.h	/^    uint32_t    noAckReTxCount;$/;"	m	struct:iAP2Link_st
+numACKDelays	iAP2Link/iAP2Link.h	/^    uint32_t    numACKDelays;$/;"	m	struct:iAP2Link_st
+numOutOfOrder	iAP2Link/iAP2Link.h	/^    uint32_t    numOutOfOrder;$/;"	m	struct:iAP2Link_st
+numRecvACK	iAP2Link/iAP2Link.h	/^    uint32_t    numRecvACK;$/;"	m	struct:iAP2Link_st
+numRecvCumSYN	iAP2Link/iAP2Link.h	/^    uint32_t    numRecvCumSYN;$/;"	m	struct:iAP2Link_st
+numRecvCumSYNACK	iAP2Link/iAP2Link.h	/^    uint32_t    numRecvCumSYNACK;$/;"	m	struct:iAP2Link_st
+numRecvDATA	iAP2Link/iAP2Link.h	/^    uint32_t    numRecvDATA;$/;"	m	struct:iAP2Link_st
+numRecvEAK	iAP2Link/iAP2Link.h	/^    uint32_t    numRecvEAK;$/;"	m	struct:iAP2Link_st
+numRecvRST	iAP2Link/iAP2Link.h	/^    uint32_t    numRecvRST;$/;"	m	struct:iAP2Link_st
+numRecvSYN	iAP2Link/iAP2Link.h	/^    uint32_t    numRecvSYN;$/;"	m	struct:iAP2Link_st
+numRecvSYNACK	iAP2Link/iAP2Link.h	/^    uint32_t    numRecvSYNACK;$/;"	m	struct:iAP2Link_st
+numResentACK	iAP2Link/iAP2Link.h	/^    uint32_t    numResentACK;$/;"	m	struct:iAP2Link_st
+numResentCumSYN	iAP2Link/iAP2Link.h	/^    uint32_t    numResentCumSYN;$/;"	m	struct:iAP2Link_st
+numResentCumSYNACK	iAP2Link/iAP2Link.h	/^    uint32_t    numResentCumSYNACK;$/;"	m	struct:iAP2Link_st
+numResentDATA	iAP2Link/iAP2Link.h	/^    uint32_t    numResentDATA;$/;"	m	struct:iAP2Link_st
+numResentSYN	iAP2Link/iAP2Link.h	/^    uint32_t    numResentSYN;$/;"	m	struct:iAP2Link_st
+numResentSYNACK	iAP2Link/iAP2Link.h	/^    uint32_t    numResentSYNACK;$/;"	m	struct:iAP2Link_st
+numSentACK	iAP2Link/iAP2Link.h	/^    uint32_t    numSentACK;$/;"	m	struct:iAP2Link_st
+numSentCumSYN	iAP2Link/iAP2Link.h	/^    uint32_t    numSentCumSYN;$/;"	m	struct:iAP2Link_st
+numSentCumSYNACK	iAP2Link/iAP2Link.h	/^    uint32_t    numSentCumSYNACK;$/;"	m	struct:iAP2Link_st
+numSentDATA	iAP2Link/iAP2Link.h	/^    uint32_t    numSentDATA;$/;"	m	struct:iAP2Link_st
+numSentEAK	iAP2Link/iAP2Link.h	/^    uint32_t    numSentEAK;$/;"	m	struct:iAP2Link_st
+numSentRST	iAP2Link/iAP2Link.h	/^    uint32_t    numSentRST;$/;"	m	struct:iAP2Link_st
+numSentSYN	iAP2Link/iAP2Link.h	/^    uint32_t    numSentSYN;$/;"	m	struct:iAP2Link_st
+numSentSYNACK	iAP2Link/iAP2Link.h	/^    uint32_t    numSentSYNACK;$/;"	m	struct:iAP2Link_st
+numSessionInfo	iAP2Link/iAP2Packet.h	/^    uint8_t    numSessionInfo;$/;"	m	struct:__anon18
+origTime	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint32_t            origTime;$/;"	m	struct:iAP2Timer_st
+otherData	iAP2Link/iAP2LinkRunLoop.h	/^    void*               otherData;$/;"	m	struct:iAP2LinkRunLoop_st
+pBuf	Cpchip.h	/^	char* pBuf;$/;"	m	struct:ipodIoParam_t
+pBuffer	iAP2Link/iAP2FileTransfer.h	/^    uint8_t*    pBuffer;$/;"	m	struct:iAP2FileTransfer_st
+pCurPos	iAP2Link/iAP2FileTransfer.h	/^    uint8_t*    pCurPos;$/;"	m	struct:iAP2FileTransfer_st
+pSem_CPInit	main.c	/^	NX_SEMAPHORE *pSem_CPInit;$/;"	m	struct:__anon4	file:
+packet	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    void*               packet;$/;"	m	struct:iAP2Timer_st
+packetLen	iAP2Link/iAP2Packet.h	/^    uint16_t    packetLen;$/;"	m	struct:iAP2Packet_st
+packetsRcvd	iAP2Link/iAP2Link.h	/^    uint32_t    packetsRcvd;$/;"	m	struct:iAP2Link_st
+packetsSent	iAP2Link/iAP2Link.h	/^    uint32_t    packetsSent;$/;"	m	struct:iAP2Link_st
+param	iAP2Link/iAP2Link.h	/^    iAP2PacketSYNData_t param;$/;"	m	struct:iAP2Link_st
+pckData	iAP2Link/iAP2Packet.h	/^    iAP2PacketData_t* pckData;$/;"	m	struct:iAP2Packet_st
+peerMaxOutstandingPackets	iAP2Link/iAP2Packet.h	/^    uint8_t    peerMaxOutstandingPackets;   \/* Not used for iAP2LinkCreate *\/$/;"	m	struct:__anon18
+peerMaxPacketSize	iAP2Link/iAP2Packet.h	/^    uint16_t   peerMaxPacketSize;           \/* Not used for iAP2LinkCreate *\/$/;"	m	struct:__anon18
+phase	main.c	/^        int phase;$/;"	m	struct:PhaseStateFunc	file:
+piAP2ListArrayCompareFunc	iAP2Utility/iAP2ListArray.h	/^typedef intptr_t (*piAP2ListArrayCompareFunc)(void* a, void* b, uint8_t dataSize);$/;"	t
+piAP2ListArrayFunc	iAP2Utility/iAP2ListArray.h	/^typedef void (*piAP2ListArrayFunc)(void* item);$/;"	t
+piAP2ListArrayIndexParamFunc	iAP2Utility/iAP2ListArray.h	/^typedef void (*piAP2ListArrayIndexParamFunc)(void* item, uint8_t index, void* param);$/;"	t
+power_source_updates	iAP_Auth.c	/^void power_source_updates(struct iAP2Link_st* link,$/;"	f
+prev	iAP2Utility/iAP2ListArray.h	/^    uint8_t prev;$/;"	m	struct:__anon7
+process_chkstatus_thread	main.c	/^void process_chkstatus_thread(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+process_recvpacket_thread	main.c	/^void process_recvpacket_thread(iAP2LinkRunLoop_t* linkRunLoop)$/;"	f
+recvAck	iAP2Link/iAP2Link.h	/^    uint8_t         recvAck;$/;"	m	struct:iAP2Link_st
+recvDataCB	iAP2Link/iAP2Link.h	/^    iAP2LinkDataReadyCB_t       recvDataCB;$/;"	m	struct:iAP2Link_st
+recvEAK	iAP2Link/iAP2Packet.h	/^    BOOL        recvEAK:1;$/;"	m	struct:iAP2Packet_st
+recvPck	iAP2Link/iAP2Link.h	/^    iAP2Packet_t*   recvPck;$/;"	m	struct:iAP2Link_st
+recvPckList	iAP2Link/iAP2Link.h	/^    uint8_t*        recvPckList;$/;"	m	struct:iAP2Link_st
+recvPckPool	iAP2Link/iAP2Link.h	/^    iAP2BuffPool_t* recvPckPool;$/;"	m	struct:iAP2Link_st
+recvSeq	iAP2Link/iAP2Link.h	/^    uint8_t         recvSeq;$/;"	m	struct:iAP2Link_st
+recv_packet_handle	main.c	/^void recv_packet_handle(struct iAP2Link_st* link, uint8_t* data, uint32_t dataLen, uint8_t session)$/;"	f
+recv_thread_handle	main.c	/^void recv_thread_handle(iAP2LinkRunLoop_t* linkRunLoop, char* buffer, size_t bufSize)$/;"	f
+register_signal	main.c	/^static void register_signal(void)$/;"	f	file:
+regnet	main.c	/^int regnet(void)$/;"	f
+req_auth_cert	iAP_Auth.c	/^void req_auth_cert(struct iAP2Link_st* link,$/;"	f
+reserved1	iAP2Utility/iAP2ListArray.h	/^    uint8_t             reserved1;$/;"	m	struct:__anon8
+reserved2	iAP2Utility/iAP2ListArray.h	/^    uint8_t             reserved2;$/;"	m	struct:__anon8
+retransmitCount	iAP2Link/iAP2Packet.h	/^    uint8_t     retransmitCount;$/;"	m	struct:iAP2Packet_st
+retransmitTimeout	iAP2Link/iAP2Packet.h	/^    uint16_t   retransmitTimeout;$/;"	m	struct:__anon18
+root	iAP2Utility/iAP2ListArray.h	/^    uint8_t             root;$/;"	m	struct:__anon8
+run_iap2link_start	main.c	/^int run_iap2link_start(void)$/;"	f
+runningTimeOut	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint32_t            runningTimeOut;$/;"	m	struct:iAP2Timer_st
+sa	iAP2UtilityImplementation/iAP2Time.c	/^static struct sigaction sa;$/;"	v	typeref:struct:sigaction	file:
+sendAckTimeoutID	iAP2Link/iAP2Link.h	/^    uint8_t         sendAckTimeoutID;$/;"	m	struct:iAP2Link_st
+sendDetectCB	iAP2Link/iAP2Link.h	/^    iAP2LinkSendDetectCB_t      sendDetectCB;$/;"	m	struct:iAP2Link_st
+sendPacket	iAP2Link/iAP2Packet.h	/^    BOOL        sendPacket:1;$/;"	m	struct:iAP2Packet_st
+sendPacketCB	iAP2Link/iAP2Link.h	/^    iAP2LinkSendPacketCB_t      sendPacketCB;$/;"	m	struct:iAP2Link_st
+sendPacketWaitCB	iAP2Link/iAP2Link.h	/^    iAP2LinkSendPacketWaitCB_t  sendPacketWaitCB;$/;"	m	struct:iAP2Link_st
+sendPckList	iAP2Link/iAP2Link.h	/^    uint8_t*        sendPckList;$/;"	m	struct:iAP2Link_st
+sendPckPool	iAP2Link/iAP2Link.h	/^    iAP2BuffPool_t* sendPckPool;$/;"	m	struct:iAP2Link_st
+send_ackpck	iAP_Auth.c	/^void send_ackpck(struct iAP2Link_st* link)$/;"	f
+send_ident_info	iAP_Auth.c	/^void send_ident_info(struct iAP2Link_st* link,$/;"	f
+sentAck	iAP2Link/iAP2Link.h	/^    uint8_t         sentAck;$/;"	m	struct:iAP2Link_st
+sentSeq	iAP2Link/iAP2Link.h	/^    uint8_t         sentSeq;$/;"	m	struct:iAP2Link_st
+sentSize	iAP2Link/iAP2FileTransfer.h	/^    uint64_t    sentSize;$/;"	m	struct:iAP2FileTransfer_st
+seq	iAP2Link/iAP2Packet.h	/^    uint8_t seq;$/;"	m	struct:__anon14
+seq	iAP2Link/iAP2Packet.h	/^    uint8_t seq;$/;"	m	struct:__anon15
+seq	iAP2Link/iAP2Packet.h	/^    uint8_t seq;$/;"	m	struct:__anon16
+seqPlus	iAP2Link/iAP2Packet.h	/^    uint8_t     seqPlus;    \/* Used to determine ACK location in sent queue *\/$/;"	m	struct:iAP2Packet_st
+sess	iAP2Link/iAP2Packet.h	/^    uint8_t sess;$/;"	m	struct:__anon14
+sess	iAP2Link/iAP2Packet.h	/^    uint8_t sess;$/;"	m	struct:__anon15
+sess	iAP2Link/iAP2Packet.h	/^    uint8_t sess;$/;"	m	struct:__anon16
+sessSendPckList	iAP2Link/iAP2Link.h	/^    uint8_t*        sessSendPckList [kIAP2PacketServiceTypeCount];$/;"	m	struct:iAP2Link_st
+session	iAP2Link/iAP2FileTransfer.h	/^    uint8_t     session;$/;"	m	struct:iAP2FileTransfer_st
+session	iAP2Link/iAP2Link.h	/^    uint8_t     session;$/;"	m	struct:iAP2LinkData_st
+sessionInfo	iAP2Link/iAP2Packet.h	/^    iAP2PacketSessionInfo_t sessionInfo[kIAP2PacketMaxSessions];$/;"	m	struct:__anon18
+setSignal	utils/ux_timer.c	/^int setSignal()$/;"	f
+setTimer	utils/ux_timer.c	/^int setTimer(int *key, unsigned long intv, TimerHandler tmFn, void *userPtr)$/;"	f
+shuttingDown	iAP2Link/iAP2LinkRunLoop.h	/^    BOOL                shuttingDown;$/;"	m	struct:iAP2LinkRunLoop_st
+signalSendBuffCB	iAP2Link/iAP2Link.h	/^    iAP2LinkSignalSendBuffCB_t  signalSendBuffCB;$/;"	m	struct:iAP2Link_st
+signal_handler	main.c	/^static void signal_handler(int sig)$/;"	f	file:
+size	main.c	/^	unsigned int size;$/;"	m	struct:iui_packet	file:
+socketId	main.c	/^	int socketId;$/;"	m	struct:__anon4	file:
+sop1	iAP2Link/iAP2Packet.h	/^    uint8_t sop1;   \/* 0xFF *\/$/;"	m	struct:__anon14
+sop1	iAP2Link/iAP2Packet.h	/^    uint8_t sop1;   \/* 0xFF *\/$/;"	m	struct:__anon15
+sop1	iAP2Link/iAP2Packet.h	/^    uint8_t sop1;   \/* 0xFF *\/$/;"	m	struct:__anon16
+sop2	iAP2Link/iAP2Packet.h	/^    uint8_t sop2;   \/* 0x5A *\/$/;"	m	struct:__anon14
+sop2	iAP2Link/iAP2Packet.h	/^    uint8_t sop2;   \/* 0x5A *\/$/;"	m	struct:__anon15
+sop2	iAP2Link/iAP2Packet.h	/^    uint8_t sop2;   \/* 0x5A *\/$/;"	m	struct:__anon16
+startSeq	iAP2Link/iAP2Link.h	/^    uint8_t         startSeq;$/;"	m	struct:iAP2Link_st
+start_hid	iAP_Auth.c	/^void start_hid(struct iAP2Link_st* link,$/;"	f
+start_power_updates	iAP_Auth.c	/^void start_power_updates(struct iAP2Link_st* link,$/;"	f
+state	iAP2Link/iAP2FileTransfer.h	/^    iAP2FileTransferState_t state;$/;"	m	struct:iAP2FileTransfer_st
+state	iAP2Link/iAP2Packet.h	/^    kiAP2PacketParseState_t state:8;$/;"	m	struct:iAP2Packet_st
+stateCount	iAP2Utility/iAP2FSM.h	/^    unsigned int    stateCount;$/;"	m	struct:iAP2FSM_st
+stateName	iAP2Link/iAP2Packet.c	/^static const char* stateName [kiAP2PacketParseStateLAST + 1] =$/;"	v	file:
+stateNames	iAP2Link/iAP2Link.c	/^const char* stateNames [kiAP2LinkStateCount] =$/;"	v
+stateNames	iAP2Utility/iAP2FSM.h	/^    const char**    stateNames;$/;"	m	struct:iAP2FSM_st
+states	iAP2Utility/iAP2FSM.h	/^    const iAP2FSMState_t* states;$/;"	m	struct:iAP2FSM_st
+synParam	main.c	/^	iAP2PacketSYNData_t synParam;$/;"	m	struct:__anon5	file:
+tag	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    const char*         tag;$/;"	m	struct:iAP2Timer_st
+tagData	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint32_t            tagData;$/;"	m	struct:iAP2Timer_st
+test_pck	iAP_Auth.c	/^static char test_pck[306] = {0xFF, 0x5A, 0x01, 0x32, 0x40, 0x75, 0x5D, 0x0A,$/;"	v	file:
+timeBuff	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint8_t*            timeBuff;$/;"	m	struct:iAP2Timer_st
+timeBuffNextFree	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint8_t*            timeBuffNextFree;$/;"	m	struct:iAP2Timer_st
+timeSinceSentLastACK	iAP2Link/iAP2Link.h	/^    uint32_t        timeSinceSentLastACK;$/;"	m	struct:iAP2Link_st
+timeStamp	iAP2Link/iAP2Packet.h	/^    uint32_t    timeStamp;  \/* timestamp (ms) when packet was sent or received(and parse). *\/$/;"	m	struct:iAP2Packet_st
+time_ipod_service_start	main.c	/^int time_ipod_service_start =0;$/;"	v
+time_ipod_service_stop	main.c	/^int time_ipod_service_stop =0;$/;"	v
+timeout	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint32_t            timeout;$/;"	m	struct:iAP2Timer_st
+timeout	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint32_t    timeout;$/;"	m	struct:iAP2Timeout_st
+timer	iAP2Link/iAP2Packet.h	/^    uint8_t     timer;$/;"	m	struct:iAP2Packet_st
+timer	main.c	/^	int timer;$/;"	m	struct:__anon5	file:
+timer_expired	iAP2UtilityImplementation/iAP2Time.c	/^void timer_expired(int value)$/;"	f
+timer_handler	utils/ux_timer.c	/^static void timer_handler(int sig, siginfo_t *si, void *context)$/;"	f	file:
+totACKDelays	iAP2Link/iAP2Link.h	/^    uint32_t    totACKDelays;$/;"	m	struct:iAP2Link_st
+totalSize	iAP2Link/iAP2FileTransfer.h	/^    uint64_t    totalSize;$/;"	m	struct:iAP2FileTransfer_st
+type	iAP2Link/iAP2Link.h	/^    iAP2LinkType_t  type;$/;"	m	struct:iAP2Link_st
+type	iAP2Link/iAP2Packet.h	/^    uint8_t    type;        \/* iAP2PacketServiceType_t *\/$/;"	m	struct:__anon17
+type	iAP2Utility/iAP2BuffPool.h	/^    uint8_t     type;$/;"	m	struct:iAP2BuffPool_st
+type	iAP2UtilityImplementation/iAP2TimeImplementation.h	/^    uint8_t     type;   \/* user defined timeout type *\/$/;"	m	struct:iAP2Timeout_st
+type	main.c	/^	uint8_t type;$/;"	m	struct:IPC_SOCKET	file:
+ucAPMajorVersion	iAP_Auth.h	/^char ucAPMajorVersion;                  \/\/Authentication Protocol Major Version$/;"	v
+ucAPMinorVersion	iAP_Auth.h	/^char ucAPMinorVersion;                  \/\/Authentication Protocol Minor Version$/;"	v
+ucAccCertificateData	iAP_Auth.h	/^char ucAccCertificateData[1920];        \/\/AccCertificate Data (v2)$/;"	v
+ucAccCertificateDataLength	iAP_Auth.h	/^char ucAccCertificateDataLength[2];     \/\/AccCertificate Data Length (v2)$/;"	v
+ucAuthentiCS	iAP_Auth.h	/^char ucAuthentiCS;$/;"	v
+ucCPAuthenticationControlStatus	iAP_Auth.h	/^char ucCPAuthenticationControlStatus;   \/\/Authentication Control\/Status$/;"	v
+ucCPAuthenticationIndex	iAP_Auth.h	/^char ucCPAuthenticationIndex[2];        \/\/Authentication Index$/;"	v
+ucCPChallengeData	iAP_Auth.h	/^char ucCPChallengeData[20];             \/\/Challenge Data (v2)$/;"	v
+ucCPChallengeDataLength	iAP_Auth.h	/^char ucCPChallengeDataLength[2];        \/\/Challenge Data Length$/;"	v
+ucCPDeviceID	iAP_Auth.h	/^char ucCPDeviceID[4];                   \/\/Device ID$/;"	v
+ucCPErrorCode	iAP_Auth.h	/^char ucCPErrorCode;                     \/\/Error Code$/;"	v
+ucCPIndexHigh	iAP_Auth.h	/^char ucCPIndexHigh[2];                  \/\/Authentication Index Supported High$/;"	v
+ucCPIndexLow	iAP_Auth.h	/^char ucCPIndexLow[2];                   \/\/Authentication Index Supported Low$/;"	v
+ucCPSignatureDataLength	iAP_Auth.h	/^char ucCPSignatureDataLength[2];        \/\/Signature Data Length$/;"	v
+ucCPSignatureVerificationStatus	iAP_Auth.h	/^char ucCPSignatureVerificationStatus;   \/\/Signature Verification Status$/;"	v
+ucCertificatePageNo	iAP_Auth.h	/^char ucCertificatePageNo;$/;"	v
+uevent_add_native_handler	uevent.c	/^int uevent_add_native_handler(void (*handler)(void *data, const char *msg, int msg_len),$/;"	f
+uevent_get_fd	uevent.c	/^int uevent_get_fd()$/;"	f
+uevent_handler	uevent.c	/^struct uevent_handler {$/;"	s	file:
+uevent_handler_list_lock	uevent.c	/^pthread_mutex_t uevent_handler_list_lock = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+uevent_init	uevent.c	/^int uevent_init()$/;"	f
+uevent_next_event	uevent.c	/^int uevent_next_event(char* buffer, int buffer_length)$/;"	f
+uevent_remove_native_handler	uevent.c	/^int uevent_remove_native_handler(void (*handler)(void *data, const char *msg, int msg_len))$/;"	f
+ulRegAddr	Cpchip.h	/^	unsigned long ulRegAddr;$/;"	m	struct:ipodIoParam_t
+unCertificateSentSize	iAP_Auth.h	/^unsigned int unCertificateSentSize;$/;"	v
+version	iAP2Link/iAP2Packet.h	/^    uint8_t    version;$/;"	m	struct:__anon17
+version	iAP2Link/iAP2Packet.h	/^    uint8_t    version;$/;"	m	struct:__anon18

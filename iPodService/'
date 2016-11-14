@@ -1,0 +1,1088 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/signal.h>
+#include <sys/ioctl.h>
+#include <pthread.h>
+#include <poll.h>
+
+// socket programming header.
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <sys/time.h>
+#include <unistd.h>
+//////////////////////
+
+#include <hardware_legacy/uevent.h>
+
+#include "DbgMsg.h"
+#include "gpio.h"
+#include "iAP_Auth.h"
+
+#include <iAP2Packet.h>
+#include <iAP2LinkRunLoop.h>
+#include <iAP2Log.h>
+
+#define IUIHID_DEV_FILE			"/dev/iuihid"
+#define IAP_DEV_FILE			"/dev/android_iap"
+#define REGNET_SYSFS			"/sys/class/regnet/regnet/regnet_dev"
+
+#define USB_HOST_DEVICE_CHANGE		PAD_GPIO_B + 20          // avn
+#define USB_OTG_POWER                           PAD_GPIO_ALV + 5
+
+
+///////////////////////////////////////////////////////////
+// jimmy modified
+//////////////////////////////////////////////////////////
+#include "NX_Semaphore.h"
+NX_SEMAPHORE *pSem_WaitConnect;
+//NX_SEMAPHORE *pSem_ChangeLinkStatus;
+
+int usb_state_check(int max_count);
+int check_androidusb0_connect(void);
+/////////////////////////////////////////////
+int ipod_link_check_count = 0;
+
+
+#define CHECK_CONNECT_TIME
+#ifdef CHECK_CONNECT_TIME
+
+int start_time, connect_time;
+int NxGetTickCount(void)
+{
+        struct timeval tv;
+        struct timezone zv;
+	int time, time_sec, time_ms;
+        gettimeofday(&tv, &zv);
+
+//        NxDbgMsg(DBG_DEBUG, "[CARPLAY] sec(%d) usec(%d) \n", (int)tv.tv_sec, (int)tv.tv_usec);
+	time_sec = (tv.tv_sec%100);
+	time_ms = (tv.tv_usec/1000);
+	time = (time_sec*1000) + time_ms;
+
+        NxDbgMsg(DBG_DEBUG, "[CARPLAY] (%d)time_sec(%d) time_ms(%d) \n",time, time_sec, time_ms);
+	return time;
+
+#if 0
+	if(startEnd == 0) //start time 
+		start_time = time;
+	else
+       		NxDbgMsg(DBG_DEBUG, "[IAP2 LINK CONNECT TIME] (%d)ms \n", (time-start_time));
+#endif
+}
+#endif
+
+int32_t GetPorcessId( const char *pAppName )
+{
+        char cmd[512], result[512];
+        sprintf( cmd, "ps | grep %s", pAppName );
+
+        FILE *fp = NULL;
+        int32_t pid = -1;
+
+        // USER/PID/PPID/VSIZE/RSS/WCHAN/PC/??/NAME
+        fp = popen( cmd, "r" );
+        fseek( fp, 0, SEEK_SET );
+        fscanf( fp, "%*s %d %*d %*d %*d %*s %*s %*s %*s", &pid );
+        pclose( fp );
+
+        if( 0 > pid )
+                return pid;
+
+        fp = popen( cmd, "r" );
+        fseek( fp, 0, SEEK_SET );
+        NxDbgMsg(DBG_VBS, "------------------------------------------------------------------------------------------\n");
+        NxDbgMsg(DBG_VBS, "USER     PID   PPID  VSIZE  RSS     WCHAN    PC        NAME\n");
+        while( fgets(result, 512, fp) )
+        {
+                NxDbgMsg(DBG_VBS, "%s", result);
+        }
+        NxDbgMsg(DBG_VBS, "------------------------------------------------------------------------------------------\n");
+        pclose( fp );
+
+        return pid;
+}
+
+
+void KillProcess( int32_t pid )
+{
+        if( pid > 0 )
+        {
+                char cmd[512];
+                sprintf( cmd, "kill -9 %d", pid );
+                system( cmd );
+        }
+}
+
+void RunProcess(const char *pAppName, const char *pOption)
+{
+        int32_t pid;
+        char cmd[512];
+        if( (pid=GetPorcessId(pAppName)) > 0 )
+        {
+                KillProcess(pid);
+        }
+        sprintf( cmd, "%s %s", pAppName, pOption );
+        system( cmd );
+}
+
+/////////////////////////////////////////////////////////////////////////
+pthread_t m_thread_chkstat;
+pthread_t m_thread_recv;
+
+static int iap_status = 0;
+static int connect_done = 0;
+static int fd_iuihid, fd_iap;
+int g_exit = 0;
+int g_detectSuccess = 0;
+int g_iapWriteError = 0;
+iAP2LinkRunLoop_t* linkRunLoop = 0;
+
+struct iui_packet {
+	char *buf;
+	unsigned int size;
+};
+
+
+int regnet(void)
+{
+	int fd, len;
+	char buf[40];
+
+	fd = open(REGNET_SYSFS, O_WRONLY);
+	if (fd < 0) {
+		perror("register ncm net");
+		return fd;
+	}
+
+	len = snprintf(buf, sizeof(buf), "%d", 1);
+	write(fd, buf, len);
+	close(fd);
+
+	return 0;
+}
+
+void recv_thread_handle(iAP2LinkRunLoop_t* linkRunLoop, char* buffer, size_t bufSize)
+{
+	//char*  buf = (char *)malloc(1024);
+	char * buf = 0;
+	iAP2Packet_t* pck;
+	BOOL IsDetect;
+
+	buf = buffer;
+
+	pck = iAP2PacketCreateEmptyRecvPacket(linkRunLoop->link);
+	iAP2PacketParseBuffer(buf, bufSize, pck, 1024, &IsDetect, NULL, NULL);
+	while(!iAP2PacketIsComplete(pck));
+
+	iAP2LinkRunLoopHandleReadyPacket(linkRunLoop, pck);
+}
+
+
+//////////////////////////////////////////////////////////
+// modified by jimmy - func on_sig_recv_thread()
+// when connect with iap, no need to excute this thread. 
+//////////////////////////////////////////////////////////
+void on_sig_recv_thread(iAP2LinkRunLoop_t* linkRunLoop)
+{
+        iAP2Packet_t* pck;
+        BOOL IsDetect;
+        size_t readSize;
+        char buf[4096] = { 0 };
+
+        while (!g_exit)
+        {
+                if(connect_done==1) break;
+		if(g_iapWriteError == 1)
+		{
+        		NxDbgMsg(DBG_DEBUG, "%s[%d] ERROR(WR) Line", __func__, __LINE__);
+			g_exit = 1;
+			break;
+		}
+
+                readSize = read(fd_iap, buf, 1024);
+		if(readSize < 0 || readSize > 1024)
+		{
+			if(connect_done == 1) break;
+			
+        		NxDbgMsg(DBG_DEBUG, "%s[%d] ERROR Line", __func__, __LINE__);
+			g_exit = 1;
+			break;
+			
+		}
+               // if( readSize > 0 ) 
+		{
+                        recv_thread_handle(linkRunLoop, buf, readSize);
+                }
+
+                usleep(1000);
+        }
+
+        NxDbgMsg(DBG_DEBUG, "%s[%d]on_sig_recv_thread exit. handle:%d, %d", __func__, __LINE__, fd_iap, fd_iuihid);
+}
+
+///////////////////////////////////////////////////////////
+// jimmy modified
+// no use polling --> use Semaphore.
+//////////////////////////////////////////////////////////
+void on_sig_chkstat_thread(iAP2LinkRunLoop_t* linkRunLoop)
+{
+	int i = 0, ret = 0;
+	char cmdString[1024];
+
+	NX_PendSem(pSem_WaitConnect);
+        NX_DestroySem(pSem_WaitConnect);
+
+#ifdef CHECK_CONNECT_TIME
+       	NxDbgMsg(DBG_DEBUG, "[IAP2 LINK CONNECT TIME] (%d)ms ipodstatecount(%d) \n", 
+					(NxGetTickCount()-start_time), ipod_link_check_count );
+#endif
+	// RUN CARPLAY APP
+	system("setprop ipod.service.state 2;");
+
+	sprintf(cmdString, "ping6 -W 2 -c 1 fe80::983b:fcff:fe66:e846%%usb0");
+	do {
+		ret = system(cmdString);
+	} while (ret != 0);
+
+	while (!g_exit && !g_iapWriteError)
+	{
+		sprintf(cmdString, "ping6 -W 1 -c 1 -L ff02::1%%usb0");
+		ret = system(cmdString);
+		if (ret == 256) 
+		{
+			NxDbgMsg(DBG_INFO,"usb is disconnected!!!!!!!!!\n");
+			iAP2LinkRunLoopDetached(linkRunLoop);
+			iAP2LinkRunLoopDelete(linkRunLoop);
+			break;
+		}
+
+		usleep(10);
+	}
+
+	NxDbgMsg(DBG_DEBUG, "%s[%d] on_sig_chkstat_thread exit. gexit((%d) gWriteErr(%d)",
+			 __func__, __LINE__, g_exit, g_iapWriteError);
+	g_exit = 1;
+
+
+	sprintf(cmdString, "ndc network destroy 100");
+	ret = system(cmdString);
+	if (ret < 0) {
+		printf("network destroy failed!!!!!\n");
+	}
+
+        NxDbgMsg(DBG_INFO, "===== DEVICE => HOST finish iPodState(%d)\n", GetIPodLinkStatus());
+	gpio_set_value(USB_HOST_DEVICE_CHANGE, 1);
+	gpio_unexport(USB_HOST_DEVICE_CHANGE);
+
+	// Finish CARPLAY APP
+	system("setprop ipod.service.state 3;");
+//	system("am broadcast -a com.ect.smartcarsync.Notify.IAPEjected");
+
+	close(fd_iuihid);
+	close(fd_iap);
+	exit(0);
+}
+
+static void SendPacket (struct iAP2Link_st* link, iAP2Packet_t*       packet)
+{
+	int i = 0;
+	int ret = 0;
+	if(0 > fd_iap) {
+                NxDbgMsg(DBG_DEBUG, "[IAP_HANDLE] %s() line[%d] ERROR fd_iap", __func__, __LINE__);
+	}
+
+	packet->pckData->chk = iAP2PacketCalcHeaderChecksum(packet);
+	packet->dataChecksum = iAP2PacketCalcPayloadChecksum(packet);
+
+	ret = write(fd_iap, packet->pckData, packet->packetLen);
+	if(ret < 0) g_iapWriteError = 1;
+}
+
+void SentCB(struct iAP2Link_st* link, void* context)
+{
+	; //	NxDbgMsg(DBG_INFO, "%s[%d] SentCB\n", __func__, __LINE__);
+}
+
+///////////////////////////////////////////////////////////
+// jimmy modified
+//////////////////////////////////////////////////////////
+void recv_packet_handle(struct iAP2Link_st* link, uint8_t* data, uint32_t dataLen, uint8_t session)
+{
+	int i = 0, ret = 0;
+	uint16_t rcvPktRsp = (data[4]<<8 | data[5]);
+	uint8_t flag_connect = data[7];
+
+	switch(rcvPktRsp)
+	{
+		case 0x1d00:
+			NxDbgMsg(DBG_INFO, "%s[%d] Start Identification\n", __func__, __LINE__);
+			send_ident_info(link, session);
+			break;
+		case 0x1d02:
+			NxDbgMsg(DBG_INFO, "%s[%d] Identification Accepted\n", __func__, __LINE__);
+			send_ackpck(link);
+			break;
+		case 0xaa00:
+			NxDbgMsg(DBG_INFO, "%s[%d] Request Authentication Certificate\n", __func__, __LINE__);
+			req_auth_cert(link, session);
+			break;
+		case 0xaa02:
+			NxDbgMsg(DBG_INFO, "%s[%d] Request Authentication Challenge\n", __func__, __LINE__);
+			auth_resp(link, data, dataLen, session);
+			break;
+		case 0xaa04:
+			NxDbgMsg(DBG_INFO, "%s[%d] Authentication Failed\n", __func__, __LINE__);
+			send_ackpck(link);
+			break;
+		case 0xaa05:
+			NxDbgMsg(DBG_INFO, "%s[%d] Authentication Succeeded\n", __func__, __LINE__);
+			send_ackpck(link);
+			start_power_updates(link, session);
+			power_source_updates(link, session);
+			start_hid(link, session);
+			regnet();
+
+			char cmdString[1024];
+			sprintf(cmdString, "ifconfig usb0 up");
+			ret = system(cmdString);
+			if (ret < 0) {
+				printf("usb0 up failed.\n");
+				return -ENODEV;
+			}
+
+			sprintf(cmdString, "ndc network create 100;ndc network interface add 100 usb0;"
+				"ndc network route add 100 usb0 fe80::983b:fcff:fe66:0/64;ndc network default set 100");
+			ret = system(cmdString);
+			if (ret < 0) {
+				printf("usb0 add route failed.\n");
+				return -ENODEV;
+			}
+			break;
+		case 0xae01:
+			NxDbgMsg(DBG_INFO, "%s[%d] Power Update [%x][%x]\n", __func__, __LINE__, data[7], flag_connect);
+			send_ackpck(link);
+
+			// jimmy modified. seperate last packet. 
+			// no use polling --> use Semaphore.
+			if(flag_connect == 0x5) 
+			{
+				connect_done = 1;
+				NX_PostSem(pSem_WaitConnect);
+			}
+			break;
+		default:
+			NxDbgMsg(DBG_WARN, "%s[%d] Unknown Packet Data [0x%x]\n", __func__, __LINE__, rcvPktRsp);
+			break;
+	}
+}
+
+static BOOL Receive (struct iAP2Link_st* link, uint8_t* data, uint32_t dataLen, uint8_t session)
+{
+	//printf("+++++++++%s %d++++++++++\n", __func__, __LINE__);
+	recv_packet_handle(link, data, dataLen, session);
+	return TRUE;
+}
+
+static void SendDetect (struct iAP2Link_st* link, BOOL bBad)
+{
+	int ret;
+
+	if(0 > fd_iap) 
+	{
+		NxDbgMsg(DBG_DEBUG, "[IAP_HANDLE]%s() line[%d] ERROR fd_iap", __func__, __LINE__);
+	}
+
+	if (!bBad)
+	{
+		ret = write(fd_iap, &kIap2PacketDetectData, kIap2PacketDetectDataLen);
+	}
+	else
+	{
+		ret = write(fd_iap, &kIap2PacketDetectBadData, kIap2PacketDetectBadDataLen);
+	}
+
+	NxDbgMsg(DBG_DEBUG, "[IAP_HANDLE]%s() ret:%d ", __func__, ret);
+	if(ret > 0) g_detectSuccess = 1;
+	else g_detectSuccess = -1;
+}
+
+static void ConnectedCB (struct iAP2Link_st* link, BOOL bConnected)
+{
+	NxDbgMsg(DBG_INFO, "%s[%d] connect state: %s\n", __func__, __LINE__, bConnected ? "connected" : "disconnected");
+}
+
+
+static void signal_handler(int sig)
+{
+	char cmdString[1024] = { 0, };
+
+	printf("Aborted by signal %s (%d)...\n", (char*)strsignal(sig), sig);
+
+	switch (sig)
+	{
+	case SIGINT:
+		printf("SIGINT..\n");   break;
+	case SIGTERM:
+		printf("SIGTERM..\n");  break;
+	case SIGABRT:
+		printf("SIGABRT..\n");  break;
+	default:
+		break;
+	}
+
+	g_exit = 1;
+
+	iAP2LinkRunLoopDetached(linkRunLoop);
+	iAP2LinkRunLoopDelete(linkRunLoop);
+
+	//pthread_join(m_thread_recv, NULL);
+	//pthread_join(m_thread_chkstat, NULL);
+
+	sprintf(cmdString, "ndc network destroy 100");
+	system(cmdString);
+
+	NxDbgMsg(DBG_INFO, "===== DEVICE => HOST\n");
+	gpio_set_value(USB_HOST_DEVICE_CHANGE, 1);
+	gpio_unexport(USB_HOST_DEVICE_CHANGE);
+
+	close(fd_iuihid);
+	close(fd_iap);
+
+	exit(0);
+}
+
+static void register_signal(void)
+{
+	signal(SIGINT, signal_handler);
+	signal(SIGTERM, signal_handler);
+	signal(SIGABRT, signal_handler);
+}
+
+///////////////////////////////////////////////////////////
+// jimmy modified
+//////////////////////////////////////////////////////////
+#define IPOD_UEVENT_STRING      "change@/devices/virtual/iuihid/iuihid"
+#define IPOD_STATE_FILE         "/dev/iuihid"
+
+int32_t m_iPodState;
+pthread_t m_monitor_iap;
+
+int32_t m_ipodLinkCheck = 0;
+int32_t m_usbConfigCheck = 0;
+
+int32_t GetIPodLinkStatus()
+{
+        usleep(1000);
+        return ( 0 == access(IPOD_STATE_FILE, F_OK) );
+}
+
+int GetIPodDeviceMode(void) 
+{
+        char val[128] = { 0, };
+        int nval = 0;
+        if (property_get("persist.nx.ipod.device.mode", val, NULL)) {
+                nval = atoi(val);
+        }
+        else
+        {
+		return 99;
+        }
+
+        return nval;
+}
+
+int CheckIPodLinkDisconnect(void)
+{
+	int count = 0;
+	int max_count = 500;
+	ipod_link_check_count =0 ;
+	while(1)
+	{
+		count++;
+		ipod_link_check_count ++ ;
+		m_iPodState  = GetIPodLinkStatus(); 
+		if(m_iPodState == 0) break;
+		if(count >= max_count) break;
+		//usleep(1*1000);
+
+	}
+	NxDbgMsg(DBG_DEBUG, "[IPOD-LINK] Changed : %d, check_count(%d)\n", m_iPodState, count );
+	return m_iPodState;
+}
+
+
+int initialize_apple_cpChip(void)
+{
+	int cp_start;
+	cp_start = NxGetTickCount();
+        if(CP_Reset() != 0) return 1;
+        CP_VersionCheck();
+	NxDbgMsg(DBG_INFO, "[CHECK CP INIT TIME] (%d)\n", NxGetTickCount()-cp_start ) ; 
+        return 0;
+}
+
+void initialize_resource_iap(void)
+{
+	pthread_t m_init_cp;
+
+	NxDbgMsg(DBG_INFO, "===== iAP2 START iapLinkStatus(%d)...\n", m_iPodState = GetIPodLinkStatus()) ; 
+#ifdef CHECK_CONNECT_TIME
+	start_time = NxGetTickCount();
+#endif
+	// Initialize CP Chip - use thread.
+        pthread_create(&m_init_cp, NULL, (void *)&initialize_apple_cpChip, NULL);
+	
+	// wait the connect
+        pSem_WaitConnect = NX_CreateSem(1, 1);
+        NX_PendSem(pSem_WaitConnect);
+}
+
+int LinkWithApple(void)
+{
+        iAP2PacketSYNData_t synParam;
+        void *context = NULL;
+        uint8_t buf[1024] = {};
+        char cmdString[1024] = { 0, };
+        int ret = 0;
+
+        // Initial Data
+        synParam.version = 1;
+        synParam.maxOutstandingPackets = 5;
+        synParam.maxRetransmissions = 30;
+        synParam.maxCumAck = 3;
+        synParam.maxPacketSize = 4096; //4096
+        synParam.retransmitTimeout = 2000;
+        synParam.cumAckTimeout = 22;
+        synParam.numSessionInfo = 3;
+
+        synParam.sessionInfo[0].id = 10;
+        synParam.sessionInfo[0].type = 0x0;
+        synParam.sessionInfo[0].version = 2;
+        synParam.sessionInfo[1].id = 11;
+        synParam.sessionInfo[1].type = 0x1;
+        synParam.sessionInfo[1].version = 1;
+        synParam.sessionInfo[2].id = 12;
+        synParam.sessionInfo[2].type = 0x2;
+        synParam.sessionInfo[2].version = 1;
+
+        linkRunLoop = iAP2LinkRunLoopCreateAccessory(
+                        &synParam, context,
+                        SendPacket, Receive, ConnectedCB, SendDetect, TRUE, (u_int8_t)64, NULL);
+	NxDbgMsg(DBG_DEBUG, "[LinkRunLoop]%s() line[%d] link:0x%x", __func__, __LINE__, linkRunLoop);
+
+        if(pthread_create(&m_thread_recv, NULL, (void *)&on_sig_recv_thread, linkRunLoop) < 0)
+        {
+                ret = -EINVAL;
+                goto fail;
+        }
+        if(pthread_create(&m_thread_chkstat, NULL, (void*)&on_sig_chkstat_thread, linkRunLoop) < 0)
+        {
+                ret = -EINVAL;
+                goto fail;
+        }
+        iAP2LinkRunLoopAttached(linkRunLoop);
+
+        NxDbgMsg(DBG_INFO, "===== iAP2LinkRunLoop Shutdown...\n");
+	if(g_detectSuccess < 0) 
+	{
+        	NxDbgMsg(DBG_INFO, "===== iAP2 USB Line Error...\n");
+                return -EINVAL;
+                goto fail;
+	}
+
+        pthread_join(m_thread_recv, NULL);
+        pthread_join(m_thread_chkstat, NULL);
+
+        sprintf(cmdString, "ndc network destroy 100");
+        system(cmdString);
+
+        gpio_set_value(USB_HOST_DEVICE_CHANGE, 1);
+        gpio_unexport(USB_HOST_DEVICE_CHANGE);
+        NxDbgMsg(DBG_INFO, "===== DEVICE => HOST close iPodState(%d)\n", GetIPodLinkStatus());
+        NxDbgMsg(DBG_INFO, "===== ======= ====== ====== ====== ====== ===== \n");
+
+fail:
+        close(fd_iuihid);
+        close(fd_iap);
+
+        return ret;
+}
+
+int initialize_iap_handle(void)
+{
+        int n = 0, i = 0, ret = 0;
+        struct iui_packet packet;
+
+        fd_iap = open(IAP_DEV_FILE, O_RDWR|O_NDELAY);
+        if (0 > fd_iap)
+        {
+                NxErrMsg("ERROR!!!!!!!!!!!!!!!!!!! path %s %d\n", IAP_DEV_FILE, __LINE__);
+                return -1;
+        }
+        if (gpio_export(USB_HOST_DEVICE_CHANGE) != 0)
+        {
+                printf("gpio open fail\n");
+                ret = -ENODEV;
+        }
+
+        NxDbgMsg(DBG_INFO, "===== %s() DEVICE => HOST (GPIO TO HIGH)\n", __func__);
+        gpio_dir_out(USB_HOST_DEVICE_CHANGE);
+        gpio_set_value(USB_HOST_DEVICE_CHANGE, 1);
+
+        fd_iuihid = open( IUIHID_DEV_FILE, O_RDWR|O_NDELAY );
+        if(0 > fd_iuihid) {
+                NxErrMsg("ERROR!!!!!!!!!!!!!!!!!!! path %s %d\n", IUIHID_DEV_FILE, __LINE__);
+                return -1;
+        }
+        ioctl(fd_iuihid, 4, (unsigned int)&packet);
+        close(fd_iuihid);
+
+	m_ipodLinkCheck = CheckIPodLinkDisconnect() ;
+        NxDbgMsg(DBG_INFO, "===== HOST => DEVICE (GPIO TO LOW) m_ipodLinkCheck(%d)\n", m_ipodLinkCheck);
+        gpio_set_value(USB_HOST_DEVICE_CHANGE, 0);
+
+        return 0;
+}
+
+
+char usbstate[16];
+int check_androidusb0_connect(void)
+{
+        FILE *fd;
+        int filesize;
+
+        memset(usbstate, 0, 16);
+	system("cat /sys/devices/virtual/android_usb/android0/state > /data/1.log");
+
+        fd = fopen("/data/1.log", "r");
+        if(fd==NULL)
+        {
+		sleep(1);
+        	NxDbgMsg(DBG_INFO, "[USBSTATE ERROR] fd NULL");
+		return 0;
+        }
+        else
+        {
+                fread(usbstate, 1, 16, fd );
+                fclose(fd);
+        }
+
+	if(strncmp("CONFIGURED", usbstate, 10) == 0) return 1;
+	else return 0;
+}
+
+int usb_state_check(int max_count)
+{
+        FILE *fd;
+        int filesize;
+	int i;
+
+
+	for(i=0; i<max_count; i++)
+	{
+	   if(check_androidusb0_connect() == 1)
+	   {
+           	NxDbgMsg(DBG_INFO, "[USBSTATE] CONFIGURED checkTime(%d)ms", i+1);
+		return 0;
+	   }
+	   usleep(1000);
+	}
+	return 1;
+}
+
+///////////////////////////////////////////////////////////
+// jimmy modified
+//////////////////////////////////////////////////////////
+#if 0
+int main( int argc, char **argv )
+{
+	int i;
+	int ret;
+	register_signal();
+
+        NxDbgMsg(DBG_INFO, "===== ======= ====== ====== ====== ====== ===== \n");
+	initialize_resource_iap();
+	ret = initialize_iap_handle();
+
+	if((m_ipodLinkCheck != 0) || (ret != 0))
+	{
+		g_exit =1;
+                usleep(1000);
+       		gpio_set_value(USB_HOST_DEVICE_CHANGE, 1);
+        	gpio_unexport(USB_HOST_DEVICE_CHANGE);
+
+        	close(fd_iuihid);
+        	close(fd_iap);
+
+     		NxDbgMsg(DBG_INFO, "[ERROR][IPOD-LINK ERR??? ] linkcount(%d)", ipod_link_check_count );
+		system("setprop ipod.service.state 4;");
+		exit(0);
+
+		return 0;
+	}
+
+	m_usbConfigCheck = usb_state_check(1000);
+	#if 0
+	if(m_usbConfigCheck != 0)
+	{
+		g_exit =1;
+                usleep(1000);
+
+       		gpio_set_value(USB_HOST_DEVICE_CHANGE, 1);
+        	gpio_unexport(USB_HOST_DEVICE_CHANGE);
+
+ //       	close(fd_iuihid);
+//        	close(fd_iap);
+	
+     		NxDbgMsg(DBG_INFO, "[ERROR]: [USBSTATE]%s, linkcount(%d)", usbstate, ipod_link_check_count );
+
+		system("setprop ipod.service.state 5;");
+		exit(0);
+		return 0;
+	}
+	#endif
+
+	if(LinkWithApple() != 0) 
+	{
+		g_exit =1;
+                usleep(1000);
+       		gpio_set_value(USB_HOST_DEVICE_CHANGE, 1);
+        	gpio_unexport(USB_HOST_DEVICE_CHANGE);
+
+        	close(fd_iuihid);
+        	close(fd_iap);
+
+     		NxDbgMsg(DBG_INFO, "[ERROR] LinkState: [USBSTATE]%s, linkcount(%d)", usbstate, ipod_link_check_count );
+		system("setprop ipod.service.state 4;");
+		exit(0);
+		return 0;
+	}
+
+	return 0;
+}
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////
+#define DEF_PORT        13512
+#define         BACKLOG 10     /* how many pending connections queue will hold */
+
+typedef enum
+{
+	IPC_TYPE_UEVENT= 0,
+	IPC_TYPE_MAX
+} IPC_TYPE;
+
+typedef enum
+{
+	IAP2_STATE_NONE 	= 0,
+	IAP2_STATE_READY	= 1,
+	IAP2_STATE_LINK 	= 2,
+	IAP2_STATE_CONNECTED 	= 3,
+	IAP2_STATE_MAX
+} IAP2_STATE;
+typedef struct IPC_SOCKET
+{
+	uint8_t type;
+	uint8_t length;
+	uint8_t msg;
+	uint8_t dev;
+	uint8_t log[16];
+}IPC_SOCKET;
+
+int g_socketId=0;
+int m_curState = 0;
+
+pthread_t m_monitor;
+pthread_t m_manager;
+pthread_t m_init_cp;
+NX_SEMAPHORE *pSem_CPInit;
+
+int cpChip_init(void)
+{
+	while(1)
+	{
+		NX_PendSem(pSem_CPInit);
+
+     		NxDbgMsg(DBG_INFO, "[CPInit] Start");
+        	CP_Reset();
+        	CP_VersionCheck();
+     		NxDbgMsg(DBG_INFO, "[CPInit] End");
+	}
+}
+
+int do_rollchange(void)
+{
+        int n = 0, i = 0, ret = 0;
+        struct iui_packet packet;
+
+        fd_iap = open(IAP_DEV_FILE, O_RDWR|O_NDELAY);
+        if (0 > fd_iap)
+        {
+                NxErrMsg("ERROR!!!!!!!!!!!!!!!!!!! path %s %d\n", IAP_DEV_FILE, __LINE__);
+                return -1;
+        }
+        if (gpio_export(USB_HOST_DEVICE_CHANGE) != 0)
+        {
+                printf("gpio open fail\n");
+                ret = -ENODEV;
+        }
+
+        NxDbgMsg(DBG_INFO, "===== %s() DEVICE => HOST (GPIO TO HIGH)\n", __func__);
+        gpio_dir_out(USB_HOST_DEVICE_CHANGE);
+        gpio_set_value(USB_HOST_DEVICE_CHANGE, 1);
+
+        fd_iuihid = open( IUIHID_DEV_FILE, O_RDWR|O_NDELAY );
+        if(0 > fd_iuihid) {
+                NxErrMsg("ERROR!!!!!!!!!!!!!!!!!!! path %s %d\n", IUIHID_DEV_FILE, __LINE__);
+                return -1;
+        }
+        ioctl(fd_iuihid, 4, (unsigned int)&packet);
+        close(fd_iuihid);
+
+        return 0;
+}
+
+int run_iap2link_start(void)
+{
+	int ret = 0;
+
+	// cp chip init
+	NX_PostSem(pSem_CPInit);
+
+	// do Apple Roll-Change
+	ret = do_rollchange();
+
+	return ret;
+}
+
+int run_iap2link_connect(void)
+{
+	// otg set to device.
+        gpio_set_value(USB_HOST_DEVICE_CHANGE, 0);
+
+	m_usbConfigCheck = usb_state_check(1000);
+}
+
+void process_uevent(IPC_SOCKET *ipcPkt)
+{
+	int ret = 0;
+
+	if(ipcPkt->dev == 1) // ipod1 audio 
+	{
+		;
+	}
+	else
+	{
+     		NxDbgMsg(DBG_INFO, "%s() iAP2 Start, curState(%d)", __func__, m_curState);
+		switch(m_curState)
+		{
+			case IAP2_STATE_NONE:
+     				NxDbgMsg(DBG_INFO, "%s() iAP2 Start, start iap2Link\n", __func__);
+				if(ipcPkt->msg == 0) 
+				{
+					NxDbgMsg(DBG_INFO, "%s() Unexpected EVT receive \n", __func__);
+					break;
+				}
+				// iap2 link start. 
+				ret = run_iap2link_start();
+				m_curState = IAP2_STATE_READY;
+				break;
+			case IAP2_STATE_READY:
+     				NxDbgMsg(DBG_INFO, "%s() iAP2 Start, ready. go next step\n", __func__);
+				// iap2 link connect. 
+				ret = run_iap2link_connect();
+				m_curState = IAP2_STATE_LINK;
+				break;
+			case IAP2_STATE_LINK :
+				break;
+			case IAP2_STATE_CONNECTED:
+				break;
+		}
+	}
+}
+
+void Manager_iPodService(void)
+{
+        int sockfd , newfd;  /* listen on sock_fd, new connection on sockId*/
+        struct sockaddr_in my_addr;    /* my address information */
+        struct sockaddr_in their_addr; /* connector's address information */
+        int sin_size;
+        int numbytes;
+        int ret;
+        int optValue = 0x01;
+	IPC_SOCKET ipcPkt;
+
+        if ((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+        {
+                NxDbgMsg(DBG_INFO, "%s() error Socket\n", __func__);
+		return ;	
+        }
+        setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char*)&optValue, sizeof(optValue));
+
+        my_addr.sin_family = AF_INET;         /* host byte order */
+        my_addr.sin_port = htons(DEF_PORT);     /* short, network byte order */
+        my_addr.sin_addr.s_addr = INADDR_ANY; /* auto-fill with my IP */
+        bzero(&(my_addr.sin_zero), 8);        /* zero the rest of the struct */
+        if (bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr))  == -1)
+        {
+                NxDbgMsg(DBG_INFO, "%s() error bind\n", __func__);
+		return ;	
+        }
+
+        if (listen(sockfd, BACKLOG) == -1)
+        {
+                NxDbgMsg(DBG_INFO, "%s() error listen\n", __func__);
+		return ;	
+        }
+
+        sin_size = sizeof(struct sockaddr_in);
+        NxDbgMsg(DBG_INFO, "%s() sinzie:%d, wait for accept\n",__func__, sin_size);
+
+        if ((newfd= accept(sockfd, (struct sockaddr *)&their_addr, &sin_size)) == -1)
+        {
+               	NxDbgMsg(DBG_INFO, "%s(): error accept\n", __func__);
+		return ;	
+        }
+
+        NxDbgMsg(DBG_INFO, "%s() Started socketId(%d)\n", __func__, newfd);
+	while(1)
+	{
+        	NxDbgMsg(DBG_INFO, "run : %s() \n", __func__);
+		if ((numbytes = read(newfd, &ipcPkt, sizeof(IPC_SOCKET))) <= 0)
+		{
+			NxDbgMsg(DBG_INFO, "%s() recv error ret(%d)\n", __func__, numbytes);
+			continue;
+		}
+        	NxDbgMsg(DBG_INFO, ">>>>> %s type:%d, msg:%d, dev:%d\n", __func__, ipcPkt.type, ipcPkt.msg, ipcPkt.dev);
+		switch(ipcPkt.type)
+		{
+			case IPC_TYPE_UEVENT:
+				process_uevent(&ipcPkt);
+				break;
+			default: 
+				NxDbgMsg(DBG_INFO, "%s() RCV Unkown Type\n", __func__);
+				break;
+		}
+
+		usleep(1000);
+	}
+
+}
+
+void Monitor_iPodLink(void)
+{
+        int sockfd ;  /* listen on sock_fd, new connection on new_fd */
+        struct sockaddr_in my_addr;    /* my address information */
+        struct sockaddr_in their_addr; /* connector's address information */
+        int sin_size;
+        int numbytes;
+        int ret;
+        int isRun = 1;
+	IPC_SOCKET ipcPkt;
+
+        if ((sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+        { 
+		NxDbgMsg(DBG_INFO, "SocketReceiver: error Socket  \n");
+        }
+
+        my_addr.sin_family = AF_INET;         /* host byte order */
+        my_addr.sin_port = htons(DEF_PORT);     /* short, network byte order */
+        my_addr.sin_addr.s_addr = INADDR_ANY; /* auto-fill with my IP */
+        bzero(&(my_addr.sin_zero), 8);        /* zero the rest of the struct */
+
+        while(connect(sockfd, (struct sockaddr *)&my_addr, sizeof(my_addr)) == -1)
+        {
+                NxDbgMsg(DBG_INFO, "SocketSender: error connect\n");
+        }
+        NxDbgMsg(DBG_INFO, "%s() socket connected, socketId(%d) \n", __func__, sockfd);
+	g_socketId = sockfd;
+
+
+	// uevent check
+        struct pollfd fds;
+        static char desc[4096];
+
+        uevent_init();
+        fds.fd = uevent_get_fd();
+        fds.events = POLLIN;
+
+	int ipodState;
+	int evt_uevent = 0;
+	int evt_config = 0;
+	// start monitor
+	while(1)
+	{
+		evt_uevent = 0;
+		evt_config = 0;
+                int32_t err = poll(&fds, 1, 10); // 10ms checking? can do ? //1000
+		if(err <= 0) continue;
+                if (fds.revents & POLLIN)
+                {
+                      	int32_t len = uevent_next_event(desc, sizeof(desc) - 1);
+                       	if (len < 1)    continue;
+                       	if (strncmp(desc, IPOD_UEVENT_STRING, strlen(IPOD_UEVENT_STRING)) != 0)
+                                        continue; 
+                }
+		else
+		{
+		}
+
+        	ipodState = GetIPodLinkStatus();
+
+		ipcPkt.type 	= IPC_TYPE_UEVENT;
+		ipcPkt.msg 	= ipodState;
+		ipcPkt.dev	= GetIPodDeviceMode();
+
+	/////////////////////
+	// testing
+	if(ipcPkt.dev == 99)
+	{
+        	NxDbgMsg(DBG_INFO, "%s(ERR) type:%d, msg:%d, dev:%d\n", __func__, ipcPkt.type, ipcPkt.msg, ipcPkt.dev);
+		continue;
+	}
+	/////////////////////
+
+        	NxDbgMsg(DBG_INFO, "[%s] type:%d, msg:%d, dev:%d\n", __func__, ipcPkt.type, ipcPkt.msg, ipcPkt.dev);
+		write(g_socketId, &ipcPkt, sizeof(IPC_SOCKET));
+	}
+}
+
+int main( int argc, char **argv )
+{
+	register_signal();
+	/*---
+	Thread Manager - Manage iPod Service . 
+	Thread Monitor - Monitor iPodLink Status and Run proper each process. 
+	Thread CP Init - Need CP(Apple) init When Start iPod Service
+
+ 	TODO which usgage is more usefule [semaphore, socket etc]when communicate with each thread? 
+	* use semaphore ::
+	* use socket :: comminicate with each other thread. 
+	---*/
+
+	// semaphre CPInit : do CPChip Initialize.
+        pSem_CPInit= NX_CreateSem(0, 1);
+	
+	// thread manager.
+        pthread_create(&m_manager, NULL, (void *)&Manager_iPodService, NULL);
+	// thread monitor .
+        pthread_create(&m_monitor, NULL, (void *)&Monitor_iPodLink, NULL);
+	// thread CP Init .
+        pthread_create(&m_init_cp, NULL, (void *)&cpChip_init, NULL);
+
+
+	// finish
+	while(1) sleep(1);
+
+	return 0;
+}
+

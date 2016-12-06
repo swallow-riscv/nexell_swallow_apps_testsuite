@@ -1,9 +1,0 @@
-[Unit]
-Description=iPod service
-
-[Service]
-Type=forking
-ExecStart=/usr/bin/start_iap2.sh
-
-[Install]
-WantedBy=multi-user.target

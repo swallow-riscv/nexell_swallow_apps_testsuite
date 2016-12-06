@@ -45,7 +45,6 @@
 #define IUIHID_DEV_FILE			"/dev/iuihid"
 #define IAP_DEV_FILE			"/dev/android_iap"
 #define REGNET_SYSFS			"/sys/class/regnet/regnet/regnet_dev"
-#define IAP_UEVENT_STRING		"offline@/devices/platform/c0000000.soc/c0040000.dwc2otg"
 
 #define USB_HOST_DEVICE_CHANGE		PAD_GPIO_B + 20          // avn
 #define USB_OTG_POWER			PAD_GPIO_ALV + 5
@@ -597,6 +596,46 @@ void process_recvpacket_thread(iAP2LinkRunLoop_t* linkRunLoop)
 			GetTickCountMs() - time_ipod_service_start );
 }
 
+void process_chkstatus_thread(iAP2LinkRunLoop_t* linkRunLoop)
+{
+	int i = 0, ret = 0;
+	char cmdString[1024];
+
+	sprintf(cmdString, "ping6 -W 2 -c 1 -q fe80::983b:fcff:fe66:e846%%usb0 > /dev/null");
+	do {
+		ret = system(cmdString);
+	} while (ret != 0);
+
+	while (!iapCtrl.iap2.g_exit && !iapCtrl.iap2.g_iapWriteError)
+	{
+		sprintf(cmdString, "ping6 -W 1 -c 1 -L -q ff02::1%%usb0 > /dev/null");
+		ret = system(cmdString);
+		if (ret == 256) 
+		{
+			NxDbgMsg(DBG_INFO,"usb is disconnected!!!!!!!!!\n");
+			time_ipod_service_stop = GetTickCountMs();
+			// cleanup the link. 
+			iAP2LinkRunLoopDetached(linkRunLoop);
+			iAP2LinkRunLoopDelete(linkRunLoop);
+			break;
+		}
+
+		// TODO:: 
+		usleep(100);
+	}
+
+
+	iapCtrl.iap2.g_exit = 1;
+#if 0
+	evtProcess_disconnect();
+#else
+	iapCtrl.iap2.m_curState = IAP2_STATE_CLOSE;
+	gPhaseStateFunc[iapCtrl.iap2.m_curState].func(0); 
+#endif
+
+	NxDbgMsg(DBG_DEBUG, "%s() exit\n", __func__);
+}
+
 int doConnectIAP2packet(void)
 {
         void *context = NULL;
@@ -762,6 +801,10 @@ int iap2Func_PhaseConnected(int msg)
         RunProcess("mdnsd", "");
         system("am start -a android.intent.action.MAIN -n com.ect.smartcarsync/com.ect.smartcarsync.MainActivity");
 #endif
+	// check the link-disconnect .
+        pthread_create(&iapCtrl.iap2.m_thread_chkstat, NULL,
+		       (void*)&process_chkstatus_thread, linkRunLoop) ;
+
 	return 0;
 }
 
@@ -1015,20 +1058,6 @@ NxDbgMsg(DBG_INFO, "---------- get uevent (%d) ms\n", GetTickCountMs());
 			if (strncmp(desc, IPOD_USBCONFIG_STRING, strlen(IPOD_USBCONFIG_STRING)) == 0)
 			{
 				evtProcess_usbConfig();
-			}
-			if (strncmp(desc, IAP_UEVENT_STRING, strlen(IAP_UEVENT_STRING)) == 0)
-			{
-				time_ipod_service_stop = GetTickCountMs();
-				// cleanup the link.
-				iAP2LinkRunLoopDetached(linkRunLoop);
-				iAP2LinkRunLoopDelete(linkRunLoop);
-
-				iapCtrl.iap2.g_exit = 1;
-
-				iapCtrl.iap2.m_curState = IAP2_STATE_CLOSE;
-				gPhaseStateFunc[iapCtrl.iap2.m_curState].func(0);
-
-				NxDbgMsg(DBG_DEBUG, "%s() exit\n", __func__);
 			}
                 }
 	}

@@ -14,6 +14,9 @@
 #include "xf86drm.h"
 #include "dp.h"
 #include "dp_common.h"
+#include <nx-drm-allocator.h>
+#include <inttypes.h>
+#include <assert.h>
 
 #include <linux/videodev2.h>
 #include "media-bus-format.h"
@@ -26,10 +29,19 @@
 #define ALIGN(x, a) (((x) + (a) - 1) & ~((a) - 1))
 #endif
 
+#define PAGE_SIZE 4096
+
 #define MAX_BUFFER_COUNT	4
 
 #define YUV_STRIDE_ALIGN_FACTOR		64
 #define YUV_STRIDE(w)	ALIGN(w, YUV_STRIDE_ALIGN_FACTOR)
+
+#define NX_PLANE_TYPE_RGB       (0<<4)
+#define NX_PLANE_TYPE_VIDEO     (1<<4)
+#define NX_PLANE_TYPE_UNKNOWN   (0xFFFFFFF)
+
+#define VIDEO_FORMAT_FIRST_INDEX	-1
+#define RGB_FORMAT_FIRST_INDEX		13
 
 static const uint32_t dp_formats[] = {
 
@@ -72,6 +84,12 @@ static const uint32_t dp_formats[] = {
 	DRM_FORMAT_XBGR8888,
 };
 
+struct dp_framebuffer *dp_framebuffer_interlace_config(struct dp_device *device,
+	uint32_t format, int width, int height, bool seperate,
+	int gem_fd, int size);
+
+int get_plane_index_by_type(struct dp_device *device, uint32_t port, uint32_t type);
+
 static size_t calc_alloc_size(uint32_t w, uint32_t h, uint32_t f)
 {
 	uint32_t y_stride = ALIGN(w, 32);
@@ -105,8 +123,7 @@ static size_t calc_alloc_size_interlace(uint32_t w, uint32_t h, uint32_t f, uint
 	uint32_t y_stride = ALIGN(w, 128);
 	uint32_t y_size = y_stride * ALIGN(h, 16);
 	size_t size = 0;
-	uint32_t y, cb, cr;
-	uint32_t lu_stride, cb_stride, cr_stride;
+	uint32_t y = 0, cb = 0, cr = 0;
 
 	switch (f) {
 	case V4L2_PIX_FMT_YUYV:
@@ -133,6 +150,42 @@ static size_t calc_alloc_size_interlace(uint32_t w, uint32_t h, uint32_t f, uint
 	return size;
 }
 
+static uint32_t get_pixel_byte(uint32_t rgb_format)
+{
+	switch (rgb_format) {
+	case DRM_FORMAT_RGB565:
+	case DRM_FORMAT_BGR565:
+		return 2;
+
+	case DRM_FORMAT_RGB888:
+	case DRM_FORMAT_BGR888:
+		return 3;
+
+	case DRM_FORMAT_XRGB8888:
+	case DRM_FORMAT_XBGR8888:
+	case DRM_FORMAT_ARGB8888:
+	case DRM_FORMAT_ABGR8888:
+		return 4;
+
+	default:
+		DP_ERR("%s: not support drm_rgb_format(0x%x)\n",
+				__func__, rgb_format);
+		return 0;
+	}
+}
+
+static size_t calc_alloc_size_rgb(uint32_t w, uint32_t h, uint32_t f_idx)
+{
+	uint32_t format = dp_formats[f_idx];
+	uint32_t pixelbyte = get_pixel_byte(format);
+	size_t size = 0;
+
+	size = w * h * pixelbyte;
+	size = ALIGN(size, PAGE_SIZE);
+
+	return size;
+}
+
 static uint32_t choose_format(struct dp_plane *plane, int select)
 {
 	uint32_t format;
@@ -150,7 +203,8 @@ static uint32_t choose_format(struct dp_plane *plane, int select)
 		return -EINVAL;
 	}
 
-	DP_LOG("format: %s\n", dp_forcc_name(format));
+	DP_DBG("format: %s\n", dp_forcc_name(format));
+
 	return format;
 }
 
@@ -173,14 +227,20 @@ struct dp_device * dp_device_init(int fd)
 	return device;
 }
 
-int dp_plane_update(struct dp_device *device, struct dp_framebuffer *fb, uint32_t w, uint32_t h)
+int dp_plane_update(struct dp_device *device, struct dp_framebuffer *fb, uint32_t w, uint32_t h, uint32_t p)
 {
-	int d_idx = 0/*overlay*/, p_idx = 0, err;
+	int err;
 	struct dp_plane *plane;
+	uint32_t video_type, video_index;
 
-	plane = dp_device_find_plane_by_index(device,
-						      d_idx, p_idx);
+	video_type = DRM_PLANE_TYPE_OVERLAY | NX_PLANE_TYPE_VIDEO;
+	video_index = get_plane_index_by_type(device, p, video_type);
+	if (video_index < 0) {
+		DP_ERR("fail : not found matching layer\n");
+		return -EINVAL;
+	}
 
+	plane = device->planes[video_index];
 	if (!plane) {
 		DP_ERR("no overlay plane found\n");
 		return -EINVAL;
@@ -195,17 +255,24 @@ int dp_plane_update(struct dp_device *device, struct dp_framebuffer *fb, uint32_
 }
 
 struct dp_framebuffer * dp_buffer_init(
-	struct dp_device *device, int  x, int y, int gem_fd)
+	struct dp_device *device, int  x, int y, int gem_fd, uint32_t p)
 {
 	struct dp_framebuffer *fb = NULL;
-	int d_idx = 0, p_idx = 0, op_format = 8/*YUV420*/;
+	int op_format = 8/*YUV420*/;
 	struct dp_plane *plane;
 
 	uint32_t format;
 	int err;
+	uint32_t video_type, video_index;
 
-	plane = dp_device_find_plane_by_index(device,
-					      d_idx, p_idx);
+	video_type = DRM_PLANE_TYPE_OVERLAY | NX_PLANE_TYPE_VIDEO;
+	video_index = get_plane_index_by_type(device, p, video_type);
+	if (video_index < 0) {
+		DP_ERR("fail : not found matching layer\n");
+		return NULL;
+	}
+
+	plane = device->planes[video_index];
 	if (!plane) {
 		DP_ERR("no overlay plane found\n");
 		return NULL;
@@ -224,42 +291,198 @@ struct dp_framebuffer * dp_buffer_init(
 	fb = dp_framebuffer_config(device, format, x, y, 0, gem_fd,
 		calc_alloc_size(x,y,format));
 
-	if (!fb)
-	{
+	if (!fb) {
 		DP_ERR("fail : framebuffer create Fail \n");
 		return NULL;
 	}
 
 	err = dp_framebuffer_addfb2(fb);
-	if (err<0)
-	{
+	if (err<0) {
 		DP_ERR("fail : framebuffer add Fail \n");
-		if (fb)
-		{
+		if (fb) {
 			dp_framebuffer_free(fb);
 		}
+
 		return NULL;
 	}
 
 	return fb;
 }
 
+void get_display_resolution(struct dp_device *device,
+		uint32_t *width, uint32_t *height)
+{
+	int i = 0;
+
+	DP_DBG("Screens: %u\n", device->num_screens);
+
+	for (i = 0; i < device->num_screens; i++) {
+		struct dp_screen *screen = device->screens[i];
+		const char *status = "disconnected";
+
+		if (screen->connected) {
+			status = "connected";
+
+			*width = screen->width;
+			*height = screen->height;
+		}
+
+		DP_DBG("  %u: %x\n", i, screen->id);
+		DP_DBG("    Status: %s\n", status);
+		DP_DBG("    Name: %s\n", screen->name);
+		DP_DBG("    Resolution: %ux%u\n", screen->width,
+				screen->height);
+	}
+
+}
+
+/* type : DRM_PLANE_TYPE_OVERLAY | NX_PLANE_TYPE_VIDEO */
+int get_plane_index_by_type(struct dp_device *device, uint32_t port, uint32_t type)
+{
+	int i = 0, j = 0;
+	int ret = -1;
+	drmModeObjectPropertiesPtr props;
+	uint32_t plane_type = -1;
+	int find_idx = 0;
+	int prop_type = -1;
+
+	/* type overlay or primary or cursor */
+	int layer_type = type & 0x3;
+	/*	display_type video : 1 << 4, rgb : 0 << 4	*/
+	int display_type = type & 0xf0;
+
+	for (i = 0; i < device->num_planes; i++) {
+		props = drmModeObjectGetProperties(device->fd,
+					device->planes[i]->id,
+					DRM_MODE_OBJECT_PLANE);
+		if (!props)
+			return -ENODEV;
+
+		prop_type = -1;
+		plane_type = NX_PLANE_TYPE_VIDEO;
+
+		for (j = 0; j < props->count_props; j++) {
+			drmModePropertyPtr prop;
+
+			prop = drmModeGetProperty(device->fd, props->props[j]);
+			if (prop) {
+				DP_DBG("plane.%2d %d.%d [%s]\n",
+					device->planes[i]->id,
+					props->count_props,
+					j,
+					prop->name);
+
+				if (strcmp(prop->name, "type") == 0)
+					prop_type = (int)props->prop_values[j];
+
+				if (strcmp(prop->name, "alphablend") == 0)
+					plane_type = NX_PLANE_TYPE_RGB;
+
+				drmModeFreeProperty(prop);
+			}
+		}
+		drmModeFreeObjectProperties(props);
+
+		DP_DBG("prop type : %d, layer type : %d\n",
+				prop_type, layer_type);
+		DP_DBG("disp type : %d, plane type : %d\n",
+				display_type, plane_type);
+		DP_DBG("find idx : %d, port : %d\n\n",
+				find_idx, port);
+
+		if (prop_type == layer_type && display_type == plane_type
+				&& find_idx == port) {
+			ret = i;
+			break;
+		}
+
+		if (prop_type == layer_type && display_type == plane_type)
+			find_idx++;
+
+		if (find_idx > port)
+			break;
+	}
+
+	return ret;
+}
+
+int get_plane_prop_id_by_property_name(int drm_fd, uint32_t plane_id,
+		char *prop_name)
+{
+	int res = -1;
+	drmModeObjectPropertiesPtr props;
+	props = drmModeObjectGetProperties(drm_fd, plane_id,
+			DRM_MODE_OBJECT_PLANE);
+
+	if (props) {
+		int i;
+
+		for (i = 0; i < props->count_props; i++) {
+			drmModePropertyPtr this_prop;
+			this_prop = drmModeGetProperty(drm_fd, props->props[i]);
+
+			if (this_prop) {
+				DP_DBG("prop name : %s, prop id: %d, param prop id: %s\n",
+						this_prop->name,
+						this_prop->prop_id,
+						prop_name
+						);
+
+				if (!strncmp(this_prop->name, prop_name,
+							DRM_PROP_NAME_LEN)) {
+
+					res = this_prop->prop_id;
+
+					drmModeFreeProperty(this_prop);
+					break;
+				}
+				drmModeFreeProperty(this_prop);
+			}
+		}
+		drmModeFreeObjectProperties(props);
+	}
+
+	return res;
+}
+
+int set_priority_video_plane(struct dp_device *device, uint32_t plane_idx,
+		uint32_t set_idx)
+{
+	uint32_t plane_id = device->planes[plane_idx]->id;
+	uint32_t prop_id = get_plane_prop_id_by_property_name(device->fd,
+							plane_id,
+							"video-priority");
+	int res = -1;
+
+	res = drmModeObjectSetProperty(device->fd,
+			plane_id,
+			DRM_MODE_OBJECT_PLANE,
+			prop_id,
+			set_idx);
+
+	return res;
+}
+
 struct dp_framebuffer * dp_buffer_init_interlace(
-	struct dp_device *device, int  x, int y, int gem_fd, uint32_t t)
+	struct dp_device *device, int  x, int y, int gem_fd, uint32_t t,
+	uint32_t p)
 {
 	struct dp_framebuffer *fb = NULL;
-	int d_idx = 0, p_idx = 0, op_format = 8/*YUV420*/;
+	int op_format = 8/*YUV420*/;
 	struct dp_plane *plane;
 
 	uint32_t format;
 	int err;
 
-	plane = dp_device_find_plane_by_index(device,
-					      d_idx, p_idx);
-	if (!plane) {
-		DP_ERR("no overlay plane found\n");
+	uint32_t video_type, video_index;
+
+	video_type = DRM_PLANE_TYPE_OVERLAY | NX_PLANE_TYPE_VIDEO;
+	video_index = get_plane_index_by_type(device, p, video_type);
+	if (video_index < 0) {
+		DP_ERR("fail : not found matching layer\n");
 		return NULL;
 	}
+	plane = device->planes[video_index];
 
 	/*
 	 * set plane format
@@ -282,10 +505,10 @@ struct dp_framebuffer * dp_buffer_init_interlace(
 	{
 		DP_ERR("fail : framebuffer create Fail \n");
 		return NULL;
-	}	
+	}
 
 	err = dp_framebuffer_addfb2(fb);
-	if (err<0)
+	if (err < 0)
 	{
 		DP_ERR("fail : framebuffer add Fail \n");
 		if (fb)
@@ -298,15 +521,137 @@ struct dp_framebuffer * dp_buffer_init_interlace(
 	return fb;
 }
 
+void dealloc_rgb_framebuffer(int drm_fd, struct dp_framebuffer **fb,
+		int *dma_fd, int *gem_fd)
+{
+	if (*fb) {
+		dp_framebuffer_delfb2(*fb);
+		*fb = NULL;
+	}
+
+	if (*dma_fd >= 0)
+		close(*dma_fd);
+
+	if (*gem_fd >= 0)
+		nx_free_gem(drm_fd, *gem_fd);
+}
+
+
+
+int alloc_rgb_framebuffer(struct dp_device *device, uint32_t w, uint32_t h,
+			uint32_t f_idx, int drm_fd, int *gem_fd, int *dma_fd,
+			struct dp_framebuffer **fb, void **vaddr, uint32_t p)
+{
+	size_t alloc_size = 0;
+	uint32_t rgb_type, rgb_index;
+	struct dp_plane *plane;
+	int err;
+	uint32_t format;
+
+	alloc_size = calc_alloc_size_rgb(w, h, f_idx);
+	if (alloc_size <= 0) {
+		DP_ERR("invalid alloc size %lu\n", alloc_size);
+		return -1;
+	}
+
+	*gem_fd = nx_alloc_gem(drm_fd, alloc_size, 0);
+	if (gem_fd < 0) {
+		DP_ERR("failed to alloc_gem\n");
+		return -2;
+	}
+
+	*dma_fd = nx_gem_to_dmafd(drm_fd, *gem_fd);
+	if (dma_fd < 0) {
+		DP_ERR("failed to gem_to_dmafd\n");
+		return -3;
+	}
+
+	rgb_type = DRM_PLANE_TYPE_OVERLAY | NX_PLANE_TYPE_RGB;
+	rgb_index = get_plane_index_by_type(device, p, rgb_type);
+	if (rgb_index < 0) {
+		DP_ERR("fail : not found matching layer\n");
+		return -4;
+	}
+	plane = device->planes[rgb_index];
+
+	format = choose_format(plane, f_idx);
+	if (!format) {
+		DP_ERR("fail : no matching format found\n");
+		return -5;
+	}
+
+	*fb = dp_framebuffer_config(device, format, w, h, 0, *gem_fd,
+			alloc_size);
+	if (!(*fb)) {
+		DP_ERR("fail : framebuffer create Fail \n");
+		return -6;
+	}
+
+	err = dp_framebuffer_addfb2(*fb);
+	if (err < 0) {
+		DP_ERR("fail : framebuffer add Fail \n");
+		if (*fb)
+			dp_framebuffer_free(*fb);
+
+		return -7;
+	}
+
+	if (get_vaddr(drm_fd, *gem_fd, alloc_size, vaddr)) {
+		printf( "failed to get_vaddr gem_fd : %d", *gem_fd);
+		return -8;
+	}
+
+	return 0;
+}
+
+void draw_rgb_overlay(int width, int height, uint32_t pixelbyte, void *vaddr)
+{
+	DP_DBG("width : %d, height : %d, pixelbyte : %d, vaddr : %p\n",
+			width, height, pixelbyte, vaddr);
+
+	if (vaddr != NULL) {
+		memset(vaddr, 0, width * height * pixelbyte);
+		/* draw red box at (0, 0) -- (150, 150) */
+		{
+			uint32_t color = 0xffff0000;
+			int i, j;
+			uint32_t *pbuf = (uint32_t *)vaddr;
+
+			for (i = 0; i < 150; i++) {
+				for (j = 0; j < 150; j++) {
+					pbuf[i * width + j] = color;
+				}
+			}
+		}
+	}
+}
+
 int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 		uint32_t h, uint32_t sw, uint32_t sh, uint32_t f,
-		uint32_t bus_f, uint32_t count, uint32_t t)
+		uint32_t bus_f, uint32_t count, uint32_t t, uint32_t p,
+		uint32_t o)
 {
 	int ret;
 	int gem_fds[MAX_BUFFER_COUNT] = { -1, };
 	int dma_fds[MAX_BUFFER_COUNT] = { -1, };
 	struct dp_framebuffer *fbs[MAX_BUFFER_COUNT] = {NULL,};
 	size_t alloc_size = 0;
+
+	uint32_t video_type, video_index;
+	uint32_t rgb_type, rgb_index;
+	int res = -1;
+
+	int rgb_gem_fd = -1;
+	int rgb_dma_fd = -1;
+	struct dp_framebuffer *rgb_fb = NULL;
+	struct dp_plane *plane;
+
+	uint32_t dp_width = 0;
+	uint32_t dp_height = 0;
+	void *vaddr;
+	uint32_t pixelbyte;
+	int format;
+	int overlay = 0;
 
 	DP_DBG("m: %d, w: %d, h: %d, sw : %d, sh : %d, f: %d, bus_f: %d, c: %d, type : %d\n",
 	       m, w, h, sw, sh, f, bus_f, count, t);
@@ -485,20 +830,22 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 		struct dp_framebuffer *fb;
 
 		if (t == V4L2_FIELD_INTERLACED)
-			fb = dp_buffer_init_interlace(device, w, h, gem_fd, t);
+			fb = dp_buffer_init_interlace(device, w, h, gem_fd, t,
+					p);
 		else
-			fb = dp_buffer_init(device, w,h,gem_fd);
-
+			fb = dp_buffer_init(device, w, h, gem_fd, p);
 		if (!fb) {
 			DP_ERR("fail : framebuffer Init %m\n");
 			ret = -1;
 			return ret;
 		}
+
 		fbs[i] = fb;
 		gem_fds[i] = gem_fd;
 		dma_fds[i] = dma_fd;
 	}
-	// qbuf
+
+	/*	qbuf	*/
 	for (i = 0; i < MAX_BUFFER_COUNT; i++) {
 		ret = nx_v4l2_qbuf(clipper_video_fd, nx_clipper_video, 1, i,
 				   &dma_fds[i], (int *)&alloc_size);
@@ -506,6 +853,61 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 			DP_ERR("failed qbuf index %d\n", i);
 			return ret;
 		}
+	}
+
+	/*	set video priority	*/
+	video_type = DRM_PLANE_TYPE_OVERLAY | NX_PLANE_TYPE_VIDEO;
+	video_index = get_plane_index_by_type(device, p, video_type);
+	if (video_index < 0) {
+		DP_ERR("fail : not found matching layer\n");
+		return -1;
+	}
+
+	rgb_type = DRM_PLANE_TYPE_OVERLAY | NX_PLANE_TYPE_RGB;
+	rgb_index = get_plane_index_by_type(device, p, rgb_type);
+	if (rgb_index < 0) {
+		DP_ERR("fail : not found matching layer\n");
+		return -1;
+	}
+
+	res = set_priority_video_plane(device, video_index, 1);
+	if (res) {
+		DP_ERR("failed setting priority : %d\n", res);
+		return res;
+	}
+
+	get_display_resolution(device, &dp_width, &dp_height);
+	if (dp_width <= 0 || dp_height <= 0) {
+		DP_ERR("fail : not found supporting resolution. %dx%d\n",
+				dp_width, dp_height);
+		return -1;
+	}
+
+	if ( o < 1 || o > 8) {
+		DP_ERR("not support drawing overlay format.\n");
+		overlay = 0;
+	} else
+		overlay = 1;
+
+	if (overlay) {
+		/*	alloc framebuffer rgb layer	*/
+		res = alloc_rgb_framebuffer(device, dp_width, dp_height,
+				RGB_FORMAT_FIRST_INDEX + o,
+				drm_fd, &rgb_gem_fd, &rgb_dma_fd, &rgb_fb,
+				&vaddr, p);
+		if (res < 0)
+			DP_ERR("failed allocation rgb framebuffer : %d\n",
+					res);
+
+		plane = device->planes[rgb_index];
+		dp_plane_set(plane, rgb_fb, 0, 0, dp_width, dp_height, 0, 0,
+				dp_width, dp_height);
+
+		format = choose_format(plane, RGB_FORMAT_FIRST_INDEX + o);
+		pixelbyte = get_pixel_byte(format);
+
+		/* draw overlay */
+		draw_rgb_overlay(dp_width, dp_height, pixelbyte, vaddr);
 	}
 
 	ret = nx_v4l2_streamon(clipper_video_fd, nx_clipper_video);
@@ -532,7 +934,7 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 			DP_ERR("failed qbuf index %d\n", dq_index);
 			return ret;
 		}
-		ret = dp_plane_update(device,fbs[dq_index],w,h);
+		ret = dp_plane_update(device, fbs[dq_index], w, h, p);
 	/*	if (ret) {
 			DP_ERR("failed plane update \n");
 			return ret;
@@ -555,6 +957,10 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 		if (gem_fds[i] >= 0)
 			nx_free_gem(drm_fd, gem_fds[i]);
 	}
+	if (overlay)
+		dealloc_rgb_framebuffer(drm_fd, &rgb_fb, &rgb_dma_fd,
+				&rgb_gem_fd);
+
 	return ret;
 }
 
@@ -565,11 +971,13 @@ int main(int argc, char *argv[])
 	struct dp_device *device;
 	int dbg_on = 0;
 	uint32_t sw = 0, sh = 0;
+	uint32_t port = 0;
+	uint32_t overlay_draw_format = -1;
 
 	dp_debug_on(dbg_on);
 
 	ret = handle_option(argc, argv, &m, &w, &h, &sw, &sh, &f, &bus_f,
-			&count, &t);
+			&count, &t, &port, &overlay_draw_format);
 	if (ret) {
 		DP_ERR("failed to handle_option\n");
 		return ret;
@@ -587,7 +995,8 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	err = camera_test(device, drm_fd, m, w, h, sw, sh, f, bus_f, count, t);
+	err = camera_test(device, drm_fd, m, w, h, sw, sh, f, bus_f, count, t,
+			port, overlay_draw_format);
 	if (err < 0) {
 		DP_ERR("failed to do camera_test \n");
 		return -1;

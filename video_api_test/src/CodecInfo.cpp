@@ -3,11 +3,11 @@
 
 //  FFMPEG Headers
 #ifdef __cplusplus
- #define __STDC_CONSTANT_MACROS
- #ifdef _STDINT_H
-  #undef _STDINT_H
- #endif
- # include <stdint.h>
+#define __STDC_CONSTANT_MACROS
+#ifdef _STDINT_H
+#undef _STDINT_H
+#endif
+#include <stdint.h>
 #endif
 
 #ifdef __cplusplus
@@ -22,20 +22,37 @@ extern "C"{
 #define MKTAG(a,b,c,d) (a | (b << 8) | (c << 16) | (d << 24))
 #endif
 
+#ifndef AV_CODEC_ID_H264
+#define AV_CODEC_ID_H264		CODEC_ID_H264
+#define AV_CODEC_ID_MPEG2VIDEO	CODEC_ID_MPEG2VIDEO
+#define AV_CODEC_ID_MPEG4		CODEC_ID_MPEG4
+#define AV_CODEC_ID_MSMPEG4V3	CODEC_ID_MSMPEG4V3
+#define AV_CODEC_ID_H263		CODEC_ID_H263
+#define AV_CODEC_ID_H263P		CODEC_ID_H263P
+#define AV_CODEC_ID_H263I		CODEC_ID_H263I
+#define AV_CODEC_ID_WMV3		CODEC_ID_WMV3
+#define AV_CODEC_ID_VC1			CODEC_ID_VC1
+#define AV_CODEC_ID_RV30		CODEC_ID_RV30
+#define AV_CODEC_ID_RV40		CODEC_ID_RV40
+#define AV_CODEC_ID_VP8			CODEC_ID_VP8
+#define AV_CODEC_ID_FLV1		CODEC_ID_FLV1
+#define AV_CODEC_ID_THEORA		CODEC_ID_THEORA
+#define AV_CODEC_ID_MJPEG		CODEC_ID_MJPEG
+#endif
 
 unsigned int CodecIdToV4l2Type(int codecId, unsigned int fourcc)
 {
 	unsigned int v4l2CodecType = -1;
 
-	if (codecId == CODEC_ID_H264)
+	if (codecId == AV_CODEC_ID_H264)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_H264;
 	}
-	else if (codecId == CODEC_ID_MPEG2VIDEO)
+	else if (codecId == AV_CODEC_ID_MPEG2VIDEO)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_MPEG2;
 	}
-	else if (codecId == CODEC_ID_MPEG4 || codecId == CODEC_ID_MSMPEG4V3)
+	else if (codecId == AV_CODEC_ID_MPEG4 || codecId == AV_CODEC_ID_MSMPEG4V3)
 	{
 		switch (fourcc)
 		{
@@ -67,39 +84,39 @@ unsigned int CodecIdToV4l2Type(int codecId, unsigned int fourcc)
 			break;
 		}
 	}
-	else if (codecId == CODEC_ID_H263 || codecId == CODEC_ID_H263P || codecId == CODEC_ID_H263I)
+	else if (codecId == AV_CODEC_ID_H263 || codecId == AV_CODEC_ID_H263P || codecId == AV_CODEC_ID_H263I)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_H263;
 	}
-	else if (codecId == CODEC_ID_WMV3)
+	else if (codecId == AV_CODEC_ID_WMV3)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_WMV9;
 	}
-	else if (codecId == CODEC_ID_VC1)
+	else if (codecId == AV_CODEC_ID_VC1)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_WVC1;
 	}
-	else if (codecId == CODEC_ID_RV30)
+	else if (codecId == AV_CODEC_ID_RV30)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_RV8;
 	}
-	else if (codecId == CODEC_ID_RV40)
+	else if (codecId == AV_CODEC_ID_RV40)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_RV9;
 	}
-	else if (codecId == CODEC_ID_VP8)
+	else if (codecId == AV_CODEC_ID_VP8)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_VP8;
 	}
-	else if (codecId == CODEC_ID_FLV1)
+	else if (codecId == AV_CODEC_ID_FLV1)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_FLV1;
 	}
-	else if (codecId == CODEC_ID_THEORA)
+	else if (codecId == AV_CODEC_ID_THEORA)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_THEORA;
 	}
-	else if (codecId == CODEC_ID_MJPEG)
+	else if (codecId == AV_CODEC_ID_MJPEG)
 	{
 		v4l2CodecType = V4L2_PIX_FMT_MJPEG;
 	}

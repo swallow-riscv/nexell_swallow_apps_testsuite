@@ -12,6 +12,10 @@ typedef struct CODEC_APP_DATA {
 	/* Input Options */
 	char *inFileName;			/* Input File Name */
 
+	/* for Decoder Only Options */
+	int32_t iSeekStartFrame;	/* Seek Start Frame */
+	int32_t iSeekPos;			/* Seek Position */
+
 	/* for Encoder Only Options */
 	int32_t width;				/* Input YUV Image Width */
 	int32_t height;				/* Input YUV Image Height */

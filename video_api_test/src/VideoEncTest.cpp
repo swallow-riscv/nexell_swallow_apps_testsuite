@@ -35,12 +35,11 @@
 #include "NX_CV4l2Camera.h"
 #include "Util.h"
 
-#define ENABLE_DRM_DISPLAY
 #define ENABLE_ASPECT_RATIO
 #define SCREEN_WIDTH	(1080)
 #define SCREEN_HEIGHT	(1920)
 
-#ifdef ENABLE_DRM_DISPLAY
+#if ENABLE_DRM_DISPLAY
 #include <drm_fourcc.h>
 #include "DrmRender.h"
 #endif
@@ -116,9 +115,11 @@ static int32_t LoadImage(uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO
 	case V4L2_PIX_FMT_YUV420M:
 	case V4L2_PIX_FMT_NV12M:
 	case V4L2_PIX_FMT_NV21M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_YUV420:
 	case DRM_FORMAT_NV12:
 	case DRM_FORMAT_NV21:
+#endif
 		cWidth = w / 2;
 		cHeight = h / 2;
 		if (planeNum == 1)
@@ -131,9 +132,11 @@ static int32_t LoadImage(uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO
 	case V4L2_PIX_FMT_YUV422M:
 	case V4L2_PIX_FMT_NV16M:
 	case V4L2_PIX_FMT_NV61M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_YUV422:
 	case DRM_FORMAT_NV16:
 	case DRM_FORMAT_NV61:
+#endif
 		cWidth = w / 2;
 		cHeight = h;
 		if (planeNum == 1)
@@ -146,7 +149,9 @@ static int32_t LoadImage(uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO
 	case V4L2_PIX_FMT_YUV444M:
 	case V4L2_PIX_FMT_NV24M:
 	case V4L2_PIX_FMT_NV42M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_YUV444:
+#endif
 		cWidth = w;
 		cHeight = h;
 		if (planeNum == 1)
@@ -164,9 +169,11 @@ static int32_t LoadImage(uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO
 	case V4L2_PIX_FMT_YUV420M:
 	case V4L2_PIX_FMT_YUV422M:
 	case V4L2_PIX_FMT_YUV444M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_YUV420:
 	case DRM_FORMAT_YUV422:
 	case DRM_FORMAT_YUV444:
+#endif
 		for (i=1 ; i<3 ; i++)
 		{
 			if (planeNum > 1)
@@ -188,8 +195,10 @@ static int32_t LoadImage(uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO
 	case V4L2_PIX_FMT_NV12M:
 	case V4L2_PIX_FMT_NV16M:
 	case V4L2_PIX_FMT_NV24M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_NV12:
 	case DRM_FORMAT_NV16:
+#endif
 		if (planeNum > 1)
 			pDst = (uint8_t *)pImg->pBuffer[1];
 		else
@@ -210,8 +219,10 @@ static int32_t LoadImage(uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO
 	case V4L2_PIX_FMT_NV21M:
 	case V4L2_PIX_FMT_NV61M:
 	case V4L2_PIX_FMT_NV42M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_NV21:
 	case DRM_FORMAT_NV61:
+#endif
 		if (planeNum > 1)
 			pDst = (uint8_t *)pImg->pBuffer[1];
 		else
@@ -239,25 +250,31 @@ static int32_t GetImgInfo(uint32_t format, int32_t lSize, int *Size)
 	case V4L2_PIX_FMT_YUV420M:
 	case V4L2_PIX_FMT_NV12M:
 	case V4L2_PIX_FMT_NV21M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_YUV420:
 	case DRM_FORMAT_NV12:
 	case DRM_FORMAT_NV21:
+#endif
 		*Size = lSize * 3 / 2;
 		break;
 
 	case V4L2_PIX_FMT_YUV422M:
 	case V4L2_PIX_FMT_NV16M:
 	case V4L2_PIX_FMT_NV61M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_YUV422:
 	case DRM_FORMAT_NV16:
 	case DRM_FORMAT_NV61:
+#endif
 		*Size = lSize * 2;
 		break;
 
 	case V4L2_PIX_FMT_YUV444M:
 	case V4L2_PIX_FMT_NV24M:
 	case V4L2_PIX_FMT_NV42M:
+#if ENABLE_DRM_DISPLAY
 	case DRM_FORMAT_YUV444:
+#endif
 		*Size = lSize * 3;
 		break;
 
@@ -278,7 +295,7 @@ static int32_t GetImgInfo(uint32_t format, int32_t lSize, int *Size)
 static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 {
 	NX_V4L2ENC_HANDLE hEnc = NULL;
-#ifdef ENABLE_DRM_DISPLAY
+#if ENABLE_DRM_DISPLAY
 	DRM_DSP_HANDLE hDsp = NULL;
 #endif
 	NX_VIP_INFO info;
@@ -318,7 +335,7 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 	{
 		int drmFd = open("/dev/dri/card0", O_RDWR);
 
-#ifdef ENABLE_DRM_DISPLAY
+#if ENABLE_DRM_DISPLAY
 		hDsp = CreateDrmDisplay(drmFd);
 		DRM_RECT srcRect, dstRect;
 
@@ -359,7 +376,7 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 	{
 		memset( &info, 0x00, sizeof(info) );
 
-		info.iModule		= 0; 
+		info.iModule		= 0;
 		info.iSensorId		= nx_sensor_subdev;
 		info.bUseMipi		= true;
 
@@ -498,7 +515,7 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 			}
 
 
-#ifdef ENABLE_DRM_DISPLAY
+#if ENABLE_DRM_DISPLAY
 			UpdateBuffer(hDsp, pBuf, NULL);
 #endif
 			memset(&encIn, 0, sizeof(NX_V4L2ENC_IN));
@@ -570,7 +587,7 @@ CAM_ENC_TERMINATE:
 static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 {
 	NX_V4L2ENC_HANDLE hEnc = NULL;
-#ifdef ENABLE_DRM_DISPLAY
+#if ENABLE_DRM_DISPLAY
 	DRM_DSP_HANDLE hDsp = NULL;
 #endif
 	NX_VID_MEMORY_HANDLE hImage[IMAGE_BUFFER_NUM];
@@ -597,7 +614,7 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 	{
 		int drmFd = open("/dev/dri/card0", O_RDWR);
 
-#ifdef ENABLE_DRM_DISPLAY
+#if ENABLE_DRM_DISPLAY
 		hDsp = CreateDrmDisplay(drmFd);
 		DRM_RECT srcRect, dstRect;
 
@@ -763,7 +780,7 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 				LoadImage(pSrcBuf, inWidth, inHeight, hImage[index]);
 			}
 
-#ifdef ENABLE_DRM_DISPLAY
+#if ENABLE_DRM_DISPLAY
 			UpdateBuffer(hDsp, hImage[index], NULL);
 #endif
 

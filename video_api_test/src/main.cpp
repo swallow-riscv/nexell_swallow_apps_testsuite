@@ -47,6 +47,9 @@ void print_usage(const char *appName)
 		"     -o [output file name]      [O]   : output file name\n"
 		"     -h : help\n"
 		" -------------------------------------------------------------------------------------------------------------------\n"
+		"  only decoder options :\n"
+		"     -j [seek frame],           [O]   : seek frame\n"
+		" -------------------------------------------------------------------------------------------------------------------\n"
 		"  only encoder options :\n"
 		"     -c [codec]                 [O]   : 0:H.264, 1:Mp4v, 2:H.263, 3:JPEG (def:H.264)\n"
 		"     -s [width],[height]        [M]   : input image's size\n"
@@ -80,7 +83,7 @@ int32_t main(int32_t argc, char *argv[])
 
 	memset(&appData, 0, sizeof(CODEC_APP_DATA));
 
-	while (-1 != (opt = getopt(argc, argv, "m:i:o:hc:s:f:b:g:q:v:x:")))
+	while (-1 != (opt = getopt(argc, argv, "m:i:o:hc:s:f:b:g:q:v:x:j:")))
 	{
 		switch (opt)
 		{
@@ -106,6 +109,10 @@ int32_t main(int32_t argc, char *argv[])
 		case 'q':	appData.qp = atoi(optarg);  break;		/* JPEG Quality or Quantization Parameter */
 		case 'v':	appData.vbv = atoi(optarg);  break;
 		case 'x':	appData.maxQp = atoi(optarg);  break;
+		case 'j':
+			sscanf(optarg, "%d,%d", &appData.iSeekStartFrame, &appData.iSeekPos);
+			printf("iSeekStartFrame = %d, iSeekPos=%d\n", appData.iSeekStartFrame, appData.iSeekPos);
+			break;
 		default:		break;
 		}
 	}
@@ -114,8 +121,10 @@ int32_t main(int32_t argc, char *argv[])
 	{
 	case DECODER_MODE:
 		return VpuDecMain(&appData);
+#ifndef ANDROID
 	case ENCODER_MODE:
 		return VpuEncMain(&appData);
+#endif
 	}
 
 	return 0;

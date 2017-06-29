@@ -400,7 +400,7 @@ int32_t CMediaReader::ReadStream( int32_t type, uint8_t *buf, int32_t *size, int
 		if( pkt.stream_index == stream->index )
 		{
 			//	check codec type
-			if( codecId == CODEC_ID_H264 && stream->codec->extradata_size > 0 && stream->codec->extradata[0]==1 )
+			if( codecId == AV_CODEC_ID_H264 && stream->codec->extradata_size > 0 && stream->codec->extradata[0]==1 )
 			{
 				*size = PasreAVCStream( &pkt, m_NalLengthSize, buf, 0 );
 				if (key)
@@ -471,7 +471,7 @@ int32_t CMediaReader::GetSequenceInformation( AVStream *stream, unsigned char *b
 	uint8_t *pbMetaData = stream->codec->extradata;
 	int32_t retSize = 0;
 
-	if ((codecId == CODEC_ID_H264) && (stream->codec->extradata_size > 0))
+	if ((codecId == AV_CODEC_ID_H264) && (stream->codec->extradata_size > 0))
 	{
 		if (stream->codec->extradata[0] == 0x1)
 		{

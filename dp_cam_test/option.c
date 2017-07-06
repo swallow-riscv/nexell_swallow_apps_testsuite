@@ -8,11 +8,11 @@
 int handle_option(int argc, char **argv, uint32_t *m, uint32_t *w,
 		  uint32_t *h, uint32_t *W, uint32_t *H, uint32_t *f,
 		  uint32_t *bus_f, uint32_t *c, uint32_t *t, uint32_t *p,
-		  uint32_t *o)
+		  uint32_t *o, uint32_t *d)
 {
 	int opt;
 
-	while ((opt = getopt(argc, argv, "m:w:h:f:F:c:W:H:t:p:o:")) != -1) {
+	while ((opt = getopt(argc, argv, "m:w:h:f:F:c:W:H:t:p:o:d:")) != -1) {
 		switch (opt) {
 		case 'm':
 			*m = atoi(optarg);
@@ -46,6 +46,9 @@ int handle_option(int argc, char **argv, uint32_t *m, uint32_t *w,
 			break;
 		case 'o':
 			*o = atoi(optarg);
+			break;
+		case 'd':
+			*d = atoi(optarg);
 			break;
 		}
 	}

@@ -227,7 +227,8 @@ struct dp_device * dp_device_init(int fd)
 	return device;
 }
 
-int dp_plane_update(struct dp_device *device, struct dp_framebuffer *fb, uint32_t w, uint32_t h, uint32_t p)
+int dp_plane_update(struct dp_device *device, struct dp_framebuffer *fb,
+		uint32_t w, uint32_t h, uint32_t dw, uint32_t dh, uint32_t p)
 {
 	int err;
 	struct dp_plane *plane;
@@ -245,7 +246,8 @@ int dp_plane_update(struct dp_device *device, struct dp_framebuffer *fb, uint32_
 		DP_ERR("no overlay plane found\n");
 		return -EINVAL;
 	}
-	err = dp_plane_set(plane, fb, 0,0, w, h,0,0,w,h);
+
+	err = dp_plane_set(plane, fb, 0, 0, (int)dw, (int)dh, 0, 0, w, h);
 	if(err<0) {
 		DP_ERR("set plane failed \n");
 		return -EINVAL;
@@ -536,8 +538,6 @@ void dealloc_rgb_framebuffer(int drm_fd, struct dp_framebuffer **fb,
 		nx_free_gem(drm_fd, *gem_fd);
 }
 
-
-
 int alloc_rgb_framebuffer(struct dp_device *device, uint32_t w, uint32_t h,
 			uint32_t f_idx, int drm_fd, int *gem_fd, int *dma_fd,
 			struct dp_framebuffer **fb, void **vaddr, uint32_t p)
@@ -629,7 +629,7 @@ void draw_rgb_overlay(int width, int height, uint32_t pixelbyte, void *vaddr)
 int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 		uint32_t h, uint32_t sw, uint32_t sh, uint32_t f,
 		uint32_t bus_f, uint32_t count, uint32_t t, uint32_t p,
-		uint32_t o)
+		uint32_t o, uint32_t full_screen)
 {
 	int ret;
 	int gem_fds[MAX_BUFFER_COUNT] = { -1, };
@@ -648,6 +648,9 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 
 	uint32_t dp_width = 0;
 	uint32_t dp_height = 0;
+	uint32_t dw = 0;
+	uint32_t dh = 0;
+
 	void *vaddr;
 	uint32_t pixelbyte;
 	int format;
@@ -934,7 +937,16 @@ int camera_test(struct dp_device *device, int drm_fd, uint32_t m, uint32_t w,
 			DP_ERR("failed qbuf index %d\n", dq_index);
 			return ret;
 		}
-		ret = dp_plane_update(device, fbs[dq_index], w, h, p);
+
+		if (full_screen) {
+			dw = dp_width;
+			dh = dp_height;
+		} else {
+			dw = w;
+			dh = h;
+		}
+
+		ret = dp_plane_update(device, fbs[dq_index], w, h, dw, dh, p);
 	/*	if (ret) {
 			DP_ERR("failed plane update \n");
 			return ret;
@@ -973,11 +985,12 @@ int main(int argc, char *argv[])
 	uint32_t sw = 0, sh = 0;
 	uint32_t port = 0;
 	uint32_t overlay_draw_format = -1;
+	uint32_t full_screen = 0;
 
 	dp_debug_on(dbg_on);
 
 	ret = handle_option(argc, argv, &m, &w, &h, &sw, &sh, &f, &bus_f,
-			&count, &t, &port, &overlay_draw_format);
+			&count, &t, &port, &overlay_draw_format, &full_screen);
 	if (ret) {
 		DP_ERR("failed to handle_option\n");
 		return ret;
@@ -996,7 +1009,7 @@ int main(int argc, char *argv[])
 	}
 
 	err = camera_test(device, drm_fd, m, w, h, sw, sh, f, bus_f, count, t,
-			port, overlay_draw_format);
+			port, overlay_draw_format, full_screen);
 	if (err < 0) {
 		DP_ERR("failed to do camera_test \n");
 		return -1;

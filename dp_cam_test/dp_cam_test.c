@@ -996,7 +996,7 @@ int main(int argc, char *argv[])
 		return ret;
 	}
 
-	drm_fd = open("/dev/dri/card0",O_RDWR);
+	drm_fd = util_open(device, "nexell");
 	if (drm_fd < 0) {
 		DP_ERR("failed to open_drm_device\n");
 		return -1;
@@ -1016,7 +1016,7 @@ int main(int argc, char *argv[])
 	}
 
 	dp_device_close(device);
-	close(drm_fd);
+	drmClose(drm_fd);
 
 	return ret;
 }

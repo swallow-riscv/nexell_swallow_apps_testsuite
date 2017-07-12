@@ -54,9 +54,9 @@
 #include "DrmRender.h"
 #endif
 
-//#define ENABLE_CBCR_INTERLEAVE
-
+#define IMG_FORMAT		V4L2_PIX_FMT_YVU420M // V4L2_PIX_FMT_YVU420
 #define IMG_PLANE_NUM	3
+
 #define PLANE_ID		26
 #define CRTC_ID			31
 
@@ -251,11 +251,11 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 
 				seqIn.width = seqOut.width;
 				seqIn.height = seqOut.height;
-				seqIn.numBuffers = 3;
 				seqIn.imgPlaneNum = IMG_PLANE_NUM;
+				seqIn.imgFormat = IMG_FORMAT;
+				seqIn.numBuffers = seqOut.minBuffers + 3;
 
 #ifdef ANDROID
-				seqIn.numBuffers = seqOut.minBuffers + 3;
 				pAndRender->GetBuffers(seqIn.numBuffers, imgWidth, imgHeight, &pMemHandle );
 				NX_VID_MEMORY_HANDLE hVideoMemory[MAX_NUMBER_OF_BUFFER];
 				for( int32_t i=0 ; i<seqIn.numBuffers ; i++ )
@@ -263,20 +263,11 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 					hVideoMemory[i] = pMemHandle[i];
 				}
 				seqIn.pMemHandle = &hVideoMemory[0];
+				seqIn.imgFormat = hVideoMemory[0]->format;
 #endif
 
-#ifdef ENABLE_CBCR_INTERLEAVE
-				if (seqOut.imgFourCC == V4L2_PIX_FMT_YUV420M)
-					seqIn.imgFormat = V4L2_PIX_FMT_NV12M;
-				else if (seqOut.imgFourCC == V4L2_PIX_FMT_YUV422M)
-					seqIn.imgFormat = V4L2_PIX_FMT_NV16M;
-				else if (seqOut.imgFourCC == V4L2_PIX_FMT_YUV444M)
-					seqIn.imgFormat = V4L2_PIX_FMT_NV24M;
-				else
-					seqIn.imgFormat	= seqOut.imgFourCC;
-#else
-				seqIn.imgFormat	= seqOut.imgFourCC;
-#endif
+				printf("[Sequence Data] width( %d ), height( %d ), plane( %d ), format( 0x%08x ), buffer( %d )\n",
+					seqIn.width, seqIn.height, seqIn.imgPlaneNum, seqIn.imgFormat, seqIn.numBuffers );
 
 				ret = NX_V4l2DecInit(hDec, &seqIn);
 				if (ret < 0)
@@ -375,7 +366,10 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 				{
 					ret = NX_V4l2DecClrDspFlag(hDec, NULL, prvIndex);
 					if (ret < 0)
+					{
+						printf("Fail, NX_V4l2DecClrDspFlag().\n");
 						break;
+					}
 				}
 
 				prvIndex = decOut.dispIdx;

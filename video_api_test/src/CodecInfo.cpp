@@ -22,24 +22,6 @@ extern "C"{
 #define MKTAG(a,b,c,d) (a | (b << 8) | (c << 16) | (d << 24))
 #endif
 
-#ifndef AV_CODEC_ID_H264
-#define AV_CODEC_ID_H264		CODEC_ID_H264
-#define AV_CODEC_ID_MPEG2VIDEO	CODEC_ID_MPEG2VIDEO
-#define AV_CODEC_ID_MPEG4		CODEC_ID_MPEG4
-#define AV_CODEC_ID_MSMPEG4V3	CODEC_ID_MSMPEG4V3
-#define AV_CODEC_ID_H263		CODEC_ID_H263
-#define AV_CODEC_ID_H263P		CODEC_ID_H263P
-#define AV_CODEC_ID_H263I		CODEC_ID_H263I
-#define AV_CODEC_ID_WMV3		CODEC_ID_WMV3
-#define AV_CODEC_ID_VC1			CODEC_ID_VC1
-#define AV_CODEC_ID_RV30		CODEC_ID_RV30
-#define AV_CODEC_ID_RV40		CODEC_ID_RV40
-#define AV_CODEC_ID_VP8			CODEC_ID_VP8
-#define AV_CODEC_ID_FLV1		CODEC_ID_FLV1
-#define AV_CODEC_ID_THEORA		CODEC_ID_THEORA
-#define AV_CODEC_ID_MJPEG		CODEC_ID_MJPEG
-#endif
-
 unsigned int CodecIdToV4l2Type(int codecId, unsigned int fourcc)
 {
 	unsigned int v4l2CodecType = -1;

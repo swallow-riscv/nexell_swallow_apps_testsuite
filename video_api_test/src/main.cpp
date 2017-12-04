@@ -99,10 +99,7 @@ int32_t main(int32_t argc, char *argv[])
 		case 'o':	appData.outFileName = strdup(optarg);  break;
 		case 'h':	print_usage(argv[0]);  return 0;
 		case 'c':	appData.codec = atoi(optarg);  break;
-		case 's':
-			sscanf(optarg, "%d,%d", &appData.width, &appData.height);
-			printf("width = %d, height=%d\n", appData.width, appData.height);
-			break;
+		case 's':	sscanf(optarg, "%d,%d", &appData.width, &appData.height); break;
 		case 'f':	sscanf( optarg, "%d,%d", &appData.fpsNum, &appData.fpsDen );  break;
 		case 'b':	appData.kbitrate = atoi(optarg);  break;
 		case 'g':	appData.gop = atoi(optarg);  break;
@@ -121,10 +118,8 @@ int32_t main(int32_t argc, char *argv[])
 	{
 	case DECODER_MODE:
 		return VpuDecMain(&appData);
-#ifndef ANDROID
 	case ENCODER_MODE:
 		return VpuEncMain(&appData);
-#endif
 	}
 
 	return 0;

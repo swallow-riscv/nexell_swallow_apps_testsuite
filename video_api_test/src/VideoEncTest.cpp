@@ -32,7 +32,11 @@
 #include <nx_video_alloc.h>
 #include <nx_video_api.h>
 
+#if ENABLE_CAMERA
 #include "NX_CV4l2Camera.h"
+#endif
+
+#include "NX_V4l2Utils.h"
 #include "Util.h"
 
 #define ENABLE_ASPECT_RATIO
@@ -45,8 +49,9 @@
 #endif
 
 #define IMAGE_BUFFER_NUM	8
-#define IMG_FORMAT			V4L2_PIX_FMT_YUV420M  //V4L2_PIX_FMT_NV12M
-#define IMG_PLANE_NUM		1
+#define IMG_FORMAT			V4L2_PIX_FMT_YUV420  //V4L2_PIX_FMT_NV12M
+#define IMG_PLANE_NUM		NX_V4l2GetPlaneNum( IMG_FORMAT )
+
 // #define PLANE_ID			26
 // #define CRTC_ID			31
 #define PLANE_ID			17
@@ -83,6 +88,7 @@ static void signal_handler( int32_t sig )
 	}
 }
 
+//------------------------------------------------------------------------------
 static void register_signal( void )
 {
 	signal( SIGINT,  signal_handler );
@@ -91,215 +97,20 @@ static void register_signal( void )
 }
 
 //------------------------------------------------------------------------------
-static int32_t LoadImage(uint8_t *pSrc, int32_t w, int32_t h, NX_VID_MEMORY_INFO *pImg)
-{
-	int32_t i, j;
-	int32_t cWidth = 0, cHeight = 0;
-	uint8_t *pDst, *pCb, *pCr, *pCbCr, *pCrCb;
-	int32_t planeNum = pImg->planes;
-	int32_t cStride = pImg->stride[1];
-	int32_t cSize = 0;
-	int32_t luSize = ((w + 31) & (~31)) * ((h + 15) & (~15));
-
-	// Copy Lu
-	pDst = (uint8_t *)pImg->pBuffer[0];
-	for (i=0 ; i<h ; i++)
-	{
-		memcpy((void *)pDst, (void *)pSrc, w);
-		pDst += pImg->stride[0];
-		pSrc += w;
-	}
-
-	switch (pImg->format)
-	{
-	case V4L2_PIX_FMT_YUV420M:
-	case V4L2_PIX_FMT_NV12M:
-	case V4L2_PIX_FMT_NV21M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_YUV420:
-	case DRM_FORMAT_NV12:
-	case DRM_FORMAT_NV21:
-#endif
-		cWidth = w / 2;
-		cHeight = h / 2;
-		if (planeNum == 1)
-		{
-			cStride = pImg->stride[0] / 2;
-			cSize = cStride * ((h/2 + 15) & (~15));
-		}
-		break;
-
-	case V4L2_PIX_FMT_YUV422M:
-	case V4L2_PIX_FMT_NV16M:
-	case V4L2_PIX_FMT_NV61M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_YUV422:
-	case DRM_FORMAT_NV16:
-	case DRM_FORMAT_NV61:
-#endif
-		cWidth = w / 2;
-		cHeight = h;
-		if (planeNum == 1)
-		{
-			cStride = pImg->stride[0] / 2;
-			cSize = cStride * ((h + 15) & (~15));
-		}
-		break;
-
-	case V4L2_PIX_FMT_YUV444M:
-	case V4L2_PIX_FMT_NV24M:
-	case V4L2_PIX_FMT_NV42M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_YUV444:
-#endif
-		cWidth = w;
-		cHeight = h;
-		if (planeNum == 1)
-		{
-			cStride = pImg->stride[0];
-			cSize = luSize;
-		}
-	}
-
-	pCb = pSrc;
-	pCr = pSrc + (cWidth * cHeight);
-
-	switch (pImg->format)
-	{
-	case V4L2_PIX_FMT_YUV420M:
-	case V4L2_PIX_FMT_YUV422M:
-	case V4L2_PIX_FMT_YUV444M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_YUV420:
-	case DRM_FORMAT_YUV422:
-	case DRM_FORMAT_YUV444:
-#endif
-		for (i=1 ; i<3 ; i++)
-		{
-			if (planeNum > 1)
-				pDst = (uint8_t *)pImg->pBuffer[i];
-			else if (i == 1)
-				pDst = (uint8_t *)pImg->pBuffer[0] + luSize;
-			else if (i == 2)
-				pDst = (uint8_t *)pImg->pBuffer[0] + luSize + cSize;
-
-			for (j=0 ; j<cHeight ; j++)
-			{
-				memcpy(pDst, pSrc, cWidth);
-				pDst += cStride;
-				pSrc += cWidth;
-			}
-		}
-		break;
-
-	case V4L2_PIX_FMT_NV12M:
-	case V4L2_PIX_FMT_NV16M:
-	case V4L2_PIX_FMT_NV24M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_NV12:
-	case DRM_FORMAT_NV16:
-#endif
-		if (planeNum > 1)
-			pDst = (uint8_t *)pImg->pBuffer[1];
-		else
-			pDst = (uint8_t *)pImg->pBuffer[0] + luSize;
-
-		for (i=0 ; i<cHeight ; i++)
-		{
-			pCbCr = pDst + cStride * i;
-
-			for (j=0 ; j<cWidth ; j++)
-			{
-				*pCbCr++ = *pCb++;
-				*pCbCr++ = *pCr++;
-			}
-		}
-		break;
-
-	case V4L2_PIX_FMT_NV21M:
-	case V4L2_PIX_FMT_NV61M:
-	case V4L2_PIX_FMT_NV42M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_NV21:
-	case DRM_FORMAT_NV61:
-#endif
-		if (planeNum > 1)
-			pDst = (uint8_t *)pImg->pBuffer[1];
-		else
-			pDst = (uint8_t *)pImg->pBuffer[0] + luSize;
-
-		for (i=0 ; i<cHeight ; i++)
-		{
-			pCrCb = pDst + cStride * i;
-
-			for (j=0 ; j<cWidth ; j++)
-			{
-				*pCrCb++ = *pCr++;
-				*pCrCb++ = *pCb++;
-			}
-		}
-	}
-
-	return 0;
-}
-
-static int32_t GetImgInfo(uint32_t format, int32_t lSize, int *Size)
-{
-	switch (format)
-	{
-	case V4L2_PIX_FMT_YUV420M:
-	case V4L2_PIX_FMT_NV12M:
-	case V4L2_PIX_FMT_NV21M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_YUV420:
-	case DRM_FORMAT_NV12:
-	case DRM_FORMAT_NV21:
-#endif
-		*Size = lSize * 3 / 2;
-		break;
-
-	case V4L2_PIX_FMT_YUV422M:
-	case V4L2_PIX_FMT_NV16M:
-	case V4L2_PIX_FMT_NV61M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_YUV422:
-	case DRM_FORMAT_NV16:
-	case DRM_FORMAT_NV61:
-#endif
-		*Size = lSize * 2;
-		break;
-
-	case V4L2_PIX_FMT_YUV444M:
-	case V4L2_PIX_FMT_NV24M:
-	case V4L2_PIX_FMT_NV42M:
-#if ENABLE_DRM_DISPLAY
-	case DRM_FORMAT_YUV444:
-#endif
-		*Size = lSize * 3;
-		break;
-
-	case V4L2_PIX_FMT_GREY:
-		*Size = lSize;
-		break;
-
-	default :
-		printf("The color format is not supported!!!");
-		return -1;
-	}
-
-	return 0;
-}
-
-//------------------------------------------------------------------------------
+//
 //	Camera Encoder Main
+//
 static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 {
 	NX_V4L2ENC_HANDLE hEnc = NULL;
 #if ENABLE_DRM_DISPLAY
 	DRM_DSP_HANDLE hDsp = NULL;
 #endif
+
+#if ENABLE_CAMERA
 	NX_VIP_INFO info;
 	NX_CV4l2Camera*	pV4l2Camera = NULL;
+#endif
 	NX_VID_MEMORY_HANDLE hVideoMemory[IMAGE_BUFFER_NUM];
 
 	int32_t inWidth = 0;
@@ -317,7 +128,7 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 	}
 
 	int32_t ret = 0, i;
-	int32_t planes = IMG_PLANE_NUM;
+	int32_t iPlanes = IMG_PLANE_NUM;
 
 	FILE *fpOut = fopen(pAppData->outFileName, "wb");
 
@@ -373,6 +184,7 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 	//==============================================================================
 	// CAMERA INITIALIZATION
 	//==============================================================================
+#if ENABLE_CAMERA
 	{
 		memset( &info, 0x00, sizeof(info) );
 
@@ -411,6 +223,7 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 			pV4l2Camera->SetVideoMemory( hVideoMemory[i] );
 		}
 	}
+#endif
 
 	//==============================================================================
 	// ENCODER INITIALIZATION
@@ -470,7 +283,8 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 		encPara.enableAUDelimiter = 0;
 		encPara.imgFormat = IMG_FORMAT;
 		encPara.imgBufferNum = IMAGE_BUFFER_NUM;
-		encPara.imgPlaneNum = planes;
+		encPara.imgPlaneNum = iPlanes;
+		encPara.pImage = hVideoMemory[0];
 
 		if (pAppData->codec == V4L2_PIX_FMT_MJPEG)
 			encPara.jpgQuality = (pAppData->qp == 0) ? (90) : (pAppData->qp);
@@ -507,12 +321,14 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 			NX_VID_MEMORY_INFO *pBuf = NULL;
 			int32_t BufferIndex = 0;
 
+#if ENABLE_CAMERA
 			//Camera
 			if( 0 >  pV4l2Camera->DequeueBuffer( &BufferIndex, &pBuf ) )
 			{
 				printf( "Fail, DequeueBuffer().\n" );
 				break;
 			}
+#endif
 
 
 #if ENABLE_DRM_DISPLAY
@@ -536,14 +352,15 @@ static int32_t VpuCamEncMain( CODEC_APP_DATA *pAppData )
 				printf("[%d] Frame]NX_V4l2EncEncodeFrame() is failed!!\n", frmCnt);
 				break;
 			}
-
+#if ENABLE_CAMERA
 			if( 0 >  pV4l2Camera->QueueBuffer( pBuf ) )
 			{
 				printf( "Fail, DequeueBuffer().\n" );
 				break;
 			}
+#endif
 
-			printf("[%04d Frm]Size = %5d, Type = %1d, TIme = %6lu\n", frmCnt, encOut.strmSize, encOut.frameType, (endTime - startTime));
+			printf("[%04d Frm]Size = %5d, Type = %1d, Time = %6llu\n", frmCnt, encOut.strmSize, encOut.frameType, (endTime - startTime));
 
 			if (fpOut && encOut.strmSize > 0)
 				fwrite((void *)encOut.strmBuf, 1, encOut.strmSize, fpOut);
@@ -559,12 +376,14 @@ CAM_ENC_TERMINATE:
 	if (hEnc)
 		NX_V4l2EncClose(hEnc);
 
+#if ENABLE_CAMERA
 	if( pV4l2Camera )
 	{
 		pV4l2Camera->Deinit();
 		delete pV4l2Camera;
 		pV4l2Camera = NULL;
 	}
+#endif
 
 	for( i = 0; i < IMAGE_BUFFER_NUM; i++ )
 	{
@@ -595,7 +414,8 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 	int32_t inWidth = pAppData->width;
 	int32_t inHeight = pAppData->height;
 	int32_t ret = 0, i;
-	int32_t planes = IMG_PLANE_NUM;
+	int32_t iPlaneNum = 0;
+	int32_t iFormat = 0;
 
 	FILE *fpIn = fopen(pAppData->inFileName, "rb");
 	FILE *fpOut = fopen(pAppData->outFileName, "wb");
@@ -681,6 +501,41 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 			goto ENC_TERMINATE;
 		}
 
+		iFormat = NX_V4l2GetFileFormat( pAppData->inFileName );
+		if( iFormat )
+		{
+			iPlaneNum = NX_V4l2GetPlaneNum( iFormat );
+		}
+		else
+		{
+			iFormat   = IMG_FORMAT;
+			iPlaneNum = IMG_PLANE_NUM;
+		}
+
+		printf("-. inFile    = %s\n", pAppData->inFileName );
+		printf("-. iFormat   = %s( 0x%08X )\n", NX_V4l2GetFormatString(iFormat), iFormat );
+		printf("-. iPlaneNum = %d\n", iPlaneNum );
+
+		//
+		// Allocate Input Buffer
+		//
+		for (i = 0; i < IMAGE_BUFFER_NUM; i++)
+		{
+			hImage[i] = NX_AllocateVideoMemory(inWidth, inHeight, iPlaneNum, iFormat, 4096);
+
+			if (hImage[i] == NULL)
+			{
+				printf("Failed to allocate %d image buffer\n", i);
+				goto ENC_TERMINATE;
+			}
+
+			if (NX_MapVideoMemory(hImage[i]) != 0)
+			{
+				printf("Video Memory Mapping Failed\n");
+				goto ENC_TERMINATE;
+			}
+		}
+
 		hEnc = NX_V4l2EncOpen(pAppData->codec);
 		if (hEnc == NULL)
 		{
@@ -705,9 +560,10 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 		encPara.numIntraRefreshMbs = 0;
 		encPara.searchRange = 0;
 		encPara.enableAUDelimiter = 0;
-		encPara.imgFormat = IMG_FORMAT;
+		encPara.imgFormat = iFormat;
 		encPara.imgBufferNum = IMAGE_BUFFER_NUM;
-		encPara.imgPlaneNum = planes;
+		encPara.imgPlaneNum = iPlaneNum;
+		encPara.pImage = hImage[0];
 
 		if (pAppData->codec == V4L2_PIX_FMT_MJPEG)
 			encPara.jpgQuality = (pAppData->qp == 0) ? (90) : (pAppData->qp);
@@ -715,14 +571,14 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 		ret = NX_V4l2EncInit(hEnc, &encPara);
 		if (ret < 0)
 		{
-			printf("video encoder initialization is failed!!!");
+			printf("video encoder initialization is failed!!!\n");
 			goto ENC_TERMINATE;
 		}
 
 		ret = NX_V4l2EncGetSeqInfo(hEnc, &pSeqData, &seqSize);
 		if (ret < 0)
 		{
-			printf("Getting Sequence header is failed!!!");
+			printf("Getting Sequence header is failed!!!\n");
 			goto ENC_TERMINATE;
 		}
 
@@ -740,28 +596,9 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 		int32_t imgSize;
 		uint8_t *pSrcBuf;
 
-		GetImgInfo(IMG_FORMAT, inWidth*inHeight, &imgSize);
-
-		// Allocate Output Buffer
-		for (i = 0; i < IMAGE_BUFFER_NUM; i++)
-		{
-			hImage[i] = NX_AllocateVideoMemory(inWidth, inHeight, planes, IMG_FORMAT, 4096);
-
-			if (hImage[i] == NULL)
-			{
-				printf("Failed to allocate %d image buffer\n", i);
-				goto ENC_TERMINATE;
-			}
-
-			if (NX_MapVideoMemory(hImage[i]) != 0)
-			{
-				printf("Video Memory Mapping Failed\n");
-				goto ENC_TERMINATE;
-			}
-		}
+		NX_V4l2GetImageInfo( iFormat, inWidth, inHeight, &imgSize);
 
 		pSrcBuf = (uint8_t *)malloc(imgSize);
-
 		while (!bExitLoop)
 		{
 			NX_V4L2ENC_IN encIn;
@@ -777,7 +614,7 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 					break;
 				}
 
-				LoadImage(pSrcBuf, inWidth, inHeight, hImage[index]);
+				NX_V4l2LoadMemory(pSrcBuf, inWidth, inHeight, hImage[index]);
 			}
 
 #if ENABLE_DRM_DISPLAY
@@ -803,7 +640,7 @@ static int32_t VpuEncPerfMain(CODEC_APP_DATA *pAppData)
 				break;
 			}
 
-			printf("[%04d Frm]Size = %5d, Type = %1d, TIme = %6lu\n", frmCnt, encOut.strmSize, encOut.frameType, (endTime - startTime));
+			printf("[%04d Frm]Size = %5d, Type = %1d, Time = %6llu\n", frmCnt, encOut.strmSize, encOut.frameType, (endTime - startTime));
 
 			if (fpOut && encOut.strmSize > 0)
 				fwrite((void *)encOut.strmBuf, 1, encOut.strmSize, fpOut);

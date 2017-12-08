@@ -42,23 +42,24 @@ void print_usage(const char *appName)
 	printf(
 		"Usage : %s [options] -i [input file], [M] = mandatory, [O] = Optional \n"
 		"  common options :\n"
-		"     -m [mode]                  [O]   : 1:decoder mode, 2:encoder mode (def:decoder mode)\n"
-		"     -i [input file name]       [M]   : input media file name (When is camera encoder, the value set NULL\n"
-		"     -o [output file name]      [O]   : output file name\n"
+		"     -m [mode]                  [O]  : 1:decoder mode, 2:encoder mode (def:decoder mode)\n"
+		"     -i [input file name]       [M]  : input media file name (When is camera encoder, the value set NULL\n"
+		"     -o [output file name]      [O]  : output file name\n"
 		"     -h : help\n"
 		" -------------------------------------------------------------------------------------------------------------------\n"
 		"  only decoder options :\n"
-		"     -j [seek frame],           [O]   : seek frame\n"
+		"     -j [seek frame],           [O]  : seek frame\n"
+		"     -d [frame Num],[file name] [O]  : dump frame\n"
 		" -------------------------------------------------------------------------------------------------------------------\n"
 		"  only encoder options :\n"
-		"     -c [codec]                 [O]   : 0:H.264, 1:Mp4v, 2:H.263, 3:JPEG (def:H.264)\n"
-		"     -s [width],[height]        [M]   : input image's size\n"
-		"     -f [fps Num],[fps Den]     [O]   : input image's framerate(def:30/1) \n"
-		"     -b [Kbitrate]              [M]   : target Kilo bitrate (0:VBR mode, other:CBR mode)\n"
-		"     -g [gop size]              [O]   : gop size (def:framerate) \n"
-		"     -q [quality or QP]         [O]   : Jpeg Quality or Other codec Quantization Parameter(When is VBR, it is valid) \n"
-		"     -v [VBV]                   [O]   : VBV Size (def:2Sec)\n"
-		"     -x [Max Qp]                [O]   : Maximum Qp \n"
+		"     -c [codec]                 [O]  : 0:H.264, 1:Mp4v, 2:H.263, 3:JPEG (def:H.264)\n"
+		"     -s [width],[height]        [M]  : input image's size\n"
+		"     -f [fps Num],[fps Den]     [O]  : input image's framerate(def:30/1) \n"
+		"     -b [Kbitrate]              [M]  : target Kilo bitrate (0:VBR mode, other:CBR mode)\n"
+		"     -g [gop size]              [O]  : gop size (def:framerate) \n"
+		"     -q [quality or QP]         [O]  : Jpeg Quality or Other codec Quantization Parameter(When is VBR, it is valid) \n"
+		"     -v [VBV]                   [O]  : VBV Size (def:2Sec)\n"
+		"     -x [Max Qp]                [O]  : Maximum Qp \n"
 		" ===================================================================================================================\n\n"
 		,appName);
 	printf(
@@ -66,6 +67,9 @@ void print_usage(const char *appName)
 	printf(
 		" Decoder Mode :\n"
 		"     #> %s -i [input filename]\n", appName);
+	printf(
+		" Decoder Mode & Capture :\n"
+		"     #> %s -i [input filename] -d [num],[dump filename] \n", appName);
 	printf(
 		" Encoder Camera Mode :\n"
 		"     #> %s -m 2 -o [output filename]\n", appName);
@@ -83,7 +87,7 @@ int32_t main(int32_t argc, char *argv[])
 
 	memset(&appData, 0, sizeof(CODEC_APP_DATA));
 
-	while (-1 != (opt = getopt(argc, argv, "m:i:o:hc:s:f:b:g:q:v:x:j:")))
+	while (-1 != (opt = getopt(argc, argv, "m:i:o:hc:d:s:f:b:g:q:v:x:j:")))
 	{
 		switch (opt)
 		{
@@ -99,6 +103,7 @@ int32_t main(int32_t argc, char *argv[])
 		case 'o':	appData.outFileName = strdup(optarg);  break;
 		case 'h':	print_usage(argv[0]);  return 0;
 		case 'c':	appData.codec = atoi(optarg);  break;
+		case 'd':	appData.dumpFileName = strdup(optarg); sscanf(optarg, "%d,%s", &appData.dumpFrameNumber, appData.dumpFileName);  break;
 		case 's':	sscanf(optarg, "%d,%d", &appData.width, &appData.height); break;
 		case 'f':	sscanf( optarg, "%d,%d", &appData.fpsNum, &appData.fpsDen );  break;
 		case 'b':	appData.kbitrate = atoi(optarg);  break;

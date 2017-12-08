@@ -34,6 +34,7 @@
 #include "MediaExtractor.h"
 #include "CodecInfo.h"
 #include "Util.h"
+#include "NX_V4l2Utils.h"
 
 #include <videodev2_nxp_media.h>
 
@@ -184,6 +185,7 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 		int32_t bInit = false, bSeek = false;
 
 		int frmCnt = 0, size = 0;
+		uint32_t outFrmCnt = 0;
 		uint64_t startTime, endTime, totalTime = 0;
 		uint64_t prevTime = 0;
 		int64_t timeStamp = -1;
@@ -362,6 +364,11 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 				}
 #endif
 
+				if( pAppData->dumpFileName && outFrmCnt==pAppData->dumpFrameNumber )
+				{
+					NX_V4l2DumpMemory(&decOut.hImg, (const char*)pAppData->dumpFileName );
+				}
+
 				if( prvIndex >= 0 )
 				{
 					ret = NX_V4l2DecClrDspFlag(hDec, NULL, prvIndex);
@@ -373,6 +380,7 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 				}
 
 				prvIndex = decOut.dispIdx;
+				outFrmCnt++;
 			}
 
 			frmCnt++;

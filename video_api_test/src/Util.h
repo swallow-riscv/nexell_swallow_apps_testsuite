@@ -30,6 +30,10 @@ typedef struct CODEC_APP_DATA {
 
 	/* Output Options */
 	char *outFileName;			/* Output File Name */
+
+	/* Dump Options */
+	uint32_t dumpFrameNumber;	/* Dump Frame Number */
+	char *dumpFileName;			/* Dump File Name */
 } CODEC_APP_DATA;
 
 #endif // __UTIL_h__

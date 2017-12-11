@@ -12,7 +12,7 @@ LIBS += -lkms -ldrm
 CROSS_COMPILE ?= aarch64-linux-gnu-
 CC := $(CROSS_COMPILE)gcc
 
-SRCS := $(wildcard *.cpp)
+SRCS := scaler-test.cpp option.cpp
 OBJS := $(SRCS:.cpp=.o)
 #SRCS := $(wildcard *.c)
 #OBJS := $(SRCS:.c=.o)

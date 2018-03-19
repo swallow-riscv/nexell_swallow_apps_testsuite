@@ -167,6 +167,7 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 
 	uint32_t v4l2CodecType;
 	int32_t fourcc = -1, codecId = -1;
+	int32_t delayedDisplay = false;
 
 	pMediaReader->GetCodecTagId(AVMEDIA_TYPE_VIDEO, &fourcc, &codecId);
 	v4l2CodecType = CodecIdToV4l2Type(codecId, fourcc);
@@ -191,7 +192,8 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 		int64_t timeStamp = -1;
 
 		FILE *fpOut = NULL;
-		int32_t prvIndex = -1;
+		int32_t prvIndex = -1, curIndex = -1;
+		NX_VID_MEMORY_HANDLE hCurImg = NULL;
 		int32_t bIsSeek = 0;
 
 		int32_t additionSize = 0;
@@ -279,6 +281,12 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 				}
 
 				bInit = true;
+
+				//
+				// If the contents is interlace and the codec type is H264, the display ordering is wrong in VPU.
+				// In this case, Application render with delay.
+				//
+				delayedDisplay = ((v4l2CodecType == V4L2_PIX_FMT_H264) && (seqOut.interlace));
 			}
 
 			if( bSeek )
@@ -329,8 +337,8 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 			endTime         = NX_GetTickCount();
 			totalTime       += (endTime - startTime);
 
-			printf("[%5d Frm] Key=%d Size=%6d, DecIdx=%2d, DispIdx=%2d, InTimeStamp=%7llu, outTimeStamp=%7llu, Time=%6llu, interlace=%1d %1d, Reliable=%3d, %3d, type = %d, %d, UsedByte=%5d\n",
-				frmCnt, key, size, decOut.decIdx, decOut.dispIdx, timeStamp, decOut.timeStamp[DISPLAY_FRAME], (endTime - startTime), decOut.interlace[DECODED_FRAME], decOut.interlace[DISPLAY_FRAME],
+			printf("[%5d Frm] Key=%d Size=%6d, DecIdx=%2d, DispIdx=%2d, InTimeStamp=%7llu, outTimeStamp=%7llu, Time=%6llu, interlace=%1d %1d, Reliable=%3d, %3d, type = %3d, %3d, UsedByte=%5d\n",
+				frmCnt, key, decIn.strmSize, decOut.decIdx, decOut.dispIdx, timeStamp, decOut.timeStamp[DISPLAY_FRAME], (endTime - startTime), decOut.interlace[DECODED_FRAME], decOut.interlace[DISPLAY_FRAME],
 				decOut.outFrmReliable_0_100[DECODED_FRAME], decOut.outFrmReliable_0_100[DISPLAY_FRAME], decOut.picType[DECODED_FRAME], decOut.picType[DISPLAY_FRAME], decOut.usedByte);
 			/*printf("%2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x %2x\n",
 				streamBuffer[0], streamBuffer[1], streamBuffer[2], streamBuffer[3], streamBuffer[4], streamBuffer[5], streamBuffer[6], streamBuffer[7],
@@ -342,22 +350,25 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 				break;
 			}
 
-			if (decOut.dispIdx >= 0)
+			if (!delayedDisplay)
+			{
+				curIndex = decOut.dispIdx;
+				hCurImg  = &decOut.hImg;
+			}
+
+			if (curIndex >= 0)
 			{
 				if (fpOut)
 				{
-					int i;
-
-					for (i=0 ; i<decOut.hImg.planes; i++)
-						fwrite((void*)decOut.hImg.pBuffer[i], 1, decOut.hImg.size[i], fpOut);
+					NX_V4l2DumpMemory(hCurImg, fpOut);
 				}
 
 #if ENABLE_DRM_DISPLAY
-				UpdateBuffer(hDsp, &decOut.hImg, NULL);
+				UpdateBuffer(hDsp, hCurImg, NULL);
 #endif
 
 #ifdef ANDROID
-				pAndRender->DspQueueBuffer( NULL, decOut.dispIdx );
+				pAndRender->DspQueueBuffer( NULL, curIndex );
 				if( prvIndex != -1 )
 				{
 					pAndRender->DspDequeueBuffer(NULL, NULL);
@@ -366,7 +377,8 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 
 				if( pAppData->dumpFileName && outFrmCnt==pAppData->dumpFrameNumber )
 				{
-					NX_V4l2DumpMemory(&decOut.hImg, (const char*)pAppData->dumpFileName );
+					printf("Dump Frame. ( frm: %d, name: %s )\n", outFrmCnt, pAppData->dumpFileName);
+					NX_V4l2DumpMemory(hCurImg, (const char*)pAppData->dumpFileName );
 				}
 
 				if( prvIndex >= 0 )
@@ -379,8 +391,14 @@ int32_t VpuDecMain( CODEC_APP_DATA *pAppData )
 					}
 				}
 
-				prvIndex = decOut.dispIdx;
+				prvIndex = curIndex;
 				outFrmCnt++;
+			}
+
+			if (delayedDisplay)
+			{
+				curIndex = decOut.dispIdx;
+				hCurImg  = &decOut.hImg;
 			}
 
 			frmCnt++;

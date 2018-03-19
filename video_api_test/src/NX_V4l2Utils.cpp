@@ -461,3 +461,58 @@ int32_t NX_V4l2DumpMemory( NX_VID_MEMORY_INFO *pInMemory, const char *pOutFile )
 
 	return 0;
 }
+
+//------------------------------------------------------------------------------
+int32_t NX_V4l2DumpMemory( NX_VID_MEMORY_INFO *pInMemory, FILE *pFile )
+{
+	if( pFile == NULL )
+	{
+		printf("Fail, Input Handle.\n");
+		return -1;
+	}
+
+	if( NULL == pInMemory )
+	{
+		printf("Fail, Input Memory. ( %p )\n", pInMemory );
+		return -1;
+	}
+
+	if( NULL == pInMemory->pBuffer[0] )
+	{
+		if( 0 > NX_MapVideoMemory( pInMemory ) )
+		{
+			printf("Fail, NX_MapVideoMemory().\n");
+			return -1;
+		}
+	}
+
+	int32_t iLumaWidth, iLumaHeight;
+	int32_t iChromaWidth, iChromaHeight;
+
+	iLumaWidth  = pInMemory->width;
+	iLumaHeight = pInMemory->height;
+	GetChromaSize( pInMemory, &iChromaWidth, &iChromaHeight );
+
+	// Save Luma
+	{
+		uint8_t *pPtr = (uint8_t*)pInMemory->pBuffer[0];
+		for( int32_t h = 0; h < iLumaHeight; h++ )
+		{
+			fwrite( pPtr, 1, iLumaWidth, pFile );
+			pPtr += pInMemory->stride[0];
+		}
+	}
+
+	// Save Chroma
+	for( int32_t i = 1; i < pInMemory->planes; i++ )
+	{
+		uint8_t *pPtr = (uint8_t*)pInMemory->pBuffer[i];
+		for( int32_t h = 0; h < iChromaHeight; h++ )
+		{
+			fwrite( pPtr, 1, iChromaWidth, pFile );
+			pPtr += pInMemory->stride[i];
+		}
+	}
+
+	return 0;
+}

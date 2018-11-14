@@ -79,7 +79,7 @@ static int32_t DoScaling(NX_MEMORY_HANDLE hIn, NX_MEMORY_HANDLE hOut,
 	int32_t hScaler = scaler_open();
 
 	if (hScaler < 0) {
-		pr_err("[%s] failed to open scaler:%d\n", __func__, hScaler);
+		printf("[%s] failed to open scaler:%d\n", __func__, hScaler);
 		return hScaler;
 	}
 

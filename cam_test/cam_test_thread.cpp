@@ -82,11 +82,42 @@ static int32_t VerifyOutputImage(NX_MEMORY_HANDLE srcImg, char data)
 	return 0;
 }
 
+static int32_t SaveOutputImage(NX_MEMORY_HANDLE hImg, const char *fileName)
+{
+	FILE *fd = fopen(fileName, "wb");
+	int32_t width = hImg->width;
+	int32_t height = hImg->height;
+	uint8_t *pDst;
+
+	if (NULL == fd) {
+		printf("Failed to open %s file\n", fileName);
+		return -1;
+	}
+
+	printf("Save %s file\n", fileName);
+	for( int32_t i=0 ; i<3 ; i++ )
+	{
+		pDst = (uint8_t *)hImg->pBuffer[i];
+		for (int32_t j = 0; j < height; j++)
+		{
+			fwrite(pDst + hImg->stride[i] * j, 1, width, fd);
+		}
+		if( i==0 )
+		{
+			width /= 2;
+			height /= 2;
+		}
+	}
+
+	fclose(fd);
+
+	return 0;
+}
+
 int test_run(struct thread_data *p)
 {
 	int ret = 0, video_fd;
 	uint32_t i;
-	char data = p->data;
 	int loop_count = p->count, size = 0, dq_index = 0;
 	NX_MEMORY_HANDLE hMem[MAX_BUFFER_COUNT] = {0, };
 
@@ -144,15 +175,18 @@ int test_run(struct thread_data *p)
 	printf("start stream done\n");
 
 	while (loop_count--) {
+		char strOutFile[20] = {0, };
+
 		ret = nx_v4l2_dqbuf(video_fd, p->video_dev, 1, &dq_index);
 		if (ret) {
 			printf("failed to dqbuf: %d\n", ret);
 			goto stop;
 		}
 		printf("Dqbuf:%d done\n", dq_index);
-		ret = VerifyOutputImage(hMem[dq_index], data);
-		if (ret) {
-			printf("Error : VerifyOutputImage !!\n");
+		snprintf(strOutFile, sizeof(strOutFile), "result%d.yuv", dq_index);
+		if (0 != SaveOutputImage(hMem[dq_index], (const char *)strOutFile))
+		{
+			printf("Error : SaveOutputImage !!\n");
 			goto stop;
 		}
 

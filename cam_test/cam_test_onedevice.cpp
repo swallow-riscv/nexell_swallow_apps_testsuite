@@ -36,7 +36,7 @@
 #define ALIGN(x, a) (((x) + (a)-1) & ~((a)-1))
 #endif
 
-#define MAX_BUFFER_COUNT	8
+#define MAX_BUFFER_COUNT	2
 
 static int32_t VerifyOutputImage(NX_MEMORY_HANDLE srcImg, char data)
 {
@@ -71,8 +71,42 @@ static int32_t VerifyOutputImage(NX_MEMORY_HANDLE srcImg, char data)
 	return 0;
 }
 
+static int32_t SaveOutputImage(NX_MEMORY_HANDLE hImg, const char *fileName)
+{
+	FILE *fd = fopen(fileName, "wb");
+	int32_t width = hImg->width;
+	int32_t height = hImg->height;
+	uint8_t *pDst;
+	int32_t count = 0;
+
+	if (NULL == fd) {
+		printf("Failed to open %s file\n", fileName);
+		return -1;
+	}
+
+	printf("Save %s file, planes:%d\n", fileName, hImg->planes);
+	for(int32_t i = 0; i < hImg->planes; i++ )
+	{
+		pDst = (uint8_t *)hImg->pBuffer[i];
+		for (int32_t j = 0; j < height; j++)
+		{
+			count = fwrite(pDst + hImg->stride[i] * j, 1, hImg->stride[i], fd);
+			if (count != hImg->stride[i])
+				printf("failed to write %d data:%d\n", width, count);
+		}
+		if(i == 0) {
+			width /= 2;
+			height /= 2;
+		}
+	}
+
+	fclose(fd);
+
+	return 0;
+}
+
 static int camera_test(uint32_t type, NX_MEMORY_HANDLE *hMem, uint32_t w, uint32_t h,
-		uint32_t count, uint32_t f)
+		uint32_t count, uint32_t f, char *strOutFile)
 {
 	int ret = 0, video_fd;
 	uint32_t i;
@@ -132,15 +166,16 @@ static int camera_test(uint32_t type, NX_MEMORY_HANDLE *hMem, uint32_t w, uint32
 	printf("start stream done\n");
 
 	while (loop_count--) {
+
 		ret = nx_v4l2_dqbuf(video_fd, type, 1, &dq_index);
 		if (ret) {
 			printf("failed to dqbuf: %d\n", ret);
 			goto stop;
 		}
 		printf("Dqbuf:%d done\n", dq_index);
-		ret = VerifyOutputImage(hMem[dq_index], data);
-		if (ret) {
-			printf("Error : VerifyOutputImage !!\n");
+		if (0 != SaveOutputImage(hMem[dq_index], (const char *)strOutFile))
+		{
+			printf("Error : SaveOutputImage !!\n");
 			goto stop;
 		}
 
@@ -181,9 +216,11 @@ static void print_usage(const char *appName)
 	printf(
 		"Usage : %s [options] -f [file] , [M] = mandatory, [O] = option\n"
 		"  common options :\n"
-		"     -d [path]		          [M]  : open device path\n"
+		"     -t [type]		          [M]  : 0 - clipper, 1 - decimator\n"
 		"     -s [width],[height]         [M]  : input image's size\n"
 		"     -c [count]		  [O]  : repeat count, default:1\n"
+		"     -o [filename]		  [M]  : output file name\n"
+		"     -f [format]		  [M]  : 0 - YUV420 1 - YUV422p\n"
 		"     -h : help\n"
 		" =========================================================================================================\n\n",
 		appName);
@@ -196,19 +233,21 @@ static void print_usage(const char *appName)
 
 int32_t main(int32_t argc, char *argv[])
 {
-	int32_t opt, ret, i;
+	int32_t opt, ret, i, f = 0, format, type, t = 0;
 	int32_t inWidth, inHeight, count = 1;
 	char *path;
 	NX_MEMORY_HANDLE hMem[MAX_BUFFER_COUNT] = {0, };
+	char *strOutFile = NULL;
 
 	printf("======camera test application=====\n");
-	while (-1 != (opt = getopt(argc, argv, "d:s:c:h:")))
+	printf("format 0:YUV420 1:YUV422p\n");
+	while (-1 != (opt = getopt(argc, argv, "t:s:c:h:o:f:")))
 	{
 		switch (opt)
 		{
-			/*case 'd':
-				path = strdup(optarg);
-				break;*/
+			case 't':
+				sscanf(optarg, "%d", &t);
+				break;
 			case 's':
 				sscanf(optarg, "%d,%d", &inWidth, &inHeight);
 				break;
@@ -218,6 +257,12 @@ int32_t main(int32_t argc, char *argv[])
 			case 'h':
 				print_usage(argv[0]);
 				return 0;
+			case 'o':
+				strOutFile = strdup(optarg);
+				break;
+			case 'f':
+				sscanf(optarg, "%d", &f);
+				break;
 			default:
 				break;
 		}
@@ -230,11 +275,31 @@ int32_t main(int32_t argc, char *argv[])
 		return -1;
 	}
 
-	printf("width:%d height:%d repeat count:%d\n", inWidth, inHeight, count);
+	if (!t)
+		type = nx_clipper_video;
+	else
+		type = nx_decimator_video;
+
+	printf("device:%s width:%d height:%d repeat count:%d max buffer:%d outFile:%s f:%d\n",
+			(t) ? "decimator":"clipper", inWidth, inHeight, count, MAX_BUFFER_COUNT,
+			strOutFile, f);
+
+	if (f == 0) {
+		format = V4L2_PIX_FMT_YUV420;
+		printf("format = YUV420\n");
+	} else if (f == 1) {
+		format = V4L2_PIX_FMT_YUYV;
+		printf("format = YVU422P, YUYV\n");
+	}
 
 	/* Allocate Image */
 	for (i = 0; i < MAX_BUFFER_COUNT; i++) {
-		hMem[i] = NX_AllocateMemory(inWidth, inHeight, 3, V4L2_PIX_FMT_YUV420, 4096);
+		int planes = 3;
+
+		if (format == V4L2_PIX_FMT_YUYV)
+			planes = 1;
+
+		hMem[i] = NX_AllocateMemory(inWidth, inHeight, planes, format, 4096);
 		if (hMem[i] == NULL) {
 			printf("hMem is NULL for %d\n", i);
 			return -1;
@@ -245,17 +310,13 @@ int32_t main(int32_t argc, char *argv[])
 		}
 	}
 
-	ret = camera_test(nx_clipper_video, hMem, inWidth, inHeight, count, V4L2_PIX_FMT_YUV420);
+	ret = camera_test(type, hMem, inWidth, inHeight, count, format,
+			strOutFile);
 	if (ret) {
 		printf("Error : camera test:%d !!\n", ret);
 		goto ErrorExit;
 	}
 
-	ret = camera_test(nx_decimator_video, hMem, inWidth, inHeight, count, V4L2_PIX_FMT_YUV420);
-	if (ret) {
-		printf("Error : camera test:%d !!\n", ret);
-		goto ErrorExit;
-	}
 	printf("Camera Test Done!!\n");
 
 	for (i = 0; i < MAX_BUFFER_COUNT; i++) {

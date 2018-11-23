@@ -3,9 +3,10 @@ INCLUDES := -I./
 LDFLAGS := -L../../sysroot/lib
 LIBS := -lnx_v4l2 -lnx_allocator -lpthread
 
-#SRCS := cam_test_onedevice.cpp
-SRCS := cam_test_thread.cpp
-OBJS := cam_test_thread.o
+SRCS := cam_test_onedevice.cpp
+OBJS := cam_test_onedevice.o
+#SRCS := cam_test_thread.cpp
+#OBJS := cam_test_thread.o
 TARGET := cam_test
 
 %.o: %.cpp

@@ -1,7 +1,7 @@
 CFLAGS = -Wall
 INCLUDES := -I./
 LDFLAGS := -L../../sysroot/lib
-LIBS := -lnx_v4l2 -lnx_allocator -lpthread
+LIBS := -lnx_v4l2 -lnx_allocator -lnx_scaler -lpthread
 
 SRCS := cam_test_onedevice.cpp
 OBJS := cam_test_onedevice.o

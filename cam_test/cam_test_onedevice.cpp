@@ -30,6 +30,7 @@
 
 #include <nx-v4l2.h>
 #include <nx-alloc.h>
+#include <nx-scaler.h>
 
 //------------------------------------------------------------------------------
 #ifndef ALIGN
@@ -37,39 +38,6 @@
 #endif
 
 #define MAX_BUFFER_COUNT	2
-
-static int32_t VerifyOutputImage(NX_MEMORY_HANDLE srcImg, char data)
-{
-	int32_t src_width = srcImg->width;
-	int32_t src_height = srcImg->height;
-	uint8_t *pSrc;
-
-	printf("[%s]\n", __func__);
-
-	for( int32_t i=0 ; i<3 ;i++ )
-	{
-		pSrc = (uint8_t *)srcImg->pBuffer[i];
-		for (int32_t j = 0; j < src_height; j++)
-		{
-			for (int32_t h = 0; h < src_width; h++)
-			{
-				if (*pSrc != data) {
-					printf("src[%x] dst[%x] is not matched\n", *pSrc, data);
-					return -1;
-				}
-				pSrc++;
-			}
-			pSrc += srcImg->stride[i] - src_width;
-		}
-		if( i == 0 )
-		{
-			src_width /= 2;
-			src_height /= 2;
-		}
-	}
-
-	return 0;
-}
 
 static int32_t SaveOutputImage(NX_MEMORY_HANDLE hImg, const char *fileName)
 {
@@ -105,7 +73,59 @@ static int32_t SaveOutputImage(NX_MEMORY_HANDLE hImg, const char *fileName)
 	return 0;
 }
 
-static int camera_test(uint32_t type, NX_MEMORY_HANDLE *hMem, uint32_t w, uint32_t h,
+
+static int32_t DoScaling(NX_MEMORY_HANDLE hIn, NX_MEMORY_HANDLE hOut,
+		int32_t cropX, int32_t cropY, int32_t cropWidth, int32_t cropHeight)
+{
+	struct nx_scaler_context scalerCtx;
+	int32_t ret;
+	int32_t hScaler = scaler_open();
+
+	if (hScaler < 0) {
+		printf("[%s] failed to open scaler:%d\n", __func__, hScaler);
+		return hScaler;
+	}
+
+	memset(&scalerCtx, 0, sizeof(struct nx_scaler_context));
+
+	// scaler crop
+	scalerCtx.crop.x = cropX;
+	scalerCtx.crop.y = cropY;
+	scalerCtx.crop.width = cropWidth;
+	scalerCtx.crop.height = cropHeight;
+
+	// scaler src
+	scalerCtx.src_plane_num = 3;
+	scalerCtx.src_width     = hIn->width;
+	scalerCtx.src_height    = hIn->height;
+	scalerCtx.src_code      = MEDIA_BUS_FMT_YUYV8_2X8;
+	scalerCtx.src_fds[0]    = hIn->sharedFd[0];
+	scalerCtx.src_fds[1]    = hIn->sharedFd[1];
+	scalerCtx.src_fds[2]    = hIn->sharedFd[2];
+	scalerCtx.src_stride[0] = hIn->stride[0];
+	scalerCtx.src_stride[1] = hIn->stride[1];
+	scalerCtx.src_stride[2] = hIn->stride[2];
+
+	// scaler dst
+	scalerCtx.dst_plane_num = 3;
+	scalerCtx.dst_width     = hOut->width;
+	scalerCtx.dst_height    = hOut->height;
+	scalerCtx.dst_code      = MEDIA_BUS_FMT_YUYV8_2X8;
+	scalerCtx.dst_fds[0]    = hOut->sharedFd[0];
+	scalerCtx.dst_fds[1]    = hOut->sharedFd[1];
+	scalerCtx.dst_fds[2]    = hOut->sharedFd[2];
+	scalerCtx.dst_stride[0] = hOut->stride[0];
+	scalerCtx.dst_stride[1] = hOut->stride[1];
+	scalerCtx.dst_stride[2] = hOut->stride[2];
+
+	ret = nx_scaler_run(hScaler, &scalerCtx);
+	nx_scaler_close(hScaler);
+	return ret;
+}
+
+static int camera_test(uint32_t type, NX_MEMORY_HANDLE *hMem,
+		NX_MEMORY_HANDLE *hOutMem, uint32_t w, uint32_t h,
+		uint32_t x, uint32_t y, uint32_t cropWidth, uint32_t cropHeight,
 		uint32_t count, uint32_t f, char *strOutFile)
 {
 	int ret = 0, video_fd;
@@ -113,6 +133,7 @@ static int camera_test(uint32_t type, NX_MEMORY_HANDLE *hMem, uint32_t w, uint32
 	char path[20] = {0, };
 	char data;
 	int loop_count = count, size = 0, dq_index = 0;
+	NX_MEMORY_HANDLE *hOut;
 
 	if (type == nx_clipper_video) {
 		strcpy(path, "/dev/video6");
@@ -166,18 +187,21 @@ static int camera_test(uint32_t type, NX_MEMORY_HANDLE *hMem, uint32_t w, uint32
 	printf("start stream done\n");
 
 	while (loop_count--) {
-
 		ret = nx_v4l2_dqbuf(video_fd, type, 1, &dq_index);
 		if (ret) {
 			printf("failed to dqbuf: %d\n", ret);
 			goto stop;
 		}
 		printf("Dqbuf:%d done\n", dq_index);
-		if (0 != SaveOutputImage(hMem[dq_index], (const char *)strOutFile))
-		{
-			printf("Error : SaveOutputImage !!\n");
-			goto stop;
-		}
+		if (cropWidth && cropHeight) {
+			ret = DoScaling(hMem[dq_index], hOutMem[dq_index], x, y, cropWidth, cropHeight);
+			if (ret) {
+				printf("Error: DoScaling !!\n");
+				goto stop;
+			}
+			hOut = &hOutMem[dq_index];
+		} else
+			hOut = &hMem[dq_index];
 
 		if (count == 1)
 			break;
@@ -187,6 +211,12 @@ static int camera_test(uint32_t type, NX_MEMORY_HANDLE *hMem, uint32_t w, uint32
 			printf("failed qbuf index %d\n", ret);
 			goto stop;
 		}
+	}
+
+	if (0 != SaveOutputImage(*(NX_MEMORY_HANDLE*)hOut, (const char *)strOutFile))
+	{
+		printf("Error : SaveOutputImage !!\n");
+		goto stop;
 	}
 
 stop:
@@ -218,7 +248,9 @@ static void print_usage(const char *appName)
 		"  common options :\n"
 		"     -t [type]		          [M]  : 0 - clipper, 1 - decimator\n"
 		"     -s [width],[height]         [M]  : input image's size\n"
-		"     -c [count]		  [O]  : repeat count, default:1\n"
+		"     -c [x],[y],[width],[height] [O]  : scaling : crop x, y, width, hegith\n"
+		"     -d [width],[height]         [O]  : output image's size\n"
+		"     -r [count]		  [O]  : repeat count, default:1\n"
 		"     -o [filename]		  [M]  : output file name\n"
 		"     -f [format]		  [M]  : 0 - YUV420 1 - YUV422p\n"
 		"     -h : help\n"
@@ -226,7 +258,7 @@ static void print_usage(const char *appName)
 		appName);
 	printf(
 		" Example :\n"
-		"     #> %s -s 1920,1080 -c 10\n"
+		"     #> %s -t 0 -s 1280,720 -r 10 -f 0 -o result.yuv\n"
 		, appName);
 
 }
@@ -235,13 +267,14 @@ int32_t main(int32_t argc, char *argv[])
 {
 	int32_t opt, ret, i, f = 0, format, type, t = 0;
 	int32_t inWidth, inHeight, count = 1;
-	char *path;
+	int32_t outWidth = 0, outHeight = 0;
+	int32_t cropWidth = 0, cropHeight = 0, x = 0, y = 0;
 	NX_MEMORY_HANDLE hMem[MAX_BUFFER_COUNT] = {0, };
+	NX_MEMORY_HANDLE hOutMem[MAX_BUFFER_COUNT] = {0, };
 	char *strOutFile = NULL;
 
 	printf("======camera test application=====\n");
-	printf("format 0:YUV420 1:YUV422p\n");
-	while (-1 != (opt = getopt(argc, argv, "t:s:c:h:o:f:")))
+	while (-1 != (opt = getopt(argc, argv, "t:s:c:d:r:h:o:f:")))
 	{
 		switch (opt)
 		{
@@ -252,6 +285,13 @@ int32_t main(int32_t argc, char *argv[])
 				sscanf(optarg, "%d,%d", &inWidth, &inHeight);
 				break;
 			case 'c':
+				sscanf(optarg, "%d,%d,%d,%d", &x, &y,
+						&cropWidth, &cropHeight);
+				break;
+			case 'd':
+				sscanf(optarg, "%d,%d", &outWidth, &outHeight);
+				break;
+			case 'r':
 				sscanf(optarg, "%d", &count);
 				break;
 			case 'h':
@@ -275,14 +315,26 @@ int32_t main(int32_t argc, char *argv[])
 		return -1;
 	}
 
+	if (!outWidth || !outHeight) {
+		outWidth = inWidth;
+		outHeight = inHeight;
+	}
+
+	if ((x + cropWidth > inWidth) || (y + cropHeight > inHeight))
+	{
+		printf("Error : Invalid arguments!!!");
+		print_usage(argv[0]);
+		return -1;
+	}
+
 	if (!t)
 		type = nx_clipper_video;
 	else
 		type = nx_decimator_video;
 
-	printf("device:%s width:%d height:%d repeat count:%d max buffer:%d outFile:%s f:%d\n",
-			(t) ? "decimator":"clipper", inWidth, inHeight, count, MAX_BUFFER_COUNT,
-			strOutFile, f);
+	printf("device:%s in [%d:%d] crop [%d:%d:%d:%d] out [%d:%d] repeat:%d max buffer:%d outFile:%s f:%d\n",
+			(t) ? "decimator":"clipper", inWidth, inHeight, x, y, cropWidth, cropHeight,
+			outWidth, outHeight, count, MAX_BUFFER_COUNT, strOutFile, f);
 
 	if (f == 0) {
 		format = V4L2_PIX_FMT_YUV420;
@@ -308,10 +360,21 @@ int32_t main(int32_t argc, char *argv[])
 			printf("failed to map hInMem for %d\n", i);
 			return -1;
 		}
+		if (outWidth && outHeight) {
+			hOutMem[i] = NX_AllocateMemory(outWidth, outHeight, planes, format, 4096);
+			if (hOutMem[i] == NULL) {
+				printf("hOutMem is NULL for %d\n", i);
+				return -1;
+			}
+			if (0 != NX_MapMemory(hOutMem[i])) {
+				printf("failed to map hInMem for %d\n", i);
+				return -1;
+			}
+		}
 	}
 
-	ret = camera_test(type, hMem, inWidth, inHeight, count, format,
-			strOutFile);
+	ret = camera_test(type, hMem, hOutMem, inWidth, inHeight,
+			x, y, cropWidth, cropHeight, count, format, strOutFile);
 	if (ret) {
 		printf("Error : camera test:%d !!\n", ret);
 		goto ErrorExit;
@@ -322,6 +385,8 @@ int32_t main(int32_t argc, char *argv[])
 	for (i = 0; i < MAX_BUFFER_COUNT; i++) {
 		if (hMem[i])
 			NX_FreeMemory(hMem[i]);
+		if (hOutMem[i])
+			NX_FreeMemory(hOutMem[i]);
 	}
 
 ErrorExit:

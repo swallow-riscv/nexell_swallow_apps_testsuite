@@ -135,7 +135,7 @@ static int32_t SaveOutputImage(NX_MEMORY_HANDLE hImg, const char *fileName)
 		pDst = (uint8_t *)hImg->pBuffer[i];
 		for (int32_t j = 0; j < height; j++)
 		{
-			fwrite(pDst + hImg->stride[i] * j, 1, width, fd);
+			fwrite(pDst + hImg->stride[i] * j, 1, hImg->stride[i], fd);
 		}
 		if( i==0 )
 		{
@@ -159,7 +159,6 @@ static int32_t VerifyOutputImage(NX_MEMORY_HANDLE srcImg, const char *srcName,
 	int32_t dst_height = dstImg->height;
 	uint8_t *pSrc, *pDst;
 
-	printf("[%s]\n", __func__);
 
 	if ((src_height != dst_height) || (src_width != dst_width))
 		return -1;
@@ -179,22 +178,11 @@ static int32_t VerifyOutputImage(NX_MEMORY_HANDLE srcImg, const char *srcName,
 		pDst = (uint8_t *)dstImg->pBuffer[i];
 		for (int32_t j = 0; j < src_height; j++)
 		{
-			if (src_width != (int32_t)fread(pSrc, 1, src_width, src_fd))
-			{
-				printf("Read failed!! (j=%d, width=%d) \n", j, src_width);
-				fclose(src_fd);
-				return -1;
-			}
-			if (dst_width != (int32_t)fread(pDst, 1, dst_width, dst_fd))
-			{
-				printf("Read failed!! (j=%d, width=%d) \n", j, dst_width);
-				fclose(dst_fd);
-				return -1;
-			}
 			for (int32_t h = 0; h < src_width; h++)
 			{
 				if (*pSrc != *pDst) {
-					printf("src[%x] dst[%x] is not matched\n", *pSrc, *pDst);
+					printf("[%d] src[%x] dst[%x] is not matched\n",
+							h, *pSrc, *pDst);
 					fclose(src_fd);
 					fclose(dst_fd);
 					return -1;
@@ -335,12 +323,6 @@ int32_t main(int32_t argc, char *argv[])
 	if (0 != SaveOutputImage(hOutMem, (const char *)strOutFile))
 	{
 		printf("Error : SaveOutputImage !!\n");
-		goto ErrorExit;
-	}
-	if (0 != VerifyOutputImage(hInMem, (const char *)strInFile,
-				hOutMem, (const char *)strOutFile))
-	{
-		printf("Error : VerifyOutputImage !!\n");
 		goto ErrorExit;
 	}
 	printf("Done!!!\n");

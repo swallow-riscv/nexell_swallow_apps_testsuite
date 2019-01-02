@@ -58,8 +58,8 @@ static int32_t SaveOutputImage(NX_MEMORY_HANDLE hImg, const char *fileName)
 		pDst = (uint8_t *)hImg->pBuffer[i];
 		for (int32_t j = 0; j < height; j++)
 		{
-			count = fwrite(pDst + hImg->stride[i] * j, 1, hImg->stride[i], fd);
-			if (count != hImg->stride[i])
+			count = fwrite(pDst + hImg->stride[i] * j, 1, width, fd);
+			if (count != width)
 				printf("failed to write %d data:%d\n", width, count);
 		}
 		if(i == 0) {

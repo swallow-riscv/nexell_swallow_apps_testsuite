@@ -135,7 +135,7 @@ static int32_t SaveOutputImage(NX_MEMORY_HANDLE hImg, const char *fileName)
 		pDst = (uint8_t *)hImg->pBuffer[i];
 		for (int32_t j = 0; j < height; j++)
 		{
-			fwrite(pDst + hImg->stride[i] * j, 1, hImg->stride[i], fd);
+			fwrite(pDst + hImg->stride[i] * j, 1, width, fd);
 		}
 		if( i==0 )
 		{

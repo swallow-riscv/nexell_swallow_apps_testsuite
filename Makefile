@@ -8,6 +8,19 @@ DIR += cam_test
 DIR += camera_test_onedevice
 DIR += dp_cam_test_onedevice
 DIR += mpegts_test
+DIR += cpu
+DIR += gpio
+DIR += i2c
+DIR += mmc
+DIR += uart
+DIR += spi
+DIR += pwm
+DIR += adc
+DIR += watchdog
+DIR += sfr
+DIR += sfr_test
+DIR += main
+DIR += usb
 
 CROSS_COMPILE ?= aarch64-linux-gnu-
 

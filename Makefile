@@ -18,7 +18,6 @@ DIR += pwm
 DIR += adc
 DIR += watchdog
 DIR += sfr
-DIR += sfr_test
 DIR += main
 DIR += usb
 
